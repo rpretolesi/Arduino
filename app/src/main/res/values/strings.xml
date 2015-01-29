@@ -8,4 +8,17 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Notifiche di operazioni su Database -->
+    <string name="db_save_data_ok">Dati Memorizzati.</string>
+    <string name="db_save_data_error">Errore Memorizzazione Dati.</string>
+
+
+    <!-- Settings. -->
+    <string name="settings_text_tv_title">Opzioni di connessione al Server</string>
+    <string name="settings_text_tv_server_ip_address">Indirizzo TCP/IP Server</string>
+    <string name="settings_hint_et_server_ip_address">Indirizzo TCP/IP Server</string>
+    <string name="settings_text_btn_start_comm">Start Comunicazione</string>
+    <string name="settings_text_btn_stop_comm">Stop Comunicazione</string>
+    <string name="settings_text_btn_save">Salva Parametri</string>
+
 </resources>
