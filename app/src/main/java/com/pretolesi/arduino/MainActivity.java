@@ -1,10 +1,17 @@
 package com.pretolesi.arduino;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import android.os.AsyncTask;
@@ -45,11 +52,15 @@ public class MainActivity extends ActionBarActivity{
      */
     ViewPager mViewPager;
 
-    // Dichiaro il Socket per la comunicazione.
-    private Socket m_socketClient;
 
     // Dichiaro la lista dei comandi da inviare
-    private BlockingQueue m_bqCommand;
+    private BlockingQueue<byte[]> m_bqCommand;
+
+    // Metto in una lista, i dati da passare alla funzione AsyncTask
+    private List<Object> m_alOParameter;
+
+    // Metto in una lista, le segnalazioni per poterle meglio consultare
+    private List<String> m_alStrError;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,28 +76,22 @@ public class MainActivity extends ActionBarActivity{
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // Verifico se ho dei dati gia' memorizzati nel DB in modo che all'avvio dell'applicazione possa collegarmi.
-
-        if(m_socketClient == null)
-        {
-            m_socketClient = new Socket();
-            // Prendo l'indirizzo remoto dal DB
-            String strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
-
-            if(strIpAddress != null)
-            {
-                try {
-                    InetAddress iNetIpAddress = InetAddress.getByName(strIpAddress);
-                } catch (UnknownHostException ex) {
-
-                } catch (IOException ex) {
-                }
-            }
-
-
-            //m_socketClient.connect();
+        // Inizializzo tutte le variabili
+        if(m_bqCommand == null) {
+            m_bqCommand = new ArrayBlockingQueue<>(10);
+        }
+        if(m_alOParameter == null) {
+            m_alOParameter = new ArrayList<>(2);
+        }
+        if(m_alStrError == null) {
+            m_alStrError = new ArrayList<>();
         }
 
+        // Preparo i parametri per passare al thread i dati.
+        if(m_alOParameter =! null)
+        {
+            m_alOParameter.add(0,m_bqCommand);
+        }
     }
 
 
@@ -325,11 +330,189 @@ public class MainActivity extends ActionBarActivity{
         }
     }
 
-    private class DownloadFilesTask extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void...v)
+    private class CommunicationTask extends AsyncTask<List<Object>, Void, Void> {
+        protected Void doInBackground(List<Object>...obj)
         {
-            return v[0];
+            //Prendo i parametri
+            Socket socketClient = null;
+            DataOutputStream dataOutputStream = null;
+            DataInputStream dataInputStream = null;
+
+            BlockingQueue<byte[]> bqCommand = (BlockingQueue)obj[1];
+            byte[] byteToWrite = null;
+            byte[] byteToWriteACK = {0x06};
+            byte[] byteToRead = new byte[8];
+
+            while (!isCancelled() && bqCommand != null)
+            {
+                // Verifico se il socket e' connesso
+                if(socketClient == null || !socketClient.isConnected())
+                {
+                    // close socket
+                    if(socketClient != null)
+                    {
+                        try
+                        {
+                            socketClient.close();
+                            socketClient = null;
+                        }
+                        catch (IOException ioex_1)
+                        {
+
+                        }
+                    }
+                    // close input stream
+                    if (dataInputStream != null)
+                    {
+                        try {
+                            dataInputStream.close();
+                        } catch (IOException ioex_2) {
+                        }
+                    }
+                    // close output stream
+                    if (dataOutputStream != null)
+                    {
+                        try {
+                            dataOutputStream.close();
+                        } catch (IOException ioex_3) {
+                        }
+                    }
+
+                    socketClient = new Socket();
+
+                    // Prelevo indirizzo IP
+                    String strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
+
+                    if(strIpAddress != null)
+                    {
+                        SocketAddress socketAddress = new InetSocketAddress(strIpAddress , 512);
+
+                        try {
+
+                            socketClient.connect(socketAddress,3000);
+                            socketClient.setSoTimeout(3000);
+
+                            dataOutputStream = new DataOutputStream(socketClient.getOutputStream());
+                            dataInputStream = new DataInputStream(socketClient.getInputStream());
+
+                        }
+                        catch (IllegalArgumentException iaex)
+                        {
+                            // close socket
+                            if(socketClient != null)
+                            {
+                                try
+                                {
+                                    socketClient.close();
+                                    socketClient = null;
+                                }
+                                catch (IOException ioex_1)
+                                {
+
+                                }
+                            }
+                            // close input stream
+                            if (dataInputStream != null)
+                            {
+                                try {
+                                    dataInputStream.close();
+                                } catch (IOException ioex_2) {
+                                }
+                            }
+                            // close output stream
+                            if (dataOutputStream != null)
+                            {
+                                try {
+                                    dataOutputStream.close();
+                                } catch (IOException ioex_3) {
+                                }
+                            }
+                        }
+
+                        catch (IOException ioex_10)
+                        {
+                            // close socket
+                            if(socketClient != null)
+                            {
+                                try
+                                {
+                                    socketClient.close();
+                                    socketClient = null;
+                                }
+                                catch (IOException ioex_1)
+                                {
+
+                                }
+                            }
+                            // close input stream
+                            if (dataInputStream != null)
+                            {
+                                try {
+                                    dataInputStream.close();
+                                } catch (IOException ioex_2) {
+                                }
+                            }
+                            // close output stream
+                            if (dataOutputStream != null)
+                            {
+                                try {
+                                    dataOutputStream.close();
+                                } catch (IOException ioex_3) {
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(socketClient.isConnected())
+                {
+                    // Verifico se ci sono dei comandi da inviare
+                    byteToWrite = bqCommand.poll();
+
+                    if(byteToWrite == null)
+                    {
+                        byteToWrite = byteToWriteACK;
+                    }
+                    try
+                    {
+                        // Send data
+                        dataOutputStream.write(byteToWrite, 0, byteToWrite.length);
+
+                        // Read answer
+                        dataInputStream.read(byteToRead);
+                        if(byteToRead[0] == 0x06)
+                        {
+                            // ACK
+                        }
+                    }
+                    catch (IOException ioex_1)
+                    {
+                    }
+                    catch (NullPointerException ioex_2)
+                    {
+                    }
+
+
+                    // Thread will wait till server replies
+
+                    String response = dataInputStream.readUTF();
+
+                    if (respnose != null && response.equals("Connection Accepted")) {
+
+                        success = true;
+
+                    } else {
+
+                        success = false;
+
+                    }
+
+                }
+            }
+
+             return v[0];
         }
+
 
         protected void onProgressUpdate(Void... v)
         {
