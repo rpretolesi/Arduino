@@ -93,7 +93,7 @@ public class MainActivity extends ActionBarActivity{
         }
 
         // Preparo i parametri per passare al thread i dati.
-        if(m_alOParameter =! null)
+        if(m_alOParameter != null)
         {
             m_alOParameter.add(0,m_bqCommand);
         }
@@ -305,7 +305,8 @@ public class MainActivity extends ActionBarActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DriveFragment extends Fragment {
+    public static class DriveFragment extends Fragment implements NewDataReceived
+    {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -333,9 +334,35 @@ public class MainActivity extends ActionBarActivity{
             View rootView = inflater.inflate(R.layout.drive_fragment, container, false);
             return rootView;
         }
+
+        //Richiamata quando ci sono nuovi dati disponibili
+        @Override
+        public void onNewDataReceived(String username, boolean available)
+        {
+
+        }
     }
 
-    private class CommunicationTask extends AsyncTask<List<Object>, Void, Void> {
+    private class CommunicationTask extends AsyncTask<List<Object>, Void, Void>
+    {
+        NewDataReceived onNewDataReceivedListener = null;
+
+        // Imposto il listener
+        public void setOnNewDataReceivedListener(NewDataReceived listener)
+        {
+            onNewDataReceivedListener = listener;
+        }
+
+        // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
+        private void onUpdate(String username, boolean available)
+        {
+            // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
+            if(onNewDataReceivedListener!=null) {
+                // Only trigger the event, when we have a username
+                onNewDataReceivedListener.onNewDataReceived("test",true);
+            }
+        }
+
         @Override
         protected Void doInBackground(List<Object>...obj)
         {
@@ -508,24 +535,20 @@ public class MainActivity extends ActionBarActivity{
                 }
 
                 // Pubblico i dati
-                this.publishProgress(v[0]);
+                this.publishProgress();
             }
 
-             return v[0];
+             return null;
         }
 
 
         @Override
         protected void onProgressUpdate(Void... v)
         {
-
+            // Aggiorno i dati
+            onUpdate("Test", true);
         }
 
-        @Override
-        protected void onPostExecute(Void...v)
-        {
-
-        }
     }
 
 }
