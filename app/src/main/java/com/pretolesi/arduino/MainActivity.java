@@ -2,6 +2,7 @@ package com.pretolesi.arduino;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -51,6 +52,10 @@ public class MainActivity extends ActionBarActivity{
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    // Comando
+    private static byte ENQ = 0x05;
+    private static byte ACK = 0x06;
 
 
     // Dichiaro la lista dei comandi da inviare
@@ -139,7 +144,7 @@ public class MainActivity extends ActionBarActivity{
             }
             if (position == 1)
             {
-                fragment = DriveWheelsFragment.newInstance(position + 1);
+                fragment = DriveFragment.newInstance(position + 1);
             }
             return fragment;
         }
@@ -300,7 +305,7 @@ public class MainActivity extends ActionBarActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DriveWheelsFragment extends Fragment {
+    public static class DriveFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -311,26 +316,27 @@ public class MainActivity extends ActionBarActivity{
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static DriveWheelsFragment newInstance(int sectionNumber) {
-            DriveWheelsFragment fragment = new DriveWheelsFragment();
+        public static DriveFragment newInstance(int sectionNumber) {
+            DriveFragment fragment = new DriveFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public DriveWheelsFragment() {
+        public DriveFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.main_fragment, container, false);
+            View rootView = inflater.inflate(R.layout.drive_fragment, container, false);
             return rootView;
         }
     }
 
     private class CommunicationTask extends AsyncTask<List<Object>, Void, Void> {
+        @Override
         protected Void doInBackground(List<Object>...obj)
         {
             //Prendo i parametri
@@ -340,8 +346,8 @@ public class MainActivity extends ActionBarActivity{
 
             BlockingQueue<byte[]> bqCommand = (BlockingQueue)obj[1];
             byte[] byteToWrite = null;
-            byte[] byteToWriteACK = {0x06};
-            byte[] byteToRead = new byte[8];
+            byte[] byteToWriteENQ = {ENQ};
+            byte[] byteToRead = new byte[64];
 
             while (!isCancelled() && bqCommand != null)
             {
@@ -471,7 +477,7 @@ public class MainActivity extends ActionBarActivity{
 
                     if(byteToWrite == null)
                     {
-                        byteToWrite = byteToWriteACK;
+                        byteToWrite = byteToWriteENQ;
                     }
                     try
                     {
@@ -479,46 +485,43 @@ public class MainActivity extends ActionBarActivity{
                         dataOutputStream.write(byteToWrite, 0, byteToWrite.length);
 
                         // Read answer
-                        dataInputStream.read(byteToRead);
-                        if(byteToRead[0] == 0x06)
+                        dataInputStream.readFully(byteToRead, 0, 1);
+                        if(byteToRead[0] == ACK)
                         {
                             // ACK
+                            // Prelevo 16 Valori Analogici(32 Byte)
+                            // prelevo 32 valori digitali(8 ingressi ogni byte)(4 Byte)
+                            dataInputStream.readFully(byteToRead, 1, 36);
+                            // Prelevo i dati da visualizzare nel cruscotto
+
                         }
                     }
-                    catch (IOException ioex_1)
+                    catch (EOFException ioex_1)
                     {
                     }
-                    catch (NullPointerException ioex_2)
+                    catch (IOException ioex_2)
                     {
                     }
-
-
-                    // Thread will wait till server replies
-
-                    String response = dataInputStream.readUTF();
-
-                    if (respnose != null && response.equals("Connection Accepted")) {
-
-                        success = true;
-
-                    } else {
-
-                        success = false;
-
+                    catch (NullPointerException ioex_3)
+                    {
                     }
-
                 }
+
+                // Pubblico i dati
+                this.publishProgress(v[0]);
             }
 
              return v[0];
         }
 
 
+        @Override
         protected void onProgressUpdate(Void... v)
         {
 
         }
 
+        @Override
         protected void onPostExecute(Void...v)
         {
 
