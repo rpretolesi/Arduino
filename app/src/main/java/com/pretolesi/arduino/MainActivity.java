@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity{
     // Comando da inviare
     /*
         m_byteCommandHolder[0] = SOH
-        m_byteCommandHolder[1] = Drive Command. Bit Nr: 0 = FWD, 1 = REV
+        m_byteCommandHolder[1] = Drive Command. Bit Nr: 0 = FWD/REW
         m_byteCommandHolder[2] = Fork Command. Bit Nr: 0 = UP, 1 = DOWN, 2 = OPEN, 3 = CLOSE,
         m_byteCommandHolder[3] = Disp.
         m_byteCommandHolder[4] = Disp.
@@ -78,10 +78,9 @@ public class MainActivity extends ActionBarActivity{
 
      */
     private static byte[] m_byteCommandHolder;
-    private byte[] m_byteCommand;
 
     // Dichiaro la lista dei comandi da inviare
-    private BlockingQueue<byte[]> m_bqCommand;
+    private static BlockingQueue<byte[]> m_bqCommand;
 
     // Metto in una lista, i dati da passare alla funzione AsyncTask
     private List<Object> m_alOParameter;
@@ -344,6 +343,8 @@ public class MainActivity extends ActionBarActivity{
      */
     public static class DriveFragment extends Fragment
     {
+        private Button m_drive_id_btn_start_stop;
+
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -369,7 +370,44 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public void onActivityCreated (Bundle savedInstanceState)
         {
+            super.onActivityCreated(savedInstanceState);
 
+            m_drive_id_btn_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_start_stop);
+
+            // Set an OnClickListener
+            m_drive_id_btn_start_stop.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if(m_byteCommandHolder != null)
+                    {
+                         boolean bStartStopStatus = ((m_byteCommandHolder[1] & 0b10000000) == 0);
+                        if(((m_byteCommandHolder[1] & 0b10000000) == 0b00000000))
+                        {
+                            // Sono fermo, accendo
+                            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b10000000);
+
+                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_stop);
+                        }
+                        else
+                        {
+                            // Sono acceso, spengo
+                            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b01111111);
+
+                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
+                        }
+
+                        // Inserisco il comando in coda
+                        byte[] m_byteCommand =  new byte[16];
+                        System.arraycopy( m_byteCommandHolder, 0, m_byteCommand, 0, m_byteCommandHolder.length );
+                        if(m_bqCommand != null)
+                        {
+                            m_bqCommand.offer(m_byteCommand);
+                        }
+                    }
+                }
+            });
         }
 
         @Override

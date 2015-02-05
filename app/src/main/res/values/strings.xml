@@ -21,7 +21,9 @@
     <string name="settings_text_btn_stop_comm">Stop Comunicazione</string>
     <string name="settings_text_btn_save">Salva Parametri</string>
 
-    <!-- Settings. -->
+    <!-- Drive. -->
     <string name="drive_text_btn_start_stop">Start/Stop\nDrive</string>
+    <string name="drive_text_btn_start">Start\nDrive</string>
+    <string name="drive_text_btn_stop">Stop\nDrive</string>
 
 </resources>
