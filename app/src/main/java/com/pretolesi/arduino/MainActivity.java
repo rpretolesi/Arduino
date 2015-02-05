@@ -4,11 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -16,9 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -35,6 +31,7 @@ import android.widget.Toast;
 
 import SQL.SQLContract;
 
+import com.pretolesi.arduino.NewDataReceived;
 
 public class MainActivity extends ActionBarActivity{
 
@@ -53,10 +50,35 @@ public class MainActivity extends ActionBarActivity{
      */
     ViewPager mViewPager;
 
-    // Comando
+    private static byte SOH = 0x01;
+    private static byte EOT = 0x04;
     private static byte ENQ = 0x05;
     private static byte ACK = 0x06;
 
+
+
+    // Comando da inviare
+    /*
+        m_byteCommandHolder[0] = SOH
+        m_byteCommandHolder[1] = Drive Command. Bit Nr: 0 = FWD, 1 = REV
+        m_byteCommandHolder[2] = Fork Command. Bit Nr: 0 = UP, 1 = DOWN, 2 = OPEN, 3 = CLOSE,
+        m_byteCommandHolder[3] = Disp.
+        m_byteCommandHolder[4] = Disp.
+        m_byteCommandHolder[5] = Throttle FWD 0-100
+        m_byteCommandHolder[6] = Throttle REW 0-100
+        m_byteCommandHolder[7] = Steering RIGHT 0-100
+        m_byteCommandHolder[8] = Steering LEFT 0-100
+        m_byteCommandHolder[9] = Fork Speed UP 0-100
+        m_byteCommandHolder[10] = Fork Speed DOWN 0-100
+        m_byteCommandHolder[11] = Fork Speed OPEN 0-100
+        m_byteCommandHolder[12] = Fork Speed CLOSE 0-100
+        m_byteCommandHolder[13] = Disp.
+        m_byteCommandHolder[14] = Disp
+        m_byteCommandHolder[15] = EOT
+
+     */
+    private static byte[] m_byteCommandHolder;
+    private byte[] m_byteCommand;
 
     // Dichiaro la lista dei comandi da inviare
     private BlockingQueue<byte[]> m_bqCommand;
@@ -65,7 +87,11 @@ public class MainActivity extends ActionBarActivity{
     private List<Object> m_alOParameter;
 
     // Metto in una lista, le segnalazioni per poterle meglio consultare
-    private List<String> m_alStrError;;
+    private List<String> m_alStrError;
+
+    // Task di comunicazione
+    private static CommunicationTask m_CommunicationTask = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +123,17 @@ public class MainActivity extends ActionBarActivity{
         {
             m_alOParameter.add(0,m_bqCommand);
         }
+
+        // Inizializzo i comandi da inviare
+        if(m_byteCommandHolder == null)
+        {
+            m_byteCommandHolder = new byte[16];
+        }
+
+        // Avvio il Task di comunicazione
+        m_CommunicationTask = new CommunicationTask();
+        m_CommunicationTask.execute(m_alOParameter, null, null);
+
     }
 
 
@@ -305,7 +342,7 @@ public class MainActivity extends ActionBarActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DriveFragment extends Fragment implements NewDataReceived
+    public static class DriveFragment extends Fragment
     {
         /**
          * The fragment argument representing the section number for this
@@ -325,21 +362,49 @@ public class MainActivity extends ActionBarActivity{
             return fragment;
         }
 
-        public DriveFragment() {
+        public DriveFragment()
+        {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public void onActivityCreated (Bundle savedInstanceState)
+        {
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
             View rootView = inflater.inflate(R.layout.drive_fragment, container, false);
             return rootView;
         }
 
-        //Richiamata quando ci sono nuovi dati disponibili
         @Override
-        public void onNewDataReceived(String username, boolean available)
+        public void onResume()
         {
+            super.onResume();
 
+            if(m_CommunicationTask != null)
+            {
+                m_CommunicationTask.setOnNewDataReceivedListener(new NewDataReceived()
+                {
+                    @Override
+                    public void onNewDataReceived(String username, boolean available)
+                    {
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onPause()
+        {
+            super.onPause();
+
+            if(m_CommunicationTask != null)
+            {
+                m_CommunicationTask.setOnNewDataReceivedListener(null);
+            }
         }
     }
 
@@ -348,7 +413,7 @@ public class MainActivity extends ActionBarActivity{
         NewDataReceived onNewDataReceivedListener = null;
 
         // Imposto il listener
-        public void setOnNewDataReceivedListener(NewDataReceived listener)
+        public synchronized void setOnNewDataReceivedListener(NewDataReceived listener)
         {
             onNewDataReceivedListener = listener;
         }
