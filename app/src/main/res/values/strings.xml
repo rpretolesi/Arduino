@@ -26,4 +26,6 @@
     <string name="drive_text_btn_start">Start\nDrive</string>
     <string name="drive_text_btn_stop">Stop\nDrive</string>
 
+    <!-- Notifiche di operazioni su Comunicazione con Robot. -->
+    <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
 </resources>

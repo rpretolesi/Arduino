@@ -127,6 +127,10 @@ public class MainActivity extends ActionBarActivity{
         if(m_byteCommandHolder == null)
         {
             m_byteCommandHolder = new byte[16];
+
+            m_byteCommandHolder[0] = SOH;
+
+            m_byteCommandHolder[15] = EOT;
         }
 
         // Avvio il Task di comunicazione
@@ -403,7 +407,11 @@ public class MainActivity extends ActionBarActivity{
                         System.arraycopy( m_byteCommandHolder, 0, m_byteCommand, 0, m_byteCommandHolder.length );
                         if(m_bqCommand != null)
                         {
-                            m_bqCommand.offer(m_byteCommand);
+                            if(m_bqCommand.offer(m_byteCommand) == false)
+                            {
+                                fare il toast qui
+                                comm_status_queue_full
+                            }
                         }
                     }
                 }
