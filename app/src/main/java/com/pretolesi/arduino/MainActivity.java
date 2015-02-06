@@ -13,6 +13,10 @@ import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -27,11 +31,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import SQL.SQLContract;
-
-import com.pretolesi.arduino.NewDataReceived;
 
 public class MainActivity extends ActionBarActivity{
 
@@ -60,7 +63,7 @@ public class MainActivity extends ActionBarActivity{
     // Comando da inviare
     /*
         m_byteCommandHolder[0] = SOH
-        m_byteCommandHolder[1] = Drive Command. Bit Nr: 0 = FWD/REW
+        m_byteCommandHolder[1] = Drive Command. Bit Nr: 0 = FWD, 1 = REW
         m_byteCommandHolder[2] = Fork Command. Bit Nr: 0 = UP, 1 = DOWN, 2 = OPEN, 3 = CLOSE,
         m_byteCommandHolder[3] = Disp.
         m_byteCommandHolder[4] = Disp.
@@ -134,8 +137,8 @@ public class MainActivity extends ActionBarActivity{
         }
 
         // Avvio il Task di comunicazione
-        m_CommunicationTask = new CommunicationTask();
-        m_CommunicationTask.execute(m_alOParameter, null, null);
+        //m_CommunicationTask = new CommunicationTask();
+        //m_CommunicationTask.execute(m_alOParameter, null, null);
 
     }
 
@@ -279,7 +282,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.main_fragment, container, false);
+            View rootView = inflater.inflate(R.layout.settings_fragment, container, false);
             return rootView;
         }
 
@@ -345,9 +348,23 @@ public class MainActivity extends ActionBarActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DriveFragment extends Fragment
+    public static class DriveFragment extends Fragment implements SensorEventListener
     {
+        // Sensori
+        private SensorManager m_SensorManager;
+        private Sensor m_Accelerometer;
+        private Sensor m_Magnetometer;
+        private float[] m_Gravity;
+        private float[] m_Geomagnetic;
+        float m_Rot[] = null;
+        float m_Incl[] = null;
+        float m_AzimPitchRoll[] = null;
+
         private Button m_drive_id_btn_start_stop;
+        private boolean m_bStartStopStatus;
+
+        private TextView m_drive_id_tv_speed;
+
 
         /**
          * The fragment argument representing the section number for this
@@ -377,6 +394,7 @@ public class MainActivity extends ActionBarActivity{
             super.onActivityCreated(savedInstanceState);
 
             m_drive_id_btn_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_start_stop);
+            m_drive_id_tv_speed = (TextView) getActivity().findViewById(R.id.drive_id_tv_speed);
 
             // Set an OnClickListener
             m_drive_id_btn_start_stop.setOnClickListener(new View.OnClickListener()
@@ -386,6 +404,17 @@ public class MainActivity extends ActionBarActivity{
                 {
                     if(m_byteCommandHolder != null)
                     {
+                        if(m_bStartStopStatus == false)
+                        {
+                            m_bStartStopStatus = true;
+                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_stop);
+                        }
+                        else
+                        {
+                            m_bStartStopStatus = true;
+                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
+                        }
+/*
                          boolean bStartStopStatus = ((m_byteCommandHolder[1] & 0b10000000) == 0);
                         if(((m_byteCommandHolder[1] & 0b10000000) == 0b00000000))
                         {
@@ -401,7 +430,7 @@ public class MainActivity extends ActionBarActivity{
 
                             m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
                         }
-
+*/
                         // Inserisco il comando in coda
                         byte[] m_byteCommand =  new byte[16];
                         System.arraycopy( m_byteCommandHolder, 0, m_byteCommand, 0, m_byteCommandHolder.length );
@@ -409,13 +438,27 @@ public class MainActivity extends ActionBarActivity{
                         {
                             if(m_bqCommand.offer(m_byteCommand) == false)
                             {
-                                fare il toast qui
-                                comm_status_queue_full
+                                Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
             });
+
+            // Get reference to SensorManager
+            m_SensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
+
+            if(m_SensorManager != null)
+            {
+                // Get reference to Sensor
+                m_Accelerometer = m_SensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                m_Magnetometer = m_SensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+                if(m_Accelerometer != null && m_Magnetometer != null)
+                {
+                    // Sensori disponibili
+                }
+            }
         }
 
         @Override
@@ -430,6 +473,7 @@ public class MainActivity extends ActionBarActivity{
         {
             super.onResume();
 
+            // Registro Listeners
             if(m_CommunicationTask != null)
             {
                 m_CommunicationTask.setOnNewDataReceivedListener(new NewDataReceived()
@@ -440,6 +484,10 @@ public class MainActivity extends ActionBarActivity{
                     }
                 });
             }
+
+            m_SensorManager.registerListener(this, m_Accelerometer, SensorManager.SENSOR_DELAY_UI);
+            m_SensorManager.registerListener(this, m_Magnetometer, SensorManager.SENSOR_DELAY_UI);
+
         }
 
         @Override
@@ -450,6 +498,45 @@ public class MainActivity extends ActionBarActivity{
             if(m_CommunicationTask != null)
             {
                 m_CommunicationTask.setOnNewDataReceivedListener(null);
+            }
+
+            m_SensorManager.unregisterListener(this);
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy)
+        {
+
+        }
+
+        public void onSensorChanged(SensorEvent event)
+        {
+
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                m_Gravity = event.values;
+            }
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                m_Geomagnetic = event.values;
+            }
+            if (m_Gravity != null && m_Geomagnetic != null)
+            {
+                m_Rot = new float[9];
+                m_Incl = new float[9];
+                boolean bRes = SensorManager.getRotationMatrix(m_Rot, m_Incl, m_Gravity, m_Geomagnetic);
+                if (bRes ==  true)
+                {
+                    m_AzimPitchRoll = new float[3];
+                    SensorManager.getOrientation(m_Rot, m_AzimPitchRoll);
+                }
+
+            }
+
+            // Aggiorno i miei dati
+            if(m_AzimPitchRoll != null)
+            {
+                // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
+
+                m_drive_id_tv_speed.setText(String.valueOf(m_AzimPitchRoll[1] * 200));
             }
         }
     }
