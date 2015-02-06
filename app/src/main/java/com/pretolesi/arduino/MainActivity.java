@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.lang.Math;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -80,7 +82,8 @@ public class MainActivity extends ActionBarActivity{
         m_byteCommandHolder[15] = EOT
 
      */
-    private static byte[] m_byteCommandHolder;
+
+    private static Command m_Command;
 
     // Dichiaro la lista dei comandi da inviare
     private static BlockingQueue<byte[]> m_bqCommand;
@@ -127,13 +130,9 @@ public class MainActivity extends ActionBarActivity{
         }
 
         // Inizializzo i comandi da inviare
-        if(m_byteCommandHolder == null)
+        if(m_Command == null)
         {
-            m_byteCommandHolder = new byte[16];
-
-            m_byteCommandHolder[0] = SOH;
-
-            m_byteCommandHolder[15] = EOT;
+            m_Command = new Command();
         }
 
         // Avvio il Task di comunicazione
@@ -364,6 +363,7 @@ public class MainActivity extends ActionBarActivity{
         private boolean m_bStartStopStatus;
 
         private TextView m_drive_id_tv_speed;
+        private float m_fThrottleTare;
 
 
         /**
@@ -402,44 +402,23 @@ public class MainActivity extends ActionBarActivity{
                 @Override
                 public void onClick(View v)
                 {
-                    if(m_byteCommandHolder != null)
+                    if(m_Command != null)
                     {
                         if(m_bStartStopStatus == false)
                         {
                             m_bStartStopStatus = true;
                             m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_stop);
-                        }
-                        else
-                        {
-                            m_bStartStopStatus = true;
-                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
-                        }
-/*
-                         boolean bStartStopStatus = ((m_byteCommandHolder[1] & 0b10000000) == 0);
-                        if(((m_byteCommandHolder[1] & 0b10000000) == 0b00000000))
-                        {
-                            // Sono fermo, accendo
-                            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b10000000);
 
-                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_stop);
-                        }
-                        else
-                        {
-                            // Sono acceso, spengo
-                            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b01111111);
-
-                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
-                        }
-*/
-                        // Inserisco il comando in coda
-                        byte[] m_byteCommand =  new byte[16];
-                        System.arraycopy( m_byteCommandHolder, 0, m_byteCommand, 0, m_byteCommandHolder.length );
-                        if(m_bqCommand != null)
-                        {
-                            if(m_bqCommand.offer(m_byteCommand) == false)
+                            // Eseguo la tara dei valori dei sensori
+                            if(m_AzimPitchRoll != null)
                             {
-                                Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
+                                m_fThrottleTare = (m_AzimPitchRoll[1] * 200);
                             }
+                        }
+                        else
+                        {
+                            m_bStartStopStatus = false;
+                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
                         }
                     }
                 }
@@ -535,8 +514,32 @@ public class MainActivity extends ActionBarActivity{
             if(m_AzimPitchRoll != null)
             {
                 // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
+                float fThrottle = 0;
+                byte byteTemp = 0;
+                if(m_bStartStopStatus == true)
+                {
+                    m_Command.setCommandFWD(false);
+                    m_Command.setCommandREV(false);
+                    byteTemp = m_Command.getCommandByte(1);
+                    m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b11111100);
+                    fThrottle = Math.abs((m_AzimPitchRoll[1] * 200) - m_fThrottleTare);
+                    m_byteCommandHolder[5] = 0;
+                    m_byteCommandHolder[6] = 0;
+                    if(m_AzimPitchRoll[1] > 0)
+                    {
+                        m_Command.setCommandFWD(true);
+                        m_Command.setCommandByte(floatTobyte(fThrottle),5);
+                    }
+                    if(m_AzimPitchRoll[1] < 0)
+                    {
+                        m_Command.setCommandREV(true);
+                        m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b00000010);
+                        fThrottle = Math.abs((m_AzimPitchRoll[1] * 200) - m_fThrottleTare);
+                        m_byteCommandHolder[6] = floatTobyte(fThrottle);
+                    }
+                }
 
-                m_drive_id_tv_speed.setText(String.valueOf(m_AzimPitchRoll[1] * 200));
+                m_drive_id_tv_speed.setText(String.valueOf(floatTobyte(fThrottle)));
             }
         }
     }
@@ -749,4 +752,19 @@ public class MainActivity extends ActionBarActivity{
 
     }
 
+
+    // Funzioni di supporto
+    static byte floatTobyte(float f)
+    {
+        if(f < 0)
+        {
+            f = 0;
+        }
+        if(f > 127)
+        {
+            f = 127;
+        }
+        DecimalFormat df = new DecimalFormat("###");
+        return Byte.valueOf(df.format(f));
+    }
 }
