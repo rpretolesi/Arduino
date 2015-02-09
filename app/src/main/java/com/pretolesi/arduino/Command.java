@@ -87,6 +87,32 @@ public class Command
         }
     }
 
+    public void setThrottleFWD(byte value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[5] = value;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+
+    public void setThrottleREV(byte value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[6] = value;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+
     public void setDriveFWD(boolean value)
     {
         m_LockCommandHolder.lock();
@@ -119,7 +145,31 @@ public class Command
             m_LockCommandHolder.unlock();
         }
     }
-    public void setSteeringLEFT(boolean value)
+    public void setSteeringLEFT(byte value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[9] = value;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+    public void setSteeringRIGHT(byte value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[10] = value;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+    public void setDriveLEFT(boolean value)
     {
         m_LockCommandHolder.lock();
         try
@@ -135,7 +185,7 @@ public class Command
             m_LockCommandHolder.unlock();
         }
     }
-    public void setSteeringRIGHT(boolean value)
+    public void setDriveRIGHT(boolean value)
     {
         m_LockCommandHolder.lock();
         try

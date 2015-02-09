@@ -13,8 +13,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/drive_text_btn_start"
-        android:id="@+id/drive_id_btn_start_stop"
+        android:text="@string/drive_text_btn_drive_start"
+        android:id="@+id/drive_id_btn_drive_start_stop"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
 

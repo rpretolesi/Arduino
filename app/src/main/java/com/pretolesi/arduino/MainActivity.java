@@ -357,7 +357,7 @@ public class MainActivity extends ActionBarActivity{
         float m_Incl[] = null;
         float m_AzimPitchRoll[] = null;
 
-        private Button m_drive_id_btn_start_stop;
+        private Button m_drive_id_btn_drive_start_stop;
         private boolean m_bStartStopStatus;
 
         private TextView m_drive_text_tv_throttle_fwd;
@@ -396,14 +396,14 @@ public class MainActivity extends ActionBarActivity{
         {
             super.onActivityCreated(savedInstanceState);
 
-            m_drive_id_btn_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_start_stop);
+            m_drive_id_btn_drive_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_start_stop);
             m_drive_text_tv_throttle_fwd = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_fwd);
             m_drive_text_tv_throttle_rev = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_rev);
             m_drive_text_tv_steering_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_left);
             m_drive_text_tv_steering_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_right);
 
             // Set an OnClickListener
-            m_drive_id_btn_start_stop.setOnClickListener(new View.OnClickListener()
+            m_drive_id_btn_drive_start_stop.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -413,7 +413,7 @@ public class MainActivity extends ActionBarActivity{
                         if(m_bStartStopStatus == false)
                         {
                             m_bStartStopStatus = true;
-                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_stop);
+                            m_drive_id_btn_drive_start_stop.setText(R.string.drive_text_btn_drive_stop);
 
                             // Eseguo la tara dei valori dei sensori
                             if(m_AzimPitchRoll != null)
@@ -425,7 +425,7 @@ public class MainActivity extends ActionBarActivity{
                         else
                         {
                             m_bStartStopStatus = false;
-                            m_drive_id_btn_start_stop.setText(R.string.drive_text_btn_start);
+                            m_drive_id_btn_drive_start_stop.setText(R.string.drive_text_btn_drive_start);
                         }
                     }
                 }
@@ -543,14 +543,14 @@ public class MainActivity extends ActionBarActivity{
                         m_Command.setDriveFWD(true);
                         fThrottleFWD = fThrottle;
                         fThrottleREV = 0;
-                        m_Command.setByte(floatTobyte(fThrottleFWD), 5);
+                        m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
                     }
                     if(fAzim < 0)
                     {
                         m_Command.setDriveREV(true);
                         fThrottleFWD = 0;
                         fThrottleREV = fThrottle;
-                        m_Command.setByte(floatTobyte(fThrottleREV), 6);
+                        m_Command.setThrottleREV(floatTobyte(fThrottleREV));
                     }
                     // Steering
                     fPitch = (m_AzimPitchRoll[2] * 200) - m_fSteeringTare;
@@ -561,14 +561,14 @@ public class MainActivity extends ActionBarActivity{
                     }
                     if(fPitch < 0)
                     {
-                        m_Command.setSteeringLEFT(true);
+                        m_Command.setDriveLEFT(true);
                         fSteeringLEFT = fSteering;
                         fSteeringRIGHT = 0;
                         m_Command.setByte(floatTobyte(fSteeringLEFT), 9);
                     }
                     if(fPitch > 0)
                     {
-                        m_Command.setSteeringRIGHT(true);
+                        m_Command.setDriveRIGHT(true);
                         fSteeringLEFT = 0;
                         fSteeringRIGHT = fSteering;
                         m_Command.setByte(floatTobyte(fSteeringRIGHT), 10);
@@ -579,8 +579,8 @@ public class MainActivity extends ActionBarActivity{
                 {
                     m_Command.setDriveFWD(false);
                     m_Command.setDriveREV(false);
-                    m_Command.setSteeringLEFT(false);
-                    m_Command.setSteeringRIGHT(false);
+                    m_Command.setDriveLEFT(false);
+                    m_Command.setDriveRIGHT(false);
                 }
 
                 m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));

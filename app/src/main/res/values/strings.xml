@@ -22,9 +22,9 @@
     <string name="settings_text_btn_save">Salva Parametri</string>
 
     <!-- Drive. -->
-    <string name="drive_text_btn_start_stop">Start/Stop\nDrive</string>
-    <string name="drive_text_btn_start">Start\nDrive</string>
-    <string name="drive_text_btn_stop">Stop\nDrive</string>
+    <string name="drive_text_btn_drive_start_stop">Start/Stop\nDrive</string>
+    <string name="drive_text_btn_drive_start">Start\nDrive</string>
+    <string name="drive_text_btn_drive_stop">Stop\nDrive</string>
     <string name="drive_text_tv_throttle_fwd">Throttle\nFWD</string>
     <string name="drive_text_tv_throttle_rev">Throttle\nREV</string>
     <string name="drive_text_tv_steering_left">Steering\nLEFT</string>
