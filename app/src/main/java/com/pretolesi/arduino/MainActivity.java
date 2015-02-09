@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,9 +86,6 @@ public class MainActivity extends ActionBarActivity{
 
     private static Command m_Command;
 
-    // Dichiaro la lista dei comandi da inviare
-    private static BlockingQueue<byte[]> m_bqCommand;
-
     // Metto in una lista, i dati da passare alla funzione AsyncTask
     private List<Object> m_alOParameter;
 
@@ -113,9 +111,6 @@ public class MainActivity extends ActionBarActivity{
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // Inizializzo tutte le variabili
-        if(m_bqCommand == null) {
-            m_bqCommand = new ArrayBlockingQueue<>(10);
-        }
         if(m_alOParameter == null) {
             m_alOParameter = new ArrayList<>(2);
         }
@@ -123,17 +118,20 @@ public class MainActivity extends ActionBarActivity{
             m_alStrError = new ArrayList<>();
         }
 
-        // Preparo i parametri per passare al thread i dati.
-        if(m_alOParameter != null)
-        {
-            m_alOParameter.add(0,m_bqCommand);
-        }
-
         // Inizializzo i comandi da inviare
         if(m_Command == null)
         {
             m_Command = new Command();
         }
+
+        // Preparo i parametri per passare al thread i dati.
+        if(m_alOParameter != null)
+        {
+            if(m_Command != null) {
+                m_alOParameter.add(0, m_Command);
+            }
+        }
+
 
         // Avvio il Task di comunicazione
         //m_CommunicationTask = new CommunicationTask();
@@ -362,8 +360,13 @@ public class MainActivity extends ActionBarActivity{
         private Button m_drive_id_btn_start_stop;
         private boolean m_bStartStopStatus;
 
-        private TextView m_drive_id_tv_speed;
+        private TextView m_drive_text_tv_throttle_fwd;
+        private TextView m_drive_text_tv_throttle_rev;
+        private TextView m_drive_text_tv_steering_left;
+        private TextView m_drive_text_tv_steering_right;
+
         private float m_fThrottleTare;
+        private float m_fSteeringTare;
 
 
         /**
@@ -394,7 +397,10 @@ public class MainActivity extends ActionBarActivity{
             super.onActivityCreated(savedInstanceState);
 
             m_drive_id_btn_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_start_stop);
-            m_drive_id_tv_speed = (TextView) getActivity().findViewById(R.id.drive_id_tv_speed);
+            m_drive_text_tv_throttle_fwd = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_fwd);
+            m_drive_text_tv_throttle_rev = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_rev);
+            m_drive_text_tv_steering_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_left);
+            m_drive_text_tv_steering_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_right);
 
             // Set an OnClickListener
             m_drive_id_btn_start_stop.setOnClickListener(new View.OnClickListener()
@@ -413,6 +419,7 @@ public class MainActivity extends ActionBarActivity{
                             if(m_AzimPitchRoll != null)
                             {
                                 m_fThrottleTare = (m_AzimPitchRoll[1] * 200);
+                                m_fSteeringTare = (m_AzimPitchRoll[2] * 200);
                             }
                         }
                         else
@@ -514,32 +521,72 @@ public class MainActivity extends ActionBarActivity{
             if(m_AzimPitchRoll != null)
             {
                 // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
+                float fAzim = 0;
                 float fThrottle = 0;
-                byte byteTemp = 0;
+                float fThrottleFWD = 0;
+                float fThrottleREV = 0;
+                float fPitch = 0;
+                float fSteering = 0;
+                float fSteeringLEFT = 0;
+                float fSteeringRIGHT = 0;
                 if(m_bStartStopStatus == true)
                 {
-                    m_Command.setCommandFWD(false);
-                    m_Command.setCommandREV(false);
-                    byteTemp = m_Command.getCommandByte(1);
-                    m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b11111100);
-                    fThrottle = Math.abs((m_AzimPitchRoll[1] * 200) - m_fThrottleTare);
-                    m_byteCommandHolder[5] = 0;
-                    m_byteCommandHolder[6] = 0;
-                    if(m_AzimPitchRoll[1] > 0)
+                    // Throttle
+                    fAzim = (m_AzimPitchRoll[1] * 200) - m_fThrottleTare;
+                    fThrottle = Math.abs(fAzim);
+                    if(fThrottle > 100)
                     {
-                        m_Command.setCommandFWD(true);
-                        m_Command.setCommandByte(floatTobyte(fThrottle),5);
+                        fThrottle = 100;
                     }
-                    if(m_AzimPitchRoll[1] < 0)
+                    if(fAzim > 0)
                     {
-                        m_Command.setCommandREV(true);
-                        m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b00000010);
-                        fThrottle = Math.abs((m_AzimPitchRoll[1] * 200) - m_fThrottleTare);
-                        m_byteCommandHolder[6] = floatTobyte(fThrottle);
+                        m_Command.setDriveFWD(true);
+                        fThrottleFWD = fThrottle;
+                        fThrottleREV = 0;
+                        m_Command.setByte(floatTobyte(fThrottleFWD), 5);
                     }
+                    if(fAzim < 0)
+                    {
+                        m_Command.setDriveREV(true);
+                        fThrottleFWD = 0;
+                        fThrottleREV = fThrottle;
+                        m_Command.setByte(floatTobyte(fThrottleREV), 6);
+                    }
+                    // Steering
+                    fPitch = (m_AzimPitchRoll[2] * 200) - m_fSteeringTare;
+                    fSteering = Math.abs(fPitch);
+                    if(fSteering > 100)
+                    {
+                        fSteering = 100;
+                    }
+                    if(fPitch < 0)
+                    {
+                        m_Command.setSteeringLEFT(true);
+                        fSteeringLEFT = fSteering;
+                        fSteeringRIGHT = 0;
+                        m_Command.setByte(floatTobyte(fSteeringLEFT), 9);
+                    }
+                    if(fPitch > 0)
+                    {
+                        m_Command.setSteeringRIGHT(true);
+                        fSteeringLEFT = 0;
+                        fSteeringRIGHT = fSteering;
+                        m_Command.setByte(floatTobyte(fSteeringRIGHT), 10);
+                    }
+
+                }
+                else
+                {
+                    m_Command.setDriveFWD(false);
+                    m_Command.setDriveREV(false);
+                    m_Command.setSteeringLEFT(false);
+                    m_Command.setSteeringRIGHT(false);
                 }
 
-                m_drive_id_tv_speed.setText(String.valueOf(floatTobyte(fThrottle)));
+                m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
+                m_drive_text_tv_throttle_rev.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
+                m_drive_text_tv_steering_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
+                m_drive_text_tv_steering_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
             }
         }
     }
@@ -572,12 +619,10 @@ public class MainActivity extends ActionBarActivity{
             DataOutputStream dataOutputStream = null;
             DataInputStream dataInputStream = null;
 
-            BlockingQueue<byte[]> bqCommand = (BlockingQueue)obj[1];
-            byte[] byteToWrite = null;
-            byte[] byteToWriteENQ = {ENQ};
+            Command cCommand = (Command)obj[0];
             byte[] byteToRead = new byte[64];
 
-            while (!isCancelled() && bqCommand != null)
+            while (!isCancelled() && cCommand != null)
             {
                 // Verifico se il socket e' connesso
                 if(socketClient == null || !socketClient.isConnected())
@@ -701,16 +746,10 @@ public class MainActivity extends ActionBarActivity{
                 if(socketClient.isConnected())
                 {
                     // Verifico se ci sono dei comandi da inviare
-                    byteToWrite = bqCommand.poll();
-
-                    if(byteToWrite == null)
-                    {
-                        byteToWrite = byteToWriteENQ;
-                    }
                     try
                     {
                         // Send data
-                        dataOutputStream.write(byteToWrite, 0, byteToWrite.length);
+                        dataOutputStream.write(cCommand.get(), 0, cCommand.getLenght());
 
                         // Read answer
                         dataInputStream.readFully(byteToRead, 0, 1);

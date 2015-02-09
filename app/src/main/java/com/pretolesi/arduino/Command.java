@@ -23,7 +23,7 @@ public class Command
         m_byteCommandHolder[15] = EOT;
     }
 
-    public void setCommand(byte[] value)
+    public void set(byte[] value)
     {
         m_LockCommandHolder.lock();
         try
@@ -36,7 +36,7 @@ public class Command
         }
     }
 
-    public byte[] getCommand()
+    public byte[] get()
     {
         m_LockCommandHolder.lock();
         try
@@ -48,8 +48,20 @@ public class Command
             m_LockCommandHolder.unlock();
         }
     }
+    public int getLenght()
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            return m_byteCommandHolder.length;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
 
-    public byte getCommandByte(int index)
+    public byte getByte(int index)
     {
         m_LockCommandHolder.lock();
         try
@@ -62,7 +74,7 @@ public class Command
         }
     }
 
-    public void setCommandByte(byte value, int index)
+    public void setByte(byte value, int index)
     {
         m_LockCommandHolder.lock();
         try
@@ -75,7 +87,7 @@ public class Command
         }
     }
 
-    public void setCommandFWD(boolean value)
+    public void setDriveFWD(boolean value)
     {
         m_LockCommandHolder.lock();
         try
@@ -91,7 +103,7 @@ public class Command
             m_LockCommandHolder.unlock();
         }
     }
-    public void setCommandREV(boolean value)
+    public void setDriveREV(boolean value)
     {
         m_LockCommandHolder.lock();
         try
@@ -100,6 +112,38 @@ public class Command
             if(value == true)
             {
                 m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b00000010);
+            }
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+    public void setSteeringLEFT(boolean value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] & 0b11111100);
+            if(value == true)
+            {
+                m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] | 0b00000001);
+            }
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+    public void setSteeringRIGHT(boolean value)
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] & 0b11111100);
+            if(value == true)
+            {
+                m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] | 0b00000010);
             }
         }
         finally

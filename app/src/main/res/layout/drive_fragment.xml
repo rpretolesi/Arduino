@@ -21,25 +21,28 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_speed"
+        android:id="@+id/drive_id_tv_throttle_fwd"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_centerHorizontal="true"/>
 
-    <ProgressBar
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_pb_throttle"
-        android:layout_toEndOf="@+id/drive_id_tv_speed"
-        android:layout_below="@+id/drive_id_tv_speed"
-        android:layout_above="@+id/drive_id_tv_pb_comm_status"/>
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_pb_comm_status"
+        android:id="@+id/drive_id_tv_throttle_rev"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_centerHorizontal="true"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drive_id_tv_steering_left"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drive_id_tv_steering_right"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
 </RelativeLayout>
