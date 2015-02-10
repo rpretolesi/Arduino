@@ -351,14 +351,15 @@ public class MainActivity extends ActionBarActivity{
         private SensorManager m_SensorManager;
         private Sensor m_Accelerometer;
         private Sensor m_Magnetometer;
-        private float[] m_Gravity;
-        private float[] m_Geomagnetic;
-        float m_Rot[] = null;
-        float m_Incl[] = null;
+        float[] m_faGravity;
+        float[] m_faGeomagnetic;
         float m_AzimPitchRoll[] = null;
+        float m_fAzim_old = (float)0.0;
+        float m_fPitch_old = (float)0.0;
 
         private Button m_drive_id_btn_drive_start_stop;
         private boolean m_bStartStopStatus;
+        private boolean m_bStartStopStatus_FP_Stop;
 
         private TextView m_drive_text_tv_throttle_fwd;
         private TextView m_drive_text_tv_throttle_rev;
@@ -495,28 +496,38 @@ public class MainActivity extends ActionBarActivity{
 
         }
 
+        @Override
         public void onSensorChanged(SensorEvent event)
         {
 
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                m_Gravity = event.values;
+                m_faGravity = event.values;
             }
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                m_Geomagnetic = event.values;
+                m_faGeomagnetic = event.values;
             }
-            if (m_Gravity != null && m_Geomagnetic != null)
+            if (m_faGravity != null && m_faGeomagnetic != null)
             {
-                m_Rot = new float[9];
-                m_Incl = new float[9];
-                boolean bRes = SensorManager.getRotationMatrix(m_Rot, m_Incl, m_Gravity, m_Geomagnetic);
+                float faRot[] = new float[9];
+                float faIncl[] = new float[9];
+                boolean bRes = SensorManager.getRotationMatrix(faRot, faIncl, m_faGravity, m_faGeomagnetic);
                 if (bRes ==  true)
                 {
-                    m_AzimPitchRoll = new float[3];
-                    SensorManager.getOrientation(m_Rot, m_AzimPitchRoll);
+                    if(m_AzimPitchRoll == null)
+                    {
+                        m_AzimPitchRoll = new float[3];
+                    }
+                    SensorManager.getOrientation(faRot, m_AzimPitchRoll);
+
+                    // Set Command for Drive
+                    Drive();
                 }
 
             }
+        }
 
+        private void Drive()
+        {
             // Aggiorno i miei dati
             if(m_AzimPitchRoll != null)
             {
@@ -531,6 +542,8 @@ public class MainActivity extends ActionBarActivity{
                 float fSteeringRIGHT = 0;
                 if(m_bStartStopStatus == true)
                 {
+                    m_bStartStopStatus_FP_Stop = false;
+
                     // Throttle
                     fAzim = (m_AzimPitchRoll[1] * 200) - m_fThrottleTare;
                     fThrottle = Math.abs(fAzim);
@@ -538,20 +551,26 @@ public class MainActivity extends ActionBarActivity{
                     {
                         fThrottle = 100;
                     }
-                    if(fAzim > 0)
+                    if(Math.abs(fAzim - m_fAzim_old) > 10)
                     {
-                        m_Command.setDriveFWD(true);
-                        fThrottleFWD = fThrottle;
-                        fThrottleREV = 0;
-                        m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
+                        m_fAzim_old = fAzim;
+
+                        if(fAzim > 0)
+                        {
+                            m_Command.setDriveFWD(true);
+                            fThrottleFWD = fThrottle;
+                            fThrottleREV = 0;
+                            m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
+                        }
+                        if(fAzim < 0)
+                        {
+                            m_Command.setDriveREV(true);
+                            fThrottleFWD = 0;
+                            fThrottleREV = fThrottle;
+                            m_Command.setThrottleREV(floatTobyte(fThrottleREV));
+                        }
                     }
-                    if(fAzim < 0)
-                    {
-                        m_Command.setDriveREV(true);
-                        fThrottleFWD = 0;
-                        fThrottleREV = fThrottle;
-                        m_Command.setThrottleREV(floatTobyte(fThrottleREV));
-                    }
+
                     // Steering
                     fPitch = (m_AzimPitchRoll[2] * 200) - m_fSteeringTare;
                     fSteering = Math.abs(fPitch);
@@ -559,28 +578,48 @@ public class MainActivity extends ActionBarActivity{
                     {
                         fSteering = 100;
                     }
-                    if(fPitch < 0)
+                    // Send command only after a threshold
+                    if(Math.abs(fPitch - m_fPitch_old) > 10)
                     {
-                        m_Command.setDriveLEFT(true);
-                        fSteeringLEFT = fSteering;
-                        fSteeringRIGHT = 0;
-                        m_Command.setByte(floatTobyte(fSteeringLEFT), 9);
-                    }
-                    if(fPitch > 0)
-                    {
-                        m_Command.setDriveRIGHT(true);
-                        fSteeringLEFT = 0;
-                        fSteeringRIGHT = fSteering;
-                        m_Command.setByte(floatTobyte(fSteeringRIGHT), 10);
+                        m_fPitch_old = fPitch;
+
+                        if(fPitch < 0)
+                        {
+                            m_Command.setDriveLEFT(true);
+                            fSteeringLEFT = fSteering;
+                            fSteeringRIGHT = 0;
+                            m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
+                        }
+                        if(fPitch > 0)
+                        {
+                            m_Command.setDriveRIGHT(true);
+                            fSteeringLEFT = 0;
+                            fSteeringRIGHT = fSteering;
+                            m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
+                        }
                     }
 
                 }
                 else
                 {
-                    m_Command.setDriveFWD(false);
-                    m_Command.setDriveREV(false);
-                    m_Command.setDriveLEFT(false);
-                    m_Command.setDriveRIGHT(false);
+                    if(m_bStartStopStatus_FP_Stop == false)
+                    {
+                        m_bStartStopStatus_FP_Stop = true;
+
+                        m_Command.setDriveFWD(false);
+                        m_Command.setDriveREV(false);
+                        m_Command.setDriveLEFT(false);
+                        m_Command.setDriveRIGHT(false);
+                    }
+                 }
+
+                // Send Command
+                if(m_Command.isCommandChange() == true)
+                {
+                    if(m_Command.setCommand() == false)
+                    {
+                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
@@ -593,7 +632,7 @@ public class MainActivity extends ActionBarActivity{
 
     private class CommunicationTask extends AsyncTask<List<Object>, Void, Void>
     {
-        NewDataReceived onNewDataReceivedListener = null;
+        private NewDataReceived onNewDataReceivedListener = null;
 
         // Imposto il listener
         public synchronized void setOnNewDataReceivedListener(NewDataReceived listener)
@@ -749,8 +788,12 @@ public class MainActivity extends ActionBarActivity{
                     try
                     {
                         // Send data
-                        dataOutputStream.write(cCommand.get(), 0, cCommand.getLenght());
-
+                        byte[] byteCommand = cCommand.get();
+                        if(byteCommand != null)
+                        {
+                            dataOutputStream.write(byteCommand, 0, byteCommand.length);
+                        }
+/*
                         // Read answer
                         dataInputStream.readFully(byteToRead, 0, 1);
                         if(byteToRead[0] == ACK)
@@ -762,6 +805,7 @@ public class MainActivity extends ActionBarActivity{
                             // Prelevo i dati da visualizzare nel cruscotto
 
                         }
+*/
                     }
                     catch (EOFException ioex_1)
                     {
@@ -789,7 +833,7 @@ public class MainActivity extends ActionBarActivity{
             onUpdate("Test", true);
         }
 
-    }
+     }
 
 
     // Funzioni di supporto
