@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.lang.Math;
@@ -84,13 +85,14 @@ public class MainActivity extends ActionBarActivity{
 
      */
 
+    // Command to send
     private static Command m_Command;
 
     // Metto in una lista, i dati da passare alla funzione AsyncTask
-    private List<Object> m_alOParameter;
+    private ArrayList<Object> m_alOParameter;
 
     // Metto in una lista, le segnalazioni per poterle meglio consultare
-    private List<String> m_alStrError;
+    private ArrayList<String> m_alStrError;
 
     // Task di comunicazione
     private static CommunicationTask m_CommunicationTask = null;
@@ -134,8 +136,8 @@ public class MainActivity extends ActionBarActivity{
 
 
         // Avvio il Task di comunicazione
-        //m_CommunicationTask = new CommunicationTask();
-        //m_CommunicationTask.execute(m_alOParameter, null, null);
+        m_CommunicationTask = new CommunicationTask();
+        m_CommunicationTask.execute(m_alOParameter, null, null);
 
     }
 
@@ -354,8 +356,10 @@ public class MainActivity extends ActionBarActivity{
         float[] m_faGravity;
         float[] m_faGeomagnetic;
         float m_AzimPitchRoll[] = null;
-        float m_fAzim_old = (float)0.0;
-        float m_fPitch_old = (float)0.0;
+        float m_fAzim_thr_FWD = (float)0.0;
+        float m_fAzim_thr_REV = (float)0.0;
+        float m_fPitch_thr_LEFT = (float)0.0;
+        float m_fPitch_thr_RIGHT = (float)0.0;
 
         private Button m_drive_id_btn_drive_start_stop;
         private boolean m_bStartStopStatus;
@@ -551,22 +555,27 @@ public class MainActivity extends ActionBarActivity{
                     {
                         fThrottle = 100;
                     }
-                    if(Math.abs(fAzim - m_fAzim_old) > 10)
+                    if(fAzim > 0)
                     {
-                        m_fAzim_old = fAzim;
-
-                        if(fAzim > 0)
+                        fThrottleFWD = fThrottle;
+                        fThrottleREV = 0;
+                        if(Math.abs(fAzim - m_fAzim_thr_FWD) > 10)
                         {
+                            m_fAzim_thr_FWD = fAzim;
+
                             m_Command.setDriveFWD(true);
-                            fThrottleFWD = fThrottle;
-                            fThrottleREV = 0;
                             m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
                         }
-                        if(fAzim < 0)
+                    }
+                    if(fAzim < 0)
+                    {
+                        fThrottleFWD = 0;
+                        fThrottleREV = fThrottle;
+                        if (Math.abs(fAzim - m_fAzim_thr_FWD) > 10)
                         {
+                            m_fAzim_thr_REV = fAzim;
+
                             m_Command.setDriveREV(true);
-                            fThrottleFWD = 0;
-                            fThrottleREV = fThrottle;
                             m_Command.setThrottleREV(floatTobyte(fThrottleREV));
                         }
                     }
@@ -579,32 +588,41 @@ public class MainActivity extends ActionBarActivity{
                         fSteering = 100;
                     }
                     // Send command only after a threshold
-                    if(Math.abs(fPitch - m_fPitch_old) > 10)
+                    if(fPitch < 0)
                     {
-                        m_fPitch_old = fPitch;
-
-                        if(fPitch < 0)
+                        fSteeringLEFT = fSteering;
+                        fSteeringRIGHT = 0;
+                        if(Math.abs(fPitch - m_fPitch_thr_LEFT) > 10)
                         {
+                            m_fPitch_thr_LEFT = fPitch;
+
                             m_Command.setDriveLEFT(true);
-                            fSteeringLEFT = fSteering;
-                            fSteeringRIGHT = 0;
                             m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
                         }
-                        if(fPitch > 0)
+                    }
+                    if(fPitch > 0)
+                    {
+                        fSteeringLEFT = 0;
+                        fSteeringRIGHT = fSteering;
+                        if(Math.abs(fPitch - m_fPitch_thr_RIGHT) > 10)
                         {
+                            m_fPitch_thr_RIGHT = fPitch;
+
                             m_Command.setDriveRIGHT(true);
-                            fSteeringLEFT = 0;
-                            fSteeringRIGHT = fSteering;
                             m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
                         }
                     }
-
                 }
                 else
                 {
                     if(m_bStartStopStatus_FP_Stop == false)
                     {
                         m_bStartStopStatus_FP_Stop = true;
+
+                        m_fAzim_thr_FWD = (float)0.0;
+                        m_fAzim_thr_REV = (float)0.0;
+                        m_fPitch_thr_LEFT = (float)0.0;
+                        m_fPitch_thr_RIGHT = (float)0.0;
 
                         m_Command.setDriveFWD(false);
                         m_Command.setDriveREV(false);
@@ -630,7 +648,7 @@ public class MainActivity extends ActionBarActivity{
         }
     }
 
-    private class CommunicationTask extends AsyncTask<List<Object>, Void, Void>
+    private class CommunicationTask extends AsyncTask<ArrayList<Object>, Void, Void>
     {
         private NewDataReceived onNewDataReceivedListener = null;
 
@@ -651,14 +669,14 @@ public class MainActivity extends ActionBarActivity{
         }
 
         @Override
-        protected Void doInBackground(List<Object>...obj)
+        protected Void doInBackground(ArrayList<Object>...obj)
         {
             //Prendo i parametri
             Socket socketClient = null;
             DataOutputStream dataOutputStream = null;
             DataInputStream dataInputStream = null;
 
-            Command cCommand = (Command)obj[0];
+            Command cCommand = (Command) obj[0].get(0);
             byte[] byteToRead = new byte[64];
 
             while (!isCancelled() && cCommand != null)
@@ -781,45 +799,47 @@ public class MainActivity extends ActionBarActivity{
                         }
                     }
                 }
-
-                if(socketClient.isConnected())
+                if(socketClient != null)
                 {
-                    // Verifico se ci sono dei comandi da inviare
-                    try
+                    if(socketClient.isConnected())
                     {
-                        // Send data
-                        byte[] byteCommand = cCommand.get();
-                        if(byteCommand != null)
+                        // Verifico se ci sono dei comandi da inviare
+                        try
                         {
-                            dataOutputStream.write(byteCommand, 0, byteCommand.length);
-                        }
-/*
-                        // Read answer
-                        dataInputStream.readFully(byteToRead, 0, 1);
-                        if(byteToRead[0] == ACK)
-                        {
-                            // ACK
-                            // Prelevo 16 Valori Analogici(32 Byte)
-                            // prelevo 32 valori digitali(8 ingressi ogni byte)(4 Byte)
-                            dataInputStream.readFully(byteToRead, 1, 36);
-                            // Prelevo i dati da visualizzare nel cruscotto
+                            // Send data
+                            byte[] byteCommand = cCommand.get();
+                            if(byteCommand != null)
+                            {
+                                dataOutputStream.write(byteCommand, 0, byteCommand.length);
+                            }
+    /*
+                            // Read answer
+                            dataInputStream.readFully(byteToRead, 0, 1);
+                            if(byteToRead[0] == ACK)
+                            {
+                                // ACK
+                                // Prelevo 16 Valori Analogici(32 Byte)
+                                // prelevo 32 valori digitali(8 ingressi ogni byte)(4 Byte)
+                                dataInputStream.readFully(byteToRead, 1, 36);
+                                // Prelevo i dati da visualizzare nel cruscotto
 
+                            }
+    */
                         }
-*/
-                    }
-                    catch (EOFException ioex_1)
-                    {
-                    }
-                    catch (IOException ioex_2)
-                    {
-                    }
-                    catch (NullPointerException ioex_3)
-                    {
+                        catch (EOFException ioex_1)
+                        {
+                        }
+                        catch (IOException ioex_2)
+                        {
+                        }
+                        catch (NullPointerException ioex_3)
+                        {
+                        }
+
+                        // Pubblico i dati
+                        this.publishProgress();
                     }
                 }
-
-                // Pubblico i dati
-                this.publishProgress();
             }
 
              return null;

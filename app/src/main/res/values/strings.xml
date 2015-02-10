@@ -17,9 +17,9 @@
     <string name="settings_text_tv_title">Opzioni di connessione al Server</string>
     <string name="settings_text_tv_server_ip_address">Indirizzo TCP/IP Server</string>
     <string name="settings_hint_et_server_ip_address">Indirizzo TCP/IP Server</string>
-    <string name="settings_text_btn_start_comm">Start Comunicazione</string>
-    <string name="settings_text_btn_stop_comm">Stop Comunicazione</string>
-    <string name="settings_text_btn_save">Salva Parametri</string>
+    <string name="settings_text_btn_start_comm">Start\nCom.</string>
+    <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
+    <string name="settings_text_btn_save">Salva\nParametri</string>
 
     <!-- Drive. -->
     <string name="drive_text_btn_drive_start_stop">Start/Stop\nDrive</string>
