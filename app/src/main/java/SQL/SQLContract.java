@@ -6,10 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Created by RPRETOLESI on 28/01/2015.
  */
-public class SQLContract {
+public class SQLContract
+{
+    private static ReentrantLock m_LockCommandHolder = new ReentrantLock();;
+
     public static final String DATABASE_NAME = "SymptomManagement.db";
     public static final int DATABASE_VERSION = 1;
     public static final String TEXT_TYPE = " TEXT";
@@ -19,7 +24,7 @@ public class SQLContract {
 
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
-    public SQLContract()
+    private SQLContract()
     {
     }
     public enum Parameter
@@ -60,77 +65,115 @@ public class SQLContract {
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        synchronized public static boolean setParameter(Context context, Parameter pType, String strpValue )
+        public static boolean setParameter(Context context, Parameter pType, String strpValue )
         {
-            if(context != null && pType != null && strpValue != null)
+            m_LockCommandHolder.lock();
+
+            ContentValues values = null;
+            try
             {
-                SQLiteDatabase db = SQLHelper.getInstance(context).getDB();
-
-                ContentValues values = new ContentValues();
-                values.put(COLUMN_NAME_PARAMETER_ID, pType.getValue());
-                values.put(COLUMN_NAME_PARAMETER_VALUE, strpValue);
-
-                String selection = COLUMN_NAME_PARAMETER_ID + " = ?";
-
-                String[] selectionArgs = { String.valueOf(pType.getValue())  };
-
-                // Update the Parameter
-                if (db.update(TABLE_NAME, values, selection, selectionArgs) == 0)
+                if (context != null && pType != null && strpValue != null)
                 {
+                    SQLiteDatabase db = SQLHelper.getInstance(context).getDB();
 
-                    // The Parameter doesn't exist, i will add it
-                    if(db.insert(TABLE_NAME, null, values) > 0)
+                    values = new ContentValues();
+                    values.put(COLUMN_NAME_PARAMETER_ID, pType.getValue());
+                    values.put(COLUMN_NAME_PARAMETER_VALUE, strpValue);
+
+                    String selection = COLUMN_NAME_PARAMETER_ID + " = ?";
+
+                    String[] selectionArgs = {String.valueOf(pType.getValue())};
+
+                    // Update the Parameter
+                    if (db.update(TABLE_NAME, values, selection, selectionArgs) == 0)
+                    {
+                        // The Parameter doesn't exist, i will add it
+                        if (db.insert(TABLE_NAME, null, values) > 0)
+                        {
+                            return true;
+                        }
+                    } else
                     {
                         return true;
                     }
                 }
-                else
-                {
-                    return true;
-                }
             }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                if(values != null)
+                {
+                    values.clear();
+                }
+
+                m_LockCommandHolder.unlock();
+            }
+
             return false;
         }
 
-        synchronized public static String getParameter(Context context, Parameter pType)
+        public static String getParameter(Context context, Parameter pType)
         {
-            if(context != null && pType != null)
+            m_LockCommandHolder.lock();
+
+            Cursor cursor = null;
+            String strRes = "";
+            try
             {
-                SQLiteDatabase db = SQLHelper.getInstance(context).getDB();
-
-                // Define a projection that specifies which columns from the database
-                // you will actually use after this query.
-                String[] projection =
-                        {
-                                COLUMN_NAME_PARAMETER_VALUE
-                        };
-
-                String selection = COLUMN_NAME_PARAMETER_ID + " = ?";
-
-                String[] selectionArgs = { String.valueOf(pType.getValue())  };
-
-                // How you want the results sorted in the resulting Cursor
-                String sortOrder = "";
-
-                Cursor cursor = db.query(
-                        TABLE_NAME,  // The table to query
-                        projection,                               // The columns to return
-                        selection,                                // The columns for the WHERE clause
-                        selectionArgs,                            // The values for the WHERE clause
-                        null,                                     // don't group the rows
-                        null,                                     // don't filter by row groups
-                        sortOrder                                 // The sort order
-                );
-
-                if((cursor != null) && (cursor.getCount() > 0))
+                if(context != null && pType != null)
                 {
-                    cursor.moveToFirst();
-                    return cursor.getString(cursor.getColumnIndex(COLUMN_NAME_PARAMETER_VALUE));
+                    SQLiteDatabase db = SQLHelper.getInstance(context).getDB();
+
+                    // Define a projection that specifies which columns from the database
+                    // you will actually use after this query.
+                    String[] projection =
+                            {
+                                    COLUMN_NAME_PARAMETER_VALUE
+                            };
+
+                    String selection = COLUMN_NAME_PARAMETER_ID + " = ?";
+
+                    String[] selectionArgs = { String.valueOf(pType.getValue())  };
+
+                    // How you want the results sorted in the resulting Cursor
+                    String sortOrder = "";
+
+                    cursor = db.query(
+                            TABLE_NAME,  // The table to query
+                            projection,                               // The columns to return
+                            selection,                                // The columns for the WHERE clause
+                            selectionArgs,                            // The values for the WHERE clause
+                            null,                                     // don't group the rows
+                            null,                                     // don't filter by row groups
+                            sortOrder                                 // The sort order
+                    );
+
+                    if((cursor != null) && (cursor.getCount() > 0))
+                    {
+                        cursor.moveToFirst();
+                        strRes = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_PARAMETER_VALUE));
+                    }
+
                 }
+            }
+            catch (Exception ex)
+            {
 
             }
+            finally
+            {
+                if(cursor != null)
+                {
+                    cursor.close();
+                }
 
-            return "";
+                m_LockCommandHolder.unlock();
+            }
+
+            return strRes;
         }
     }
 }

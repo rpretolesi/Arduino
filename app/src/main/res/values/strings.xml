@@ -32,4 +32,10 @@
 
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
     <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
+    <string name="comm_status_error">Error</string>
+    <string name="comm_status_online">Online</string>
+    <string name="comm_status_offline">Offline</string>
+    <string name="comm_status_connecting">Connecting...</string>
+    <string name="comm_status_connected">Connected</string>
+    <string name="comm_status_closed">Close</string>
 </resources>

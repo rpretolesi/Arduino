@@ -9,18 +9,21 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.lang.Math;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -87,12 +90,11 @@ public class MainActivity extends ActionBarActivity{
 
     // Command to send
     private static Command m_Command;
+    private static ArduinoClientSocket m_acs;
 
     // Metto in una lista, i dati da passare alla funzione AsyncTask
     private ArrayList<Object> m_alOParameter;
-
-    // Metto in una lista, le segnalazioni per poterle meglio consultare
-    private ArrayList<String> m_alStrError;
+    private ArrayList<String> m_alstrStatus;
 
     // Task di comunicazione
     private static CommunicationTask m_CommunicationTask = null;
@@ -113,11 +115,14 @@ public class MainActivity extends ActionBarActivity{
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // Inizializzo tutte le variabili
-        if(m_alOParameter == null) {
+        if(m_alOParameter == null)
+        {
             m_alOParameter = new ArrayList<>(2);
         }
-        if(m_alStrError == null) {
-            m_alStrError = new ArrayList<>();
+
+        if(m_alstrStatus == null)
+        {
+            m_alstrStatus = new ArrayList<>(2);
         }
 
         // Inizializzo i comandi da inviare
@@ -126,11 +131,20 @@ public class MainActivity extends ActionBarActivity{
             m_Command = new Command();
         }
 
+        // Inizializzo il client di comunicazione
+        if(m_acs == null)
+        {
+            m_acs = new ArduinoClientSocket();
+        }
+
         // Preparo i parametri per passare al thread i dati.
         if(m_alOParameter != null)
         {
             if(m_Command != null) {
                 m_alOParameter.add(0, m_Command);
+            }
+            if(m_acs != null) {
+                m_alOParameter.add(1, m_acs);
             }
         }
 
@@ -188,13 +202,17 @@ public class MainActivity extends ActionBarActivity{
             {
                 fragment = DriveFragment.newInstance(position + 1);
             }
+            if (position == 2)
+            {
+                fragment = AlarmListFragment.newInstance(position + 1);
+            }
             return fragment;
         }
 
         @Override
         public int getCount() {
             // Show xx total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -212,7 +230,6 @@ public class MainActivity extends ActionBarActivity{
         }
 
     }
-
 
     /**
      * A placeholder fragment containing a simple view.
@@ -369,6 +386,7 @@ public class MainActivity extends ActionBarActivity{
         private TextView m_drive_text_tv_throttle_rev;
         private TextView m_drive_text_tv_steering_left;
         private TextView m_drive_text_tv_steering_right;
+        private TextView m_drive_id_tv_communication_status;
 
         private float m_fThrottleTare;
         private float m_fSteeringTare;
@@ -406,6 +424,7 @@ public class MainActivity extends ActionBarActivity{
             m_drive_text_tv_throttle_rev = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_rev);
             m_drive_text_tv_steering_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_left);
             m_drive_text_tv_steering_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_right);
+            m_drive_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
 
             // Set an OnClickListener
             m_drive_id_btn_drive_start_stop.setOnClickListener(new View.OnClickListener()
@@ -467,11 +486,16 @@ public class MainActivity extends ActionBarActivity{
             // Registro Listeners
             if(m_CommunicationTask != null)
             {
-                m_CommunicationTask.setOnNewDataReceivedListener(new NewDataReceived()
+                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus()
                 {
                     @Override
-                    public void onNewDataReceived(String username, boolean available)
+                    public void onNewCommunicationStatus(String strStatus)
                     {
+                        // Aggiorno lo stato
+                        if(m_drive_id_tv_communication_status != null)
+                        {
+                            m_drive_id_tv_communication_status.setText(strStatus);
+                        }
                     }
                 });
             }
@@ -488,7 +512,7 @@ public class MainActivity extends ActionBarActivity{
 
             if(m_CommunicationTask != null)
             {
-                m_CommunicationTask.setOnNewDataReceivedListener(null);
+                m_CommunicationTask.setCommunicationStatusListener(null);
             }
 
             m_SensorManager.unregisterListener(this);
@@ -648,23 +672,93 @@ public class MainActivity extends ActionBarActivity{
         }
     }
 
-    private class CommunicationTask extends AsyncTask<ArrayList<Object>, Void, Void>
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class AlarmListFragment extends ListFragment
     {
-        private NewDataReceived onNewDataReceivedListener = null;
+        private AlarmListAdapter m_adapter;
+
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static AlarmListFragment newInstance(int sectionNumber) {
+            AlarmListFragment fragment = new AlarmListFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public AlarmListFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
+        @Override
+        public void onActivityCreated (Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            m_adapter = new AlarmListAdapter(getActivity());
+            setListAdapter(m_adapter);
+        }
+        @Override
+        public void onResume() {
+            super.onResume();
+/*
+            // Registro Listeners
+            if (m_acs != null) {
+                m_acs.setOnNewAlarmListener(new NewAlarm()
+                {
+                    @Override
+                    public void onNewAlarm(ArrayList<String> alAlarm)
+                    {
+                        if(alAlarm != null)
+                        {
+                        }
+                    }
+                });
+            }
+            */
+        }
+
+        @Override
+        public void onDestroyView()
+        {
+            super.onDestroyView();
+
+            // free adapter
+            setListAdapter(null);
+        }
+    }
+
+    private class CommunicationTask extends AsyncTask<ArrayList<Object>, String, Void>
+    {
+        private CommunicationStatus onNewCommunicationStatusListener = null;
 
         // Imposto il listener
-        public synchronized void setOnNewDataReceivedListener(NewDataReceived listener)
+        public synchronized void setCommunicationStatusListener(CommunicationStatus listener)
         {
-            onNewDataReceivedListener = listener;
+            onNewCommunicationStatusListener = listener;
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
-        private void onUpdate(String username, boolean available)
+        private void onUpdate(String strStatus)
         {
             // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
-            if(onNewDataReceivedListener!=null) {
+            if(onNewCommunicationStatusListener!=null) {
                 // Only trigger the event, when we have a username
-                onNewDataReceivedListener.onNewDataReceived("test",true);
+                onNewCommunicationStatusListener.onNewCommunicationStatus(strStatus);
             }
         }
 
@@ -672,188 +766,59 @@ public class MainActivity extends ActionBarActivity{
         protected Void doInBackground(ArrayList<Object>...obj)
         {
             //Prendo i parametri
-            Socket socketClient = null;
-            DataOutputStream dataOutputStream = null;
-            DataInputStream dataInputStream = null;
+            Command cmd = (Command) obj[0].get(0);
+            ArduinoClientSocket acs = (ArduinoClientSocket) obj[0].get(1);
+            String strStatus = "";
 
-            Command cCommand = (Command) obj[0].get(0);
             byte[] byteToRead = new byte[64];
 
-            while (!isCancelled() && cCommand != null)
+            while (!isCancelled() && cmd != null && acs != null)
             {
-                // Verifico se il socket e' connesso
-                if(socketClient == null || !socketClient.isConnected())
-                {
-                    // close socket
-                    if(socketClient != null)
-                    {
-                        try
-                        {
-                            socketClient.close();
-                            socketClient = null;
-                        }
-                        catch (IOException ioex_1)
-                        {
 
-                        }
-                    }
-                    // close input stream
-                    if (dataInputStream != null)
-                    {
-                        try {
-                            dataInputStream.close();
-                        } catch (IOException ioex_2) {
-                        }
-                    }
-                    // close output stream
-                    if (dataOutputStream != null)
-                    {
-                        try {
-                            dataOutputStream.close();
-                        } catch (IOException ioex_3) {
-                        }
-                    }
-
-                    socketClient = new Socket();
+                if(acs.isConnected() == false) {
+                    // Pubblico i dati
+                    strStatus =  getString(R.string.comm_status_connecting);
+                    this.publishProgress(strStatus);
 
                     // Prelevo indirizzo IP
                     String strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
-
-                    if(strIpAddress != null)
+                    if(acs.connectToArduino(strIpAddress, 502, 3000) == true)
                     {
-                        SocketAddress socketAddress = new InetSocketAddress(strIpAddress , 512);
-
-                        try {
-
-                            socketClient.connect(socketAddress,3000);
-                            socketClient.setSoTimeout(3000);
-
-                            dataOutputStream = new DataOutputStream(socketClient.getOutputStream());
-                            dataInputStream = new DataInputStream(socketClient.getInputStream());
-
-                        }
-                        catch (IllegalArgumentException iaex)
-                        {
-                            // close socket
-                            if(socketClient != null)
-                            {
-                                try
-                                {
-                                    socketClient.close();
-                                    socketClient = null;
-                                }
-                                catch (IOException ioex_1)
-                                {
-
-                                }
-                            }
-                            // close input stream
-                            if (dataInputStream != null)
-                            {
-                                try {
-                                    dataInputStream.close();
-                                } catch (IOException ioex_2) {
-                                }
-                            }
-                            // close output stream
-                            if (dataOutputStream != null)
-                            {
-                                try {
-                                    dataOutputStream.close();
-                                } catch (IOException ioex_3) {
-                                }
-                            }
-                        }
-
-                        catch (IOException ioex_10)
-                        {
-                            // close socket
-                            if(socketClient != null)
-                            {
-                                try
-                                {
-                                    socketClient.close();
-                                    socketClient = null;
-                                }
-                                catch (IOException ioex_1)
-                                {
-
-                                }
-                            }
-                            // close input stream
-                            if (dataInputStream != null)
-                            {
-                                try {
-                                    dataInputStream.close();
-                                } catch (IOException ioex_2) {
-                                }
-                            }
-                            // close output stream
-                            if (dataOutputStream != null)
-                            {
-                                try {
-                                    dataOutputStream.close();
-                                } catch (IOException ioex_3) {
-                                }
-                            }
-                        }
+                        strStatus = getString(R.string.comm_status_connected);
                     }
+                    else
+                    {
+                        strStatus = getString(R.string.comm_status_error);
+                    }
+                    this.publishProgress(strStatus);
+
                 }
-                if(socketClient != null)
+                else
                 {
-                    if(socketClient.isConnected())
-                    {
-                        // Verifico se ci sono dei comandi da inviare
-                        try
-                        {
-                            // Send data
-                            byte[] byteCommand = cCommand.get();
-                            if(byteCommand != null)
-                            {
-                                dataOutputStream.write(byteCommand, 0, byteCommand.length);
-                            }
-    /*
-                            // Read answer
-                            dataInputStream.readFully(byteToRead, 0, 1);
-                            if(byteToRead[0] == ACK)
-                            {
-                                // ACK
-                                // Prelevo 16 Valori Analogici(32 Byte)
-                                // prelevo 32 valori digitali(8 ingressi ogni byte)(4 Byte)
-                                dataInputStream.readFully(byteToRead, 1, 36);
-                                // Prelevo i dati da visualizzare nel cruscotto
-
-                            }
-    */
-                        }
-                        catch (EOFException ioex_1)
-                        {
-                        }
-                        catch (IOException ioex_2)
-                        {
-                        }
-                        catch (NullPointerException ioex_3)
-                        {
-                        }
-
-                        // Pubblico i dati
-                        this.publishProgress();
-                    }
+                    // Pubblico i dati
+                    strStatus = getString(R.string.comm_status_online);
+                    this.publishProgress(strStatus);
+                    acs.sendCommand(cmd);
                 }
+
             }
 
-             return null;
+            // Pubblico i dati
+            strStatus = getString(R.string.comm_status_closed);
+            this.publishProgress(strStatus);
+
+            return null;
         }
 
 
         @Override
-        protected void onProgressUpdate(Void... v)
+        protected void onProgressUpdate(String... strStatus)
         {
+            super.onProgressUpdate(strStatus);
             // Aggiorno i dati
-            onUpdate("Test", true);
+            onUpdate(strStatus[0]);
         }
-
-     }
+    }
 
 
     // Funzioni di supporto

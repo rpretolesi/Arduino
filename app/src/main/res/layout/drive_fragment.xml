@@ -28,8 +28,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_throttle_rev"
+        android:id="@+id/drive_id_tv_communication_status"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drive_id_tv_throttle_rev"
+        android:layout_above="@id/drive_id_tv_communication_status"
         android:layout_centerHorizontal="true"/>
 
     <TextView
@@ -45,4 +52,5 @@
         android:id="@+id/drive_id_tv_steering_right"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
+
 </RelativeLayout>
