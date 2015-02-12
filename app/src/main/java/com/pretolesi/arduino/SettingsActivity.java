@@ -166,12 +166,13 @@ public class SettingsActivity extends ActionBarActivity
                 {
                     boolean bSaveStatus = true;
                     String strIpAddress = m_settings_id_et_server_ip_address.getText().toString();
+                    String strPort = m_settings_id_et_server_port.getText().toString();
                     // set a Parameter
                     if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)) == false)
                     {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strIpAddress)) == false)
+                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort)) == false)
                     {
                         bSaveStatus = false;
                     }

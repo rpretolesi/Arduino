@@ -41,7 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_id_tv_server_port"
         android:layout_alignParentLeft="true"
-        android:hint="@string/settings_hint_et_server_port" />
+        android:hint="@string/settings_hint_et_server_port"
+        android:inputType="numberSigned" />
 
     <Button
         android:id="@+id/settings_id_btn_save"

@@ -12,19 +12,26 @@ import java.net.SocketAddress;
  */
 public class ArduinoClientSocket
 {
+    private static byte ENQ = 0x05;
+
     private Socket m_clientSocket = null;
     private SocketAddress m_socketAddress = null;
     private DataOutputStream m_dataOutputStream = null;
     private DataInputStream m_dataInputStream = null;
     private String m_strLastError = "";
 
-    public boolean connectToArduino(String strHost, int iPort, int iTimeout)
+    public boolean connectToArduino(String strHost, int iPort, int iTimeout, Command cmd)
     {
         boolean bRes = false;
         try
         {
             // Prima chiudo la connessione
             closeConnection();
+
+            if(cmd != null)
+            {
+                cmd.reset();
+            }
 
             m_socketAddress = new InetSocketAddress(strHost , iPort);
             if(m_clientSocket == null)
@@ -63,16 +70,50 @@ public class ArduinoClientSocket
     public boolean sendCommand(Command cmd)
     {
         boolean bRes = false;
-        if (m_dataInputStream != null)
+        if (m_dataOutputStream != null)
         {
             try
             {
-                m_dataOutputStream.write(cmd.get(), 0, cmd.getLength());
+                byte[] byteCmd = cmd.get();
+                if(byteCmd != null)
+                {
+                    m_dataOutputStream.write(byteCmd, 0, byteCmd.length);
+                }
+                else
+                {
+                    m_dataOutputStream.write(ENQ);
+                }
                 m_strLastError = "";
+                bRes = true;
             }
             catch (Exception ex)
             {
                 m_strLastError = ex.getMessage();
+                closeConnection();
+            }
+        }
+        return bRes;
+    }
+
+    public boolean getCommand()
+    {
+        boolean bRes = false;
+        if (m_dataInputStream != null)
+        {
+            try
+            {
+                byte[] byteCmd = new byte[16];
+                if(byteCmd != null)
+                {
+                    m_dataInputStream.read(byteCmd, 0, byteCmd.length);
+                }
+                m_strLastError = "";
+                bRes = true;
+            }
+            catch (Exception ex)
+            {
+                m_strLastError = ex.getMessage();
+                closeConnection();
             }
         }
         return bRes;

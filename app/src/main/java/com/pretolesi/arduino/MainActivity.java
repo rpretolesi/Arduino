@@ -280,6 +280,7 @@ public class MainActivity extends ActionBarActivity
         private boolean m_bStartStopStatus;
         private boolean m_bStartStopStatus_FP_Stop;
 
+        private TextView m_drive_id_tv_command_queue;
         private TextView m_drive_text_tv_throttle_fwd;
         private TextView m_drive_text_tv_throttle_rev;
         private TextView m_drive_text_tv_steering_left;
@@ -318,6 +319,7 @@ public class MainActivity extends ActionBarActivity
             super.onActivityCreated(savedInstanceState);
 
             m_drive_id_btn_drive_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_start_stop);
+            m_drive_id_tv_command_queue = (TextView) getActivity().findViewById(R.id.drive_id_tv_command_queue);
             m_drive_text_tv_throttle_fwd = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_fwd);
             m_drive_text_tv_throttle_rev = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_rev);
             m_drive_text_tv_steering_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_left);
@@ -393,6 +395,10 @@ public class MainActivity extends ActionBarActivity
                         if(m_drive_id_tv_communication_status != null)
                         {
                             m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+                        }
+                        if(m_drive_id_tv_command_queue != null)
+                        {
+                            m_drive_id_tv_command_queue.setText(strStatus[2]);
                         }
                     }
                 });
@@ -558,7 +564,7 @@ public class MainActivity extends ActionBarActivity
                 {
                     if(m_Command.setCommand() == false)
                     {
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -668,6 +674,7 @@ public class MainActivity extends ActionBarActivity
             Command cmd = (Command) obj[1];
             String strStatus = "";
             String strError = "";
+            String strCommandInQueue = "";
 
             byte[] byteToRead = new byte[64];
 
@@ -675,38 +682,40 @@ public class MainActivity extends ActionBarActivity
             {
                 while (!isCancelled() && acs != null && cmd != null)
                 {
+                    strCommandInQueue = String.valueOf(cmd.getQueueLength());
 
                     if (acs.isConnected() == false)
                     {
                         // Pubblico i dati
                         strStatus = getString(R.string.comm_status_connecting);
                         strError = acs.getLastError();
-                        this.publishProgress(strStatus, strError);
+                        this.publishProgress(strStatus, strError,strCommandInQueue);
 
                         // Prelevo indirizzo IP
                         String strIpAddress = "";
+                        String strPort = "";
                         int iPort = 0;
                         try
                         {
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
-                            iPort = Integer.getInteger(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
+                            iPort = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
                         }
                         catch (Exception ex)
                         {
                         }
-                        if(strIpAddress.equals("") == true && iPort > 0)
+                        if(strIpAddress.equals("") == false && iPort > 0)
                         {
-                            if (acs.connectToArduino(strIpAddress, iPort, 3000) == true)
+                            if (acs.connectToArduino(strIpAddress, iPort, 3000, cmd) == true)
                             {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
-                                this.publishProgress(strStatus, strError);
+                                this.publishProgress(strStatus, strError,strCommandInQueue);
                             }
                             else
                             {
                                 strStatus = getString(R.string.comm_status_error);
                                 strError = acs.getLastError();
-                                this.publishProgress(strStatus, strError);
+                                this.publishProgress(strStatus, strError,strCommandInQueue);
 
                                 // attendo per non sovraccaricare CPU
                                 try
@@ -722,7 +731,7 @@ public class MainActivity extends ActionBarActivity
                         {
                             strStatus = getString(R.string.comm_status_error);
                             strError = getString(R.string.db_data_server_error);
-                            this.publishProgress(strStatus, strError);
+                            this.publishProgress(strStatus, strError,strCommandInQueue);
                             // attendo per non sovraccaricare CPU
                             try
                             {
@@ -738,8 +747,16 @@ public class MainActivity extends ActionBarActivity
                         // Pubblico i dati
                         strStatus = getString(R.string.comm_status_online);
                         strError = "";
-                        this.publishProgress(strStatus, strError);
-                        acs.sendCommand(cmd);
+                        this.publishProgress(strStatus, strError,strCommandInQueue);
+                        if(acs.sendCommand(cmd) == true)
+                        {
+                             acs.getCommand();
+                        }
+                        else
+                        {
+                            Thread.sleep(100, 0);
+                        }
+
                     }
                 }
                 strError = "";
@@ -751,7 +768,7 @@ public class MainActivity extends ActionBarActivity
 
             // Pubblico i dati
             strStatus = getString(R.string.comm_status_closed);
-            this.publishProgress(strStatus,strError);
+            this.publishProgress(strStatus,strError,strCommandInQueue);
 
             return null;
         }

@@ -26,11 +26,28 @@ public class Command
         m_LockCommandHolder = new ReentrantLock();
 
         m_byteCommandHolder = new byte[16];
-        m_abqCommandQueue = new ArrayBlockingQueue(100);
+        m_abqCommandQueue = new ArrayBlockingQueue(10);
         m_bCommandChange = false;
 
         m_byteCommandHolder[0] = SOH;
         m_byteCommandHolder[15] = EOT;
+    }
+
+    public void reset()
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            if(m_abqCommandQueue != null)
+            {
+                m_abqCommandQueue.clear();
+            }
+
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
     }
 
     public void set(byte[] value)
@@ -53,9 +70,9 @@ public class Command
         m_LockCommandHolder.lock();
         try
         {
-             byteRes = m_abqCommandQueue.take();
+             byteRes = m_abqCommandQueue.poll();
 
-        } catch (InterruptedException ie) {
+        } catch (Exception ex) {
 
         } finally
         {
@@ -70,6 +87,19 @@ public class Command
         try
         {
             return m_byteCommandHolder.length;
+        }
+        finally
+        {
+            m_LockCommandHolder.unlock();
+        }
+    }
+
+    public int getQueueLength()
+    {
+        m_LockCommandHolder.lock();
+        try
+        {
+            return m_abqCommandQueue.size();
         }
         finally
         {
@@ -160,7 +190,7 @@ public class Command
         m_LockCommandHolder.lock();
         try
         {
-            m_byteCommandHolder[9] = value;
+            m_byteCommandHolder[7] = value;
             m_bCommandChange = true;
         }
         finally
@@ -174,7 +204,7 @@ public class Command
         m_LockCommandHolder.lock();
         try
         {
-            m_byteCommandHolder[10] = value;
+            m_byteCommandHolder[8] = value;
             m_bCommandChange = true;
         }
         finally
@@ -188,10 +218,10 @@ public class Command
         m_LockCommandHolder.lock();
         try
         {
-            m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] & 0b11111100);
+            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b11001111);
             if(value == true)
             {
-                m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] | 0b00000001);
+                m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b00010000);
             }
             m_bCommandChange = true;
         }
@@ -206,10 +236,10 @@ public class Command
          m_LockCommandHolder.lock();
         try
         {
-            m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] & 0b11111100);
+            m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] & 0b11001111);
             if(value == true)
             {
-                m_byteCommandHolder[2] = (byte)(m_byteCommandHolder[2] | 0b00000010);
+                m_byteCommandHolder[1] = (byte)(m_byteCommandHolder[1] | 0b00100000);
             }
             m_bCommandChange = true;
          }

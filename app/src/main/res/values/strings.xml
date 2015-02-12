@@ -35,7 +35,7 @@
     <string name="drive_text_tv_steering_right">Steering\nRIGHT</string>
 
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
-    <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
+    <string name="ccomm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
     <string name="comm_status_error">Error</string>
     <string name="comm_status_online">Online</string>
     <string name="comm_status_offline">Offline</string>
