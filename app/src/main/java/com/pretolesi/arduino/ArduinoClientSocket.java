@@ -10,8 +10,9 @@ import java.net.SocketAddress;
 /**
  * Created by RPRETOLESI on 11/02/2015.
  */
-public class ArduinoClientSocket extends Socket
+public class ArduinoClientSocket
 {
+    private Socket m_clientSocket = null;
     private SocketAddress m_socketAddress = null;
     private DataOutputStream m_dataOutputStream = null;
     private DataInputStream m_dataInputStream = null;
@@ -22,50 +23,40 @@ public class ArduinoClientSocket extends Socket
         boolean bRes = false;
         try
         {
+            // Prima chiudo la connessione
+            closeConnection();
+
             m_socketAddress = new InetSocketAddress(strHost , iPort);
-            super.connect(m_socketAddress);
-            super.setSoTimeout(iTimeout);
-
-            m_dataOutputStream = new DataOutputStream(super.getOutputStream());
-            m_dataInputStream = new DataInputStream(super.getInputStream());
-
-            bRes = true;
-            m_strLastError = "";
+            if(m_clientSocket == null)
+            {
+                m_clientSocket = new Socket();
+                if(m_clientSocket != null)
+                {
+                    m_clientSocket.connect(m_socketAddress);
+                    m_clientSocket.setSoTimeout(iTimeout);
+                    m_dataOutputStream = new DataOutputStream(m_clientSocket.getOutputStream());
+                    m_dataInputStream = new DataInputStream(m_clientSocket.getInputStream());
+                    bRes = true;
+                    m_strLastError = "";
+                }
+            }
         }
         catch (Exception ex)
         {
             m_strLastError = ex.getMessage();
-
-            m_socketAddress = null;
-            // close Output stream
-            if (m_dataOutputStream != null)
-            {
-                try
-                {
-                    m_dataOutputStream.close();
-                }
-                catch (IOException ioex_1)
-                {
-                    m_strLastError = ioex_1.getMessage();
-                }
-            }
-            // close Input stream
-            if (m_dataInputStream != null)
-            {
-                try
-                {
-                    m_dataInputStream.close();
-                }
-                catch (IOException ioex_2)
-                {
-                    m_strLastError = ioex_2.getMessage();
-                }
-            }
+            closeConnection();
         }
         finally
         {
         }
 
+        return bRes;
+    }
+    public boolean isConnected() {
+        boolean bRes = false;
+        if (m_clientSocket != null && m_dataInputStream != null && m_dataInputStream != null) {
+            bRes = m_clientSocket.isConnected();
+        }
         return bRes;
     }
 
@@ -85,6 +76,52 @@ public class ArduinoClientSocket extends Socket
             }
         }
         return bRes;
+    }
+
+    public void closeConnection()
+    {
+        m_socketAddress = null;
+
+        // Chiudo il socket
+        if(m_clientSocket != null)
+        {
+            try
+            {
+                m_clientSocket.close();
+            } catch (IOException ioex_1)
+            {
+                m_strLastError = ioex_1.getMessage();
+            }
+        }
+        m_clientSocket = null;
+
+        // close Output stream
+        if (m_dataOutputStream != null)
+        {
+            try
+            {
+                m_dataOutputStream.close();
+            }
+            catch (IOException ioex_2)
+            {
+                m_strLastError = ioex_2.getMessage();
+            }
+        }
+        m_dataOutputStream = null;
+
+        // close Input stream
+        if (m_dataInputStream != null)
+        {
+            try
+            {
+                m_dataInputStream.close();
+            }
+            catch (IOException ioex_3)
+            {
+                m_strLastError = ioex_3.getMessage();
+            }
+        }
+        m_dataInputStream = null;
     }
 
     public String getLastError()

@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by RPRETOLESI on 06/02/2015.
  */
-public class Command extends Object
+public class Command
 {
     private static byte SOH = 0x01;
     private static byte EOT = 0x04;

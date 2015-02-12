@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Arduino</string>
-    <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     <string name="hello_world">Hello world!</string>
@@ -11,17 +10,22 @@
     <!-- Notifiche di operazioni su Database -->
     <string name="db_save_data_ok">Dati Memorizzati.</string>
     <string name="db_save_data_error">Errore Memorizzazione Dati.</string>
+    <string name="db_data_server_error">Errore nei Dati Server.</string>
 
 
     <!-- Settings. -->
+    <string name="settings_title_setting_TCP_IP_Server">Server Settings</string>
     <string name="settings_text_tv_title">Opzioni di connessione al Server</string>
     <string name="settings_text_tv_server_ip_address">Indirizzo TCP/IP Server</string>
     <string name="settings_hint_et_server_ip_address">Indirizzo TCP/IP Server</string>
+    <string name="settings_text_tv_server_port">Porta Server</string>
+    <string name="settings_hint_et_server_port">Porta Server</string>
     <string name="settings_text_btn_start_comm">Start\nCom.</string>
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
     <string name="settings_text_btn_save">Salva\nParametri</string>
 
     <!-- Drive. -->
+    <string name="drive_title_section">Drive</string>
     <string name="drive_text_btn_drive_start_stop">Start/Stop\nDrive</string>
     <string name="drive_text_btn_drive_start">Start\nDrive</string>
     <string name="drive_text_btn_drive_stop">Stop\nDrive</string>

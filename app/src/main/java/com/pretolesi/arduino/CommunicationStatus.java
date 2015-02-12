@@ -7,5 +7,5 @@ import java.util.ArrayList;
  */
 public interface CommunicationStatus
 {
-    public abstract void onNewCommunicationStatus(String strStatus);
+    public abstract void onNewCommunicationStatus(String[] strStatus);
 }

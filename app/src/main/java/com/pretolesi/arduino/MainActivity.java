@@ -18,6 +18,7 @@ import java.util.concurrent.BlockingQueue;
 import java.lang.Math;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -43,7 +44,8 @@ import android.widget.Toast;
 
 import SQL.SQLContract;
 
-public class MainActivity extends ActionBarActivity{
+public class MainActivity extends ActionBarActivity
+{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -89,12 +91,8 @@ public class MainActivity extends ActionBarActivity{
      */
 
     // Command to send
-    private static Command m_Command;
     private static ArduinoClientSocket m_acs;
-
-    // Metto in una lista, i dati da passare alla funzione AsyncTask
-    private ArrayList<Object> m_alOParameter;
-    private ArrayList<String> m_alstrStatus;
+    private static Command m_Command;
 
     // Task di comunicazione
     private static CommunicationTask m_CommunicationTask = null;
@@ -114,47 +112,43 @@ public class MainActivity extends ActionBarActivity{
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // Inizializzo tutte le variabili
-        if(m_alOParameter == null)
-        {
-            m_alOParameter = new ArrayList<>(2);
-        }
-
-        if(m_alstrStatus == null)
-        {
-            m_alstrStatus = new ArrayList<>(2);
-        }
 
         // Inizializzo i comandi da inviare
-        if(m_Command == null)
-        {
-            m_Command = new Command();
-        }
-
         // Inizializzo il client di comunicazione
         if(m_acs == null)
         {
             m_acs = new ArduinoClientSocket();
         }
-
-        // Preparo i parametri per passare al thread i dati.
-        if(m_alOParameter != null)
+        if(m_Command == null)
         {
-            if(m_Command != null) {
-                m_alOParameter.add(0, m_Command);
-            }
-            if(m_acs != null) {
-                m_alOParameter.add(1, m_acs);
-            }
+            m_Command = new Command();
         }
-
-
-        // Avvio il Task di comunicazione
-        m_CommunicationTask = new CommunicationTask();
-        m_CommunicationTask.execute(m_alOParameter, null, null);
-
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        String str = "";
+        // Avvio il Task di comunicazione
+        m_CommunicationTask = new CommunicationTask();
+        if(m_CommunicationTask != null)
+        {
+            m_CommunicationTask.execute(m_acs, m_Command);
+        }
+   }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+
+        if(m_CommunicationTask != null)
+        {
+            m_CommunicationTask.cancel(false);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -169,9 +163,14 @@ public class MainActivity extends ActionBarActivity{
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        Intent intent = null;
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_settings)
+        {
+            intent = SettingsActivity.makeSettingsActivity(getApplicationContext());
+            startActivity(intent);
+
             return true;
         }
 
@@ -196,13 +195,9 @@ public class MainActivity extends ActionBarActivity{
             Fragment fragment = null;
             if (position == 0)
             {
-                fragment = SettingsFragment.newInstance(position + 1);
-            }
-            if (position == 1)
-            {
                 fragment = DriveFragment.newInstance(position + 1);
             }
-            if (position == 2)
+            if (position == 1)
             {
                 fragment = AlarmListFragment.newInstance(position + 1);
             }
@@ -212,7 +207,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         public int getCount() {
             // Show xx total pages.
-            return 3;
+            return 2;
         }
 
         @Override
@@ -220,11 +215,11 @@ public class MainActivity extends ActionBarActivity{
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.drive_title_section).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+//                case 2:
+//                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
@@ -261,103 +256,6 @@ public class MainActivity extends ActionBarActivity{
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.main_fragment, container, false);
             return rootView;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class SettingsFragment extends Fragment {
-
-        private EditText m_settings_id_et_server_ip_address;
-        private Button m_settings_id_btn_start_comm;
-        private Button m_settings_id_btn_stop_comm;
-        private Button m_settings_id_btn_save;
-
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static SettingsFragment newInstance(int sectionNumber) {
-            SettingsFragment fragment = new SettingsFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public SettingsFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.settings_fragment, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState)
-        {
-            super.onActivityCreated(savedInstanceState);
-
-            m_settings_id_et_server_ip_address = (EditText) getActivity().findViewById(R.id.settings_id_et_server_ip_address);
-            m_settings_id_btn_start_comm = (Button) getActivity().findViewById(R.id.settings_id_btn_start_comm);
-            m_settings_id_btn_stop_comm = (Button) getActivity().findViewById(R.id.settings_id_btn_stop_comm);
-            m_settings_id_btn_save = (Button) getActivity().findViewById(R.id.settings_id_btn_save);
-
-
-            // Set an OnClickListener
-            m_settings_id_btn_start_comm.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-
-
-                }
-            });
-
-            // Set an OnClickListener
-            m_settings_id_btn_stop_comm.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-
-                }
-            });
-
-            // Set an OnClickListener
-            m_settings_id_btn_save.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    boolean bSaveStatus = true;
-                    String strIpAddress = m_settings_id_et_server_ip_address.getText().toString();
-                    // set a Parameter
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)) == false)
-                    {
-                        bSaveStatus = false;
-                    }
-
-                    if(bSaveStatus == true)
-                    {
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_error, Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
         }
     }
 
@@ -489,12 +387,12 @@ public class MainActivity extends ActionBarActivity{
                 m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus()
                 {
                     @Override
-                    public void onNewCommunicationStatus(String strStatus)
+                    public void onNewCommunicationStatus(String[] strStatus)
                     {
                         // Aggiorno lo stato
                         if(m_drive_id_tv_communication_status != null)
                         {
-                            m_drive_id_tv_communication_status.setText(strStatus);
+                            m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
                         }
                     }
                 });
@@ -742,7 +640,7 @@ public class MainActivity extends ActionBarActivity{
         }
     }
 
-    private class CommunicationTask extends AsyncTask<ArrayList<Object>, String, Void>
+    private class CommunicationTask extends AsyncTask<Object, String, Void>
     {
         private CommunicationStatus onNewCommunicationStatusListener = null;
 
@@ -753,7 +651,7 @@ public class MainActivity extends ActionBarActivity{
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
-        private void onUpdate(String strStatus)
+        private void onUpdate(String[] strStatus)
         {
             // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
             if(onNewCommunicationStatusListener!=null) {
@@ -763,49 +661,97 @@ public class MainActivity extends ActionBarActivity{
         }
 
         @Override
-        protected Void doInBackground(ArrayList<Object>...obj)
+        protected Void doInBackground(Object...obj)
         {
             //Prendo i parametri
-            Command cmd = (Command) obj[0].get(0);
-            ArduinoClientSocket acs = (ArduinoClientSocket) obj[0].get(1);
+            ArduinoClientSocket acs = (ArduinoClientSocket) obj[0];
+            Command cmd = (Command) obj[1];
             String strStatus = "";
+            String strError = "";
 
             byte[] byteToRead = new byte[64];
 
-            while (!isCancelled() && cmd != null && acs != null)
+            try
             {
-
-                if(acs.isConnected() == false) {
-                    // Pubblico i dati
-                    strStatus =  getString(R.string.comm_status_connecting);
-                    this.publishProgress(strStatus);
-
-                    // Prelevo indirizzo IP
-                    String strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
-                    if(acs.connectToArduino(strIpAddress, 502, 3000) == true)
-                    {
-                        strStatus = getString(R.string.comm_status_connected);
-                    }
-                    else
-                    {
-                        strStatus = getString(R.string.comm_status_error);
-                    }
-                    this.publishProgress(strStatus);
-
-                }
-                else
+                while (!isCancelled() && acs != null && cmd != null)
                 {
-                    // Pubblico i dati
-                    strStatus = getString(R.string.comm_status_online);
-                    this.publishProgress(strStatus);
-                    acs.sendCommand(cmd);
-                }
 
+                    if (acs.isConnected() == false)
+                    {
+                        // Pubblico i dati
+                        strStatus = getString(R.string.comm_status_connecting);
+                        strError = acs.getLastError();
+                        this.publishProgress(strStatus, strError);
+
+                        // Prelevo indirizzo IP
+                        String strIpAddress = "";
+                        int iPort = 0;
+                        try
+                        {
+                            strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
+                            iPort = Integer.getInteger(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                        if(strIpAddress.equals("") == true && iPort > 0)
+                        {
+                            if (acs.connectToArduino(strIpAddress, iPort, 3000) == true)
+                            {
+                                strStatus = getString(R.string.comm_status_connected);
+                                strError = "";
+                                this.publishProgress(strStatus, strError);
+                            }
+                            else
+                            {
+                                strStatus = getString(R.string.comm_status_error);
+                                strError = acs.getLastError();
+                                this.publishProgress(strStatus, strError);
+
+                                // attendo per non sovraccaricare CPU
+                                try
+                                {
+                                    Thread.sleep(1000, 0);
+                                }
+                                catch (InterruptedException e)
+                                {
+                                }
+                            }
+                        }
+                        else
+                        {
+                            strStatus = getString(R.string.comm_status_error);
+                            strError = getString(R.string.db_data_server_error);
+                            this.publishProgress(strStatus, strError);
+                            // attendo per non sovraccaricare CPU
+                            try
+                            {
+                                Thread.sleep(1000, 0);
+                            }
+                            catch (InterruptedException e)
+                            {
+                            }
+                        }
+
+                    } else
+                    {
+                        // Pubblico i dati
+                        strStatus = getString(R.string.comm_status_online);
+                        strError = "";
+                        this.publishProgress(strStatus, strError);
+                        acs.sendCommand(cmd);
+                    }
+                }
+                strError = "";
+            }
+            catch (Exception ex)
+            {
+                strError = ex.getMessage();
             }
 
             // Pubblico i dati
             strStatus = getString(R.string.comm_status_closed);
-            this.publishProgress(strStatus);
+            this.publishProgress(strStatus,strError);
 
             return null;
         }
@@ -816,7 +762,7 @@ public class MainActivity extends ActionBarActivity{
         {
             super.onProgressUpdate(strStatus);
             // Aggiorno i dati
-            onUpdate(strStatus[0]);
+            onUpdate(strStatus);
         }
     }
 
