@@ -32,7 +32,8 @@ public class SQLContract
         SCHEDULED_REMINDER_FREQUENCY(0),
         SCHEDULED_UPDATE_FREQUENCY(1),
         IP_ADDRESS(2),
-        PORT(3);
+        PORT(3),
+        TIMEOUT(4);
 
         private int value;
 

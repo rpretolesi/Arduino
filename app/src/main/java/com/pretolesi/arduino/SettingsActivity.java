@@ -118,6 +118,7 @@ public class SettingsActivity extends ActionBarActivity
 
         private EditText m_settings_id_et_server_ip_address;
         private EditText m_settings_id_et_server_port;
+        private EditText m_settings_id_et_timeout;
         private Button m_settings_id_btn_save;
 
         /**
@@ -155,6 +156,7 @@ public class SettingsActivity extends ActionBarActivity
 
             m_settings_id_et_server_ip_address = (EditText) getActivity().findViewById(R.id.settings_id_et_server_ip_address);
             m_settings_id_et_server_port = (EditText) getActivity().findViewById(R.id.settings_id_et_server_port);
+            m_settings_id_et_timeout = (EditText) getActivity().findViewById(R.id.settings_id_et_timeout);
             m_settings_id_btn_save = (Button) getActivity().findViewById(R.id.settings_id_btn_save);
 
 
@@ -167,12 +169,17 @@ public class SettingsActivity extends ActionBarActivity
                     boolean bSaveStatus = true;
                     String strIpAddress = m_settings_id_et_server_ip_address.getText().toString();
                     String strPort = m_settings_id_et_server_port.getText().toString();
+                    String strTimeout = m_settings_id_et_timeout.getText().toString();
                     // set a Parameter
                     if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)) == false)
                     {
                         bSaveStatus = false;
                     }
                     if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort)) == false)
+                    {
+                        bSaveStatus = false;
+                    }
+                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, String.valueOf(strTimeout)) == false)
                     {
                         bSaveStatus = false;
                     }
@@ -203,6 +210,11 @@ public class SettingsActivity extends ActionBarActivity
             {
                 m_settings_id_et_server_port.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT));
             }
+            if(m_settings_id_et_timeout != null)
+            {
+                m_settings_id_et_timeout.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT));
+            }
+
         }
 
         @Override

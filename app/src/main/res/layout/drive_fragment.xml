@@ -10,20 +10,12 @@
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 tools:context=".MainActivity$DriveFragment">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/drive_text_btn_drive_start"
-        android:id="@+id/drive_id_btn_drive_start_stop"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/drive_id_tv_command_queue"
-        android:layout_above="@id/drive_id_btn_drive_start_stop"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,6 +23,29 @@
         android:id="@+id/drive_id_tv_throttle_fwd"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drive_id_tv_steering_left"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/drive_text_btn_drive_start"
+        android:id="@+id/drive_id_btn_drive_start_stop"
+        android:layout_below="@+id/drive_id_tv_throttle_fwd"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/drive_id_tv_steering_right"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,19 +60,5 @@
         android:id="@+id/drive_id_tv_throttle_rev"
         android:layout_above="@id/drive_id_tv_communication_status"
         android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_steering_left"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_steering_right"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"/>
 
 </RelativeLayout>

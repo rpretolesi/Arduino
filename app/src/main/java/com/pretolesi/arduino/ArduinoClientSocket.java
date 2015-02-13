@@ -67,7 +67,7 @@ public class ArduinoClientSocket
         return bRes;
     }
 
-    public boolean sendCommand(Command cmd)
+    public boolean sendData(Command cmd)
     {
         boolean bRes = false;
         if (m_dataOutputStream != null)
@@ -95,7 +95,7 @@ public class ArduinoClientSocket
         return bRes;
     }
 
-    public boolean getCommand()
+    public boolean getData()
     {
         boolean bRes = false;
         if (m_dataInputStream != null)
@@ -103,10 +103,7 @@ public class ArduinoClientSocket
             try
             {
                 byte[] byteCmd = new byte[16];
-                if(byteCmd != null)
-                {
-                    m_dataInputStream.read(byteCmd, 0, byteCmd.length);
-                }
+                m_dataInputStream.read(byteCmd, 0, byteCmd.length);
                 m_strLastError = "";
                 bRes = true;
             }

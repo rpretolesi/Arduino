@@ -372,33 +372,26 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-        {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.drive_fragment, container, false);
             return rootView;
         }
 
         @Override
-        public void onResume()
-        {
+        public void onResume() {
             super.onResume();
 
             // Registro Listeners
-            if(m_CommunicationTask != null)
-            {
-                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus()
-                {
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
                     @Override
-                    public void onNewCommunicationStatus(String[] strStatus)
-                    {
+                    public void onNewCommunicationStatus(String[] strStatus) {
                         // Aggiorno lo stato
-                        if(m_drive_id_tv_communication_status != null)
-                        {
+                        if(m_drive_id_tv_communication_status != null) {
                             m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
                         }
-                        if(m_drive_id_tv_command_queue != null)
-                        {
-                            m_drive_id_tv_command_queue.setText(strStatus[2]);
+                        if(m_drive_id_tv_command_queue != null) {
+                            m_drive_id_tv_command_queue.setText(getText(R.string.comm_status_queue) + strStatus[2]);
                         }
                     }
                 });
@@ -410,12 +403,10 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public void onPause()
-        {
+        public void onPause() {
             super.onPause();
 
-            if(m_CommunicationTask != null)
-            {
+            if(m_CommunicationTask != null) {
                 m_CommunicationTask.setCommunicationStatusListener(null);
             }
 
@@ -423,14 +414,12 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy)
-        {
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
         }
 
         @Override
-        public void onSensorChanged(SensorEvent event)
-        {
+        public void onSensorChanged(SensorEvent event) {
 
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 m_faGravity = event.values;
@@ -438,15 +427,12 @@ public class MainActivity extends ActionBarActivity
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 m_faGeomagnetic = event.values;
             }
-            if (m_faGravity != null && m_faGeomagnetic != null)
-            {
+            if (m_faGravity != null && m_faGeomagnetic != null) {
                 float faRot[] = new float[9];
                 float faIncl[] = new float[9];
                 boolean bRes = SensorManager.getRotationMatrix(faRot, faIncl, m_faGravity, m_faGeomagnetic);
-                if (bRes ==  true)
-                {
-                    if(m_AzimPitchRoll == null)
-                    {
+                if (bRes ==  true) {
+                    if(m_AzimPitchRoll == null) {
                         m_AzimPitchRoll = new float[3];
                     }
                     SensorManager.getOrientation(faRot, m_AzimPitchRoll);
@@ -458,11 +444,9 @@ public class MainActivity extends ActionBarActivity
             }
         }
 
-        private void Drive()
-        {
+        private void Drive() {
             // Aggiorno i miei dati
-            if(m_AzimPitchRoll != null)
-            {
+            if(m_AzimPitchRoll != null) {
                 // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
                 float fAzim = 0;
                 float fThrottle = 0;
@@ -472,35 +456,29 @@ public class MainActivity extends ActionBarActivity
                 float fSteering = 0;
                 float fSteeringLEFT = 0;
                 float fSteeringRIGHT = 0;
-                if(m_bStartStopStatus == true)
-                {
+                if(m_bStartStopStatus == true) {
                     m_bStartStopStatus_FP_Stop = false;
 
                     // Throttle
                     fAzim = (m_AzimPitchRoll[1] * 200) - m_fThrottleTare;
                     fThrottle = Math.abs(fAzim);
-                    if(fThrottle > 100)
-                    {
+                    if(fThrottle > 100) {
                         fThrottle = 100;
                     }
-                    if(fAzim > 0)
-                    {
+                    if(fAzim > 0) {
                         fThrottleFWD = fThrottle;
                         fThrottleREV = 0;
-                        if(Math.abs(fAzim - m_fAzim_thr_FWD) > 10)
-                        {
+                        if(Math.abs(fAzim - m_fAzim_thr_FWD) > 10) {
                             m_fAzim_thr_FWD = fAzim;
 
                             m_Command.setDriveFWD(true);
                             m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
                         }
                     }
-                    if(fAzim < 0)
-                    {
+                    if(fAzim < 0) {
                         fThrottleFWD = 0;
                         fThrottleREV = fThrottle;
-                        if (Math.abs(fAzim - m_fAzim_thr_FWD) > 10)
-                        {
+                        if (Math.abs(fAzim - m_fAzim_thr_FWD) > 10) {
                             m_fAzim_thr_REV = fAzim;
 
                             m_Command.setDriveREV(true);
@@ -511,40 +489,32 @@ public class MainActivity extends ActionBarActivity
                     // Steering
                     fPitch = (m_AzimPitchRoll[2] * 200) - m_fSteeringTare;
                     fSteering = Math.abs(fPitch);
-                    if(fSteering > 100)
-                    {
+                    if(fSteering > 100) {
                         fSteering = 100;
                     }
                     // Send command only after a threshold
-                    if(fPitch < 0)
-                    {
+                    if(fPitch < 0) {
                         fSteeringLEFT = fSteering;
                         fSteeringRIGHT = 0;
-                        if(Math.abs(fPitch - m_fPitch_thr_LEFT) > 10)
-                        {
+                        if(Math.abs(fPitch - m_fPitch_thr_LEFT) > 10) {
                             m_fPitch_thr_LEFT = fPitch;
 
                             m_Command.setDriveLEFT(true);
                             m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
                         }
                     }
-                    if(fPitch > 0)
-                    {
+                    if(fPitch > 0) {
                         fSteeringLEFT = 0;
                         fSteeringRIGHT = fSteering;
-                        if(Math.abs(fPitch - m_fPitch_thr_RIGHT) > 10)
-                        {
+                        if(Math.abs(fPitch - m_fPitch_thr_RIGHT) > 10) {
                             m_fPitch_thr_RIGHT = fPitch;
 
                             m_Command.setDriveRIGHT(true);
                             m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
                         }
                     }
-                }
-                else
-                {
-                    if(m_bStartStopStatus_FP_Stop == false)
-                    {
+                } else {
+                    if(m_bStartStopStatus_FP_Stop == false) {
                         m_bStartStopStatus_FP_Stop = true;
 
                         m_fAzim_thr_FWD = (float)0.0;
@@ -560,10 +530,8 @@ public class MainActivity extends ActionBarActivity
                  }
 
                 // Send Command
-                if(m_Command.isCommandChange() == true)
-                {
-                    if(m_Command.setCommand() == false)
-                    {
+                if(m_Command.isCommandChange() == true) {
+                    if(m_Command.setCommand() == false) {
 //                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -579,8 +547,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class AlarmListFragment extends ListFragment
-    {
+    public static class AlarmListFragment extends ListFragment {
         private AlarmListAdapter m_adapter;
 
         /**
@@ -605,8 +572,7 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
             return super.onCreateView(inflater, container, savedInstanceState);
         }
         @Override
@@ -637,8 +603,7 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public void onDestroyView()
-        {
+        public void onDestroyView() {
             super.onDestroyView();
 
             // free adapter
@@ -646,19 +611,16 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    private class CommunicationTask extends AsyncTask<Object, String, Void>
-    {
+    private class CommunicationTask extends AsyncTask<Object, String, Void> {
         private CommunicationStatus onNewCommunicationStatusListener = null;
 
         // Imposto il listener
-        public synchronized void setCommunicationStatusListener(CommunicationStatus listener)
-        {
+        public synchronized void setCommunicationStatusListener(CommunicationStatus listener) {
             onNewCommunicationStatusListener = listener;
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
-        private void onUpdate(String[] strStatus)
-        {
+        private void onUpdate(String[] strStatus) {
             // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
             if(onNewCommunicationStatusListener!=null) {
                 // Only trigger the event, when we have a username
@@ -667,63 +629,52 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        protected Void doInBackground(Object...obj)
-        {
+        protected Void doInBackground(Object...obj) {
             //Prendo i parametri
             ArduinoClientSocket acs = (ArduinoClientSocket) obj[0];
             Command cmd = (Command) obj[1];
             String strStatus = "";
             String strError = "";
             String strCommandInQueue = "";
+            int iCommFrame = 0;
 
             byte[] byteToRead = new byte[64];
 
-            try
-            {
-                while (!isCancelled() && acs != null && cmd != null)
-                {
+            try {
+                while (!isCancelled() && acs != null && cmd != null) {
                     strCommandInQueue = String.valueOf(cmd.getQueueLength());
 
-                    if (acs.isConnected() == false)
-                    {
+                    if (acs.isConnected() == false) {
                         // Pubblico i dati
                         strStatus = getString(R.string.comm_status_connecting);
-                        strError = acs.getLastError();
+                        strError = "";
                         this.publishProgress(strStatus, strError,strCommandInQueue);
 
                         // Prelevo indirizzo IP
                         String strIpAddress = "";
-                        String strPort = "";
                         int iPort = 0;
-                        try
-                        {
+                        int iTimeout = 0;
+                        try {
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
                             iPort = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
+                            iTimeout = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
                         }
-                        catch (Exception ex)
-                        {
+                        catch (Exception ex) {
                         }
-                        if(strIpAddress.equals("") == false && iPort > 0)
-                        {
-                            if (acs.connectToArduino(strIpAddress, iPort, 3000, cmd) == true)
-                            {
+                        if(strIpAddress.equals("") == false && iPort > 0) {
+                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout, cmd) == true) {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
-                                this.publishProgress(strStatus, strError,strCommandInQueue);
-                            }
-                            else
-                            {
+                                this.publishProgress(strStatus, strError, strCommandInQueue);
+                            } else {
                                 strStatus = getString(R.string.comm_status_error);
                                 strError = acs.getLastError();
                                 this.publishProgress(strStatus, strError,strCommandInQueue);
 
                                 // attendo per non sovraccaricare CPU
-                                try
-                                {
-                                    Thread.sleep(1000, 0);
-                                }
-                                catch (InterruptedException e)
-                                {
+                                try {
+                                    Thread.sleep(3000, 0);
+                                } catch (InterruptedException e) {
                                 }
                             }
                         }
@@ -733,36 +684,51 @@ public class MainActivity extends ActionBarActivity
                             strError = getString(R.string.db_data_server_error);
                             this.publishProgress(strStatus, strError,strCommandInQueue);
                             // attendo per non sovraccaricare CPU
-                            try
-                            {
-                                Thread.sleep(1000, 0);
-                            }
-                            catch (InterruptedException e)
-                            {
+                            try {
+                                Thread.sleep(3000, 0);
+                            } catch (InterruptedException e) {
                             }
                         }
+                    } else {
+                        if(acs.sendData(cmd) == true) {
+                             if(acs.getData() == true) {
+                                 // Tutto Ok, posso leggere i dati ricevuti
 
-                    } else
-                    {
-                        // Pubblico i dati
-                        strStatus = getString(R.string.comm_status_online);
-                        strError = "";
-                        this.publishProgress(strStatus, strError,strCommandInQueue);
-                        if(acs.sendCommand(cmd) == true)
-                        {
-                             acs.getCommand();
+                                 // Faccio avanzare una barra ad ogni frame
+                                 iCommFrame = iCommFrame + 1;
+                                 if(iCommFrame > 10) {
+                                     iCommFrame = 1;
+                                 }
+                                 strStatus = getString(R.string.comm_status_online);
+                                 strError = "";
+                                 for(int index = 0; index < iCommFrame; index++){
+                                     strError = strError + "-";
+                                 }
+                                 this.publishProgress(strStatus, strError,strCommandInQueue);
+                             } else {
+                                 strStatus = getString(R.string.comm_status_error);
+                                 strError = acs.getLastError();
+                                 this.publishProgress(strStatus, strError, strCommandInQueue);
+                                 // attendo per non sovraccaricare CPU
+                                 try {
+                                     Thread.sleep(3000, 0);
+                                 } catch (InterruptedException e) {
+                                 }
+                             }
+                        } else {
+                            strStatus = getString(R.string.comm_status_error);
+                            strError = acs.getLastError();
+                            this.publishProgress(strStatus, strError, strCommandInQueue);
+                            // attendo per non sovraccaricare CPU
+                            try {
+                                Thread.sleep(3000, 0);
+                            } catch (InterruptedException e) {
+                            }
                         }
-                        else
-                        {
-                            Thread.sleep(100, 0);
-                        }
-
                     }
                 }
                 strError = "";
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 strError = ex.getMessage();
             }
 
@@ -775,8 +741,7 @@ public class MainActivity extends ActionBarActivity
 
 
         @Override
-        protected void onProgressUpdate(String... strStatus)
-        {
+        protected void onProgressUpdate(String... strStatus) {
             super.onProgressUpdate(strStatus);
             // Aggiorno i dati
             onUpdate(strStatus);
@@ -785,14 +750,11 @@ public class MainActivity extends ActionBarActivity
 
 
     // Funzioni di supporto
-    static byte floatTobyte(float f)
-    {
-        if(f < 0)
-        {
+    static byte floatTobyte(float f) {
+        if(f < 0) {
             f = 0;
         }
-        if(f > 127)
-        {
+        if(f > 127) {
             f = 127;
         }
         DecimalFormat df = new DecimalFormat("###");

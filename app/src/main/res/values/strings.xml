@@ -23,6 +23,11 @@
     <string name="settings_text_btn_start_comm">Start\nCom.</string>
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
     <string name="settings_text_btn_save">Salva\nParametri</string>
+    <string name="settings_text_tv_timeout">Timeout comunicazione</string>
+    <string name="settings_hint_et_timeout">Timeout comunicazione</string>
+
+
+
 
     <!-- Drive. -->
     <string name="drive_title_section">Drive</string>
@@ -35,11 +40,12 @@
     <string name="drive_text_tv_steering_right">Steering\nRIGHT</string>
 
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
-    <string name="ccomm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
+    <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
     <string name="comm_status_error">Error</string>
     <string name="comm_status_online">Online</string>
     <string name="comm_status_offline">Offline</string>
     <string name="comm_status_connecting">Connecting...</string>
     <string name="comm_status_connected">Connected</string>
     <string name="comm_status_closed">Close</string>
+    <string name="comm_status_queue">Comandi\nin Coda: </string>
 </resources>
