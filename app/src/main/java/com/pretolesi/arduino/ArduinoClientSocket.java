@@ -1,11 +1,15 @@
 package com.pretolesi.arduino;
 
+import android.content.Context;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 
 /**
  * Created by RPRETOLESI on 11/02/2015.
@@ -14,11 +18,18 @@ public class ArduinoClientSocket
 {
     private static byte ENQ = 0x05;
 
+    private Context m_context = null;
     private Socket m_clientSocket = null;
     private SocketAddress m_socketAddress = null;
     private DataOutputStream m_dataOutputStream = null;
     private DataInputStream m_dataInputStream = null;
     private String m_strLastError = "";
+    private long m_timeMillisecondsSend = 0;
+    private long m_timeMillisecondsGet = 0;
+
+    public ArduinoClientSocket(Context context){
+        m_context = context;
+    }
 
     public boolean connectToArduino(String strHost, int iPort, int iTimeout, Command cmd)
     {
@@ -47,6 +58,8 @@ public class ArduinoClientSocket
                     m_strLastError = "";
                 }
             }
+            m_timeMillisecondsSend = 0;
+            m_timeMillisecondsGet = 0;
         }
         catch (Exception ex)
         {
@@ -92,6 +105,9 @@ public class ArduinoClientSocket
                 closeConnection();
             }
         }
+
+        m_timeMillisecondsSend = System.currentTimeMillis();
+
         return bRes;
     }
 
@@ -103,9 +119,23 @@ public class ArduinoClientSocket
             try
             {
                 byte[] byteCmd = new byte[16];
-                m_dataInputStream.read(byteCmd, 0, byteCmd.length);
+                for(int i = 0; i < 16; i++)
+                {
+                    byteCmd[i] = m_dataInputStream.readByte();
+                }
+                // m_dataInputStream.read(byteCmd, 0, byteCmd.length);
                 m_strLastError = "";
                 bRes = true;
+            }
+            catch (SocketTimeoutException ex)
+            {
+                m_strLastError = m_context.getString(R.string.comm_status_timeout);
+                closeConnection();
+            }
+            catch (EOFException eofx)
+            {
+                m_strLastError = m_context.getString(R.string.comm_status_eof);
+                closeConnection();
             }
             catch (Exception ex)
             {
@@ -113,7 +143,20 @@ public class ArduinoClientSocket
                 closeConnection();
             }
         }
+
+        m_timeMillisecondsGet = System.currentTimeMillis();
+
         return bRes;
+    }
+
+    public long getSendGetAnswerTimeMilliseconds()
+    {
+        return (m_timeMillisecondsGet - m_timeMillisecondsSend);
+    }
+
+    public long getGetSendAnswerTimeMilliseconds()
+    {
+        return (m_timeMillisecondsSend - m_timeMillisecondsGet);
     }
 
     public void closeConnection()

@@ -1,22 +1,8 @@
 package com.pretolesi.arduino;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.lang.Math;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -37,10 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import SQL.SQLContract;
 
@@ -117,7 +100,7 @@ public class MainActivity extends ActionBarActivity
         // Inizializzo il client di comunicazione
         if(m_acs == null)
         {
-            m_acs = new ArduinoClientSocket();
+            m_acs = new ArduinoClientSocket(getApplicationContext());
         }
         if(m_Command == null)
         {
@@ -271,6 +254,8 @@ public class MainActivity extends ActionBarActivity
         float[] m_faGravity;
         float[] m_faGeomagnetic;
         float m_AzimPitchRoll[] = null;
+        float m_AzimPitchRollRaw[] = null;
+        private long m_LastUpdate;
         float m_fAzim_thr_FWD = (float)0.0;
         float m_fAzim_thr_REV = (float)0.0;
         float m_fPitch_thr_LEFT = (float)0.0;
@@ -435,13 +420,37 @@ public class MainActivity extends ActionBarActivity
                     if(m_AzimPitchRoll == null) {
                         m_AzimPitchRoll = new float[3];
                     }
-                    SensorManager.getOrientation(faRot, m_AzimPitchRoll);
+                    if(m_AzimPitchRollRaw == null) {
+                        m_AzimPitchRollRaw = new float[3];
+                    }
 
-                    // Set Command for Drive
-                    Drive();
+                    SensorManager.getOrientation(faRot, m_AzimPitchRollRaw);
+                    long actualTime = System.currentTimeMillis();
+                    if (actualTime - m_LastUpdate > 500) {
+                        m_LastUpdate = actualTime;
+                        float rawX = m_AzimPitchRollRaw[0];
+                        float rawY = m_AzimPitchRollRaw[1];
+                        float rawZ = m_AzimPitchRollRaw[2];
+
+                        // Apply low-pass filter
+                        m_AzimPitchRoll[0] = lowPass(rawX, m_AzimPitchRoll[0]);
+                        m_AzimPitchRoll[1] = lowPass(rawY, m_AzimPitchRoll[1]);
+                        m_AzimPitchRoll[2] = lowPass(rawZ, m_AzimPitchRoll[2]);
+
+                        // Set Command for Drive
+                        Drive();
+                    }
                 }
-
             }
+        }
+
+        // Deemphasize transient forces
+        private float lowPass(float current, float gravity) {
+
+            float alpha = 0.4f;
+
+            return gravity * alpha + current * ((float)1.0 - alpha);
+
         }
 
         private void Drive() {
@@ -661,7 +670,7 @@ public class MainActivity extends ActionBarActivity
                         }
                         catch (Exception ex) {
                         }
-                        if(strIpAddress.equals("") == false && iPort > 0) {
+                        if(strIpAddress.equals("") == false && iPort > 0 && iTimeout > 0) {
                             if (acs.connectToArduino(strIpAddress, iPort, iTimeout, cmd) == true) {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
@@ -690,22 +699,37 @@ public class MainActivity extends ActionBarActivity
                             }
                         }
                     } else {
+                        long lTime_1;
+                        long lTime_2;
+                        iCommFrame = iCommFrame + 1;
                         if(acs.sendData(cmd) == true) {
-                             if(acs.getData() == true) {
+                            lTime_1 = acs.getGetSendAnswerTimeMilliseconds();
+
+                            if(acs.getData() == true) {
+                                lTime_2 = acs.getSendGetAnswerTimeMilliseconds();
+
                                  // Tutto Ok, posso leggere i dati ricevuti
 
                                  // Faccio avanzare una barra ad ogni frame
                                  iCommFrame = iCommFrame + 1;
-                                 if(iCommFrame > 10) {
+                                 if(iCommFrame > 16) {
                                      iCommFrame = 1;
                                  }
                                  strStatus = getString(R.string.comm_status_online);
                                  strError = "";
-                                 for(int index = 0; index < iCommFrame; index++){
-                                     strError = strError + "-";
+                                 for(int index = 0; index < 20; index++){
+                                     if(index < iCommFrame) {
+                                         strError = strError + "-";
+                                     }
+                                     else
+                                     {
+                                         strError = strError + " ";
+                                     }
                                  }
+                                 strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
                                  this.publishProgress(strStatus, strError,strCommandInQueue);
-                             } else {
+
+                            } else {
                                  strStatus = getString(R.string.comm_status_error);
                                  strError = acs.getLastError();
                                  this.publishProgress(strStatus, strError, strCommandInQueue);
@@ -714,7 +738,7 @@ public class MainActivity extends ActionBarActivity
                                      Thread.sleep(3000, 0);
                                  } catch (InterruptedException e) {
                                  }
-                             }
+                            }
                         } else {
                             strStatus = getString(R.string.comm_status_error);
                             strError = acs.getLastError();

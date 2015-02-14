@@ -34,7 +34,7 @@ public class Command {
         m_byteCommandTest[0] = ENQ;
         m_byteCommandTest[15] = EOT;
 
-        m_abqCommandActionQueue = new ArrayBlockingQueue<>(10);
+        m_abqCommandActionQueue = new ArrayBlockingQueue<>(3);
         m_abqCommandActionQueue.clear();
     }
 
@@ -64,11 +64,12 @@ public class Command {
         byte[] byteRes = null;
         m_LockCommand.lock();
         try {
-            byteRes = m_abqCommandActionQueue.poll();
-            if(byteRes == null) {
+//            byteRes = m_abqCommandActionQueue.poll();
+//            if(byteRes == null) {
                 // No data
-                byteRes = m_byteCommandTest;
-            }
+                //byteRes = m_byteCommandTest;
+                byteRes = m_byteCommandAction;
+//            }
 
         } catch (Exception ex) {
 

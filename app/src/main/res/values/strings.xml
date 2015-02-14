@@ -48,4 +48,6 @@
     <string name="comm_status_connected">Connected</string>
     <string name="comm_status_closed">Close</string>
     <string name="comm_status_queue">Comandi\nin Coda: </string>
+    <string name="comm_status_timeout">Timeout</string>
+    <string name="comm_status_eof">EOF-likely connection close by peer</string>
 </resources>
