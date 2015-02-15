@@ -60,6 +60,7 @@ public class ArduinoClientSocket
             }
             m_timeMillisecondsSend = 0;
             m_timeMillisecondsGet = 0;
+
         }
         catch (Exception ex)
         {
@@ -116,14 +117,17 @@ public class ArduinoClientSocket
         boolean bRes = false;
         if (m_dataInputStream != null)
         {
+/*
             try
             {
                 byte[] byteCmd = new byte[16];
-                for(int i = 0; i < 16; i++)
+                for(int i = 0; i < 1; i++)
+//                for(int i = 0; i < 16; i++)
                 {
                     byteCmd[i] = m_dataInputStream.readByte();
                 }
                 // m_dataInputStream.read(byteCmd, 0, byteCmd.length);
+
                 m_strLastError = "";
                 bRes = true;
             }
@@ -142,6 +146,13 @@ public class ArduinoClientSocket
                 m_strLastError = ex.getMessage();
                 closeConnection();
             }
+*/
+            // attendo per non sovraccaricare CPU
+            try {
+                Thread.sleep(100, 0);
+            } catch (InterruptedException e) {
+            }
+            bRes = true;
         }
 
         m_timeMillisecondsGet = System.currentTimeMillis();

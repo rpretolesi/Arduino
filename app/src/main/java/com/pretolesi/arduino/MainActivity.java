@@ -447,7 +447,7 @@ public class MainActivity extends ActionBarActivity
         // Deemphasize transient forces
         private float lowPass(float current, float gravity) {
 
-            float alpha = 0.4f;
+            float alpha = 0.3f;
 
             return gravity * alpha + current * ((float)1.0 - alpha);
 
@@ -757,6 +757,7 @@ public class MainActivity extends ActionBarActivity
             }
 
             // Pubblico i dati
+            acs.closeConnection();
             strStatus = getString(R.string.comm_status_closed);
             this.publishProgress(strStatus,strError,strCommandInQueue);
 
