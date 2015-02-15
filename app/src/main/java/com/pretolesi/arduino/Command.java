@@ -15,8 +15,9 @@ public class Command {
     private byte[] m_byteCommandAction = null;
     private boolean m_bCommandActionChanged = false;
 
-    private byte[] m_byteCommandTest = null;
     private BlockingQueue<byte[]> m_abqCommandActionQueue;
+
+    private byte[] m_byteCommandData = null;
 
     public Command(){
         byte SOH = 0x01;
@@ -30,12 +31,10 @@ public class Command {
         m_byteCommandAction[15] = EOT;
         m_bCommandActionChanged = false;
 
-        m_byteCommandTest = new byte[16];
-        m_byteCommandTest[0] = ENQ;
-        m_byteCommandTest[15] = EOT;
-
         m_abqCommandActionQueue = new ArrayBlockingQueue<>(3);
         m_abqCommandActionQueue.clear();
+
+        m_byteCommandData = new byte[16];
     }
 
     public void reset(){
@@ -66,9 +65,9 @@ public class Command {
         try {
 //            byteRes = m_abqCommandActionQueue.poll();
 //            if(byteRes == null) {
-                // No data
-                //byteRes = m_byteCommandTest;
-                byteRes = m_byteCommandAction;
+            // No data
+            //byteRes = m_byteCommandTest;
+            byteRes = m_byteCommandAction;
 //            }
 
         } catch (Exception ex) {
@@ -79,6 +78,17 @@ public class Command {
 
         return byteRes;
     }
+
+    public void setData(byte[] byteData) {
+        m_LockCommand.lock();
+        try {
+                m_byteCommandData = byteData;
+        }
+        finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public int getLength() {
         m_LockCommand.lock();
         try {

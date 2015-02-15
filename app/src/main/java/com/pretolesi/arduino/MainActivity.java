@@ -701,14 +701,13 @@ public class MainActivity extends ActionBarActivity
                     } else {
                         long lTime_1;
                         long lTime_2;
-                        iCommFrame = iCommFrame + 1;
                         if(acs.sendData(cmd) == true) {
                             lTime_1 = acs.getGetSendAnswerTimeMilliseconds();
 
-                            if(acs.getData() == true) {
+                            if(acs.getData(cmd) == true) {
                                 lTime_2 = acs.getSendGetAnswerTimeMilliseconds();
-
                                  // Tutto Ok, posso leggere i dati ricevuti
+
 
                                  // Faccio avanzare una barra ad ogni frame
                                  iCommFrame = iCommFrame + 1;
@@ -727,7 +726,7 @@ public class MainActivity extends ActionBarActivity
                                      }
                                  }
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
-                                 this.publishProgress(strStatus, strError,strCommandInQueue);
+                                 this.publishProgress(strStatus, strError, strCommandInQueue);
 
                             } else {
                                  strStatus = getString(R.string.comm_status_error);

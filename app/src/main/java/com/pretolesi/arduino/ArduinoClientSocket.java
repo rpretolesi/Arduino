@@ -16,13 +16,18 @@ import java.net.SocketTimeoutException;
  */
 public class ArduinoClientSocket
 {
+    private static byte SOH = 0x01;
+    private static byte EOT = 0x04;
     private static byte ENQ = 0x05;
+    private static byte ACK = 0x06;
 
     private Context m_context = null;
     private Socket m_clientSocket = null;
     private SocketAddress m_socketAddress = null;
     private DataOutputStream m_dataOutputStream = null;
     private DataInputStream m_dataInputStream = null;
+    private byte m_byteInputStreamBuf[] = null;
+    private int m_NrOfByteInInputStreamBuf = 0;
     private String m_strLastError = "";
     private long m_timeMillisecondsSend = 0;
     private long m_timeMillisecondsGet = 0;
@@ -60,7 +65,8 @@ public class ArduinoClientSocket
             }
             m_timeMillisecondsSend = 0;
             m_timeMillisecondsGet = 0;
-
+            m_byteInputStreamBuf = new byte[16];
+            m_NrOfByteInInputStreamBuf = 0;
         }
         catch (Exception ex)
         {
@@ -112,7 +118,7 @@ public class ArduinoClientSocket
         return bRes;
     }
 
-    public boolean getData()
+    public boolean getData(Command cmd)
     {
         boolean bRes = false;
         if (m_dataInputStream != null)
@@ -120,14 +126,25 @@ public class ArduinoClientSocket
 /*
             try
             {
-                byte[] byteCmd = new byte[16];
-                for(int i = 0; i < 1; i++)
-//                for(int i = 0; i < 16; i++)
-                {
-                    byteCmd[i] = m_dataInputStream.readByte();
+                int iByteOffset = 0;
+                if(m_NrOfByteInInputStreamBuf > 0) {
+                    iByteOffset = m_NrOfByteInInputStreamBuf;
                 }
-                // m_dataInputStream.read(byteCmd, 0, byteCmd.length);
+                else
+                {
+                    iByteOffset = 0;
+                }
 
+                m_NrOfByteInInputStreamBuf = m_dataInputStream.read(m_byteInputStreamBuf, iByteOffset, m_byteInputStreamBuf.length - m_NrOfByteInInputStreamBuf);
+
+                if(m_NrOfByteInInputStreamBuf == 16)
+                {
+                    m_NrOfByteInInputStreamBuf = 0;
+                    if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
+                    {
+                        cmd.setData(m_byteInputStreamBuf);
+                    }
+                }
                 m_strLastError = "";
                 bRes = true;
             }
@@ -153,6 +170,7 @@ public class ArduinoClientSocket
             } catch (InterruptedException e) {
             }
             bRes = true;
+
         }
 
         m_timeMillisecondsGet = System.currentTimeMillis();
