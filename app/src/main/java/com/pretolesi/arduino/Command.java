@@ -210,13 +210,68 @@ public class Command {
     }
 
     // Fork
-    public void setDriveWheelFWD(boolean value) {
+    public void setDriveForkUp(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
+            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00000001);
+                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000001);
             }
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveForkDown(boolean value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11111100);
+            if(value == true) {
+                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000001);
+            }
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveSpeedForkUPDOWN(byte value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[9] = value;
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    public void setDriveForkOpen(boolean value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11001111);
+            if(value == true) {
+                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00010000);
+            }
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveForkClose(boolean value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11001111);
+            if(value == true) {
+                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00100000);
+            }
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveSpeedForkOPENCLOSE(byte value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[10] = value;
             m_bCommandActionChanged = true;
         } finally {
             m_LockCommand.unlock();

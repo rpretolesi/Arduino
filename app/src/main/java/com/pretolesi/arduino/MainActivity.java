@@ -198,7 +198,7 @@ public class MainActivity extends ActionBarActivity
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.drive_title_section).toUpperCase(l);
+                    return getString(R.string.drive_title_section_drive).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
 //                case 2:
@@ -257,15 +257,18 @@ public class MainActivity extends ActionBarActivity
         float m_AzimPitchRollRaw[] = null;
         private long m_LastUpdate;
 
-        private Button m_drive_id_btn_drive_start_stop;
-        private boolean m_bStartStopStatus;
-        private boolean m_bStartStopStatus_FP_Stop;
+        private Button m_drive_id_btn_drive_wheel_start_stop;
+        private boolean m_bDriveWheelStartStopStatus;
+        private boolean m_bDriveWheelStartStopStatus_FP_Stop;
+        private Button m_drive_id_btn_drive_fork_start_stop;
+        private boolean m_bDriveForkStartStopStatus;
+        private boolean m_bDriveForkStartStopStatus_FP_Stop;
 
         private TextView m_drive_id_tv_command_queue;
-        private TextView m_drive_text_tv_throttle_fwd;
-        private TextView m_drive_text_tv_throttle_rev;
-        private TextView m_drive_text_tv_steering_left;
-        private TextView m_drive_text_tv_steering_right;
+        private TextView m_drive_text_tv_value_up;
+        private TextView m_drive_text_tv_value_down;
+        private TextView m_drive_text_tv_value_left;
+        private TextView m_drive_text_tv_value_right;
         private TextView m_drive_id_tv_communication_status;
 
         // Dati
@@ -303,38 +306,61 @@ public class MainActivity extends ActionBarActivity
         {
             super.onActivityCreated(savedInstanceState);
 
-            m_drive_id_btn_drive_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_start_stop);
+            m_drive_id_btn_drive_wheel_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_start_stop);
+            m_drive_id_btn_drive_fork_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_fork_start_stop);
             m_drive_id_tv_command_queue = (TextView) getActivity().findViewById(R.id.drive_id_tv_command_queue);
-            m_drive_text_tv_throttle_fwd = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_fwd);
-            m_drive_text_tv_throttle_rev = (TextView) getActivity().findViewById(R.id.drive_id_tv_throttle_rev);
-            m_drive_text_tv_steering_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_left);
-            m_drive_text_tv_steering_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_steering_right);
+            m_drive_text_tv_value_up = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_up);
+            m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
+            m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
+            m_drive_text_tv_value_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_right);
             m_drive_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
 
             // Set an OnClickListener
-            m_drive_id_btn_drive_start_stop.setOnClickListener(new View.OnClickListener()
-            {
+            m_drive_id_btn_drive_wheel_start_stop.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
-                    if(m_Command != null)
-                    {
-                        if(m_bStartStopStatus == false)
-                        {
-                            m_bStartStopStatus = true;
-                            m_drive_id_btn_drive_start_stop.setText(R.string.drive_text_btn_drive_stop);
+                public void onClick(View v) {
+                    if (m_Command != null) {
+                        if (m_bDriveWheelStartStopStatus == false) {
+                            m_bDriveWheelStartStopStatus = true;
+                            m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_stop);
+
+                            // Fork
+                            m_bDriveForkStartStopStatus = false;
+                            m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_start);
 
                             // Eseguo la tara dei valori dei sensori
-                            if(m_AzimPitchRoll != null)
-                            {
+                            if (m_AzimPitchRoll != null) {
                                 m_fAzimTare = m_AzimPitchRoll[1];
                                 m_fPitchTare = m_AzimPitchRoll[2];
                             }
+                        } else {
+                            m_bDriveWheelStartStopStatus = false;
+                            m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_start);
                         }
-                        else
-                        {
-                            m_bStartStopStatus = false;
-                            m_drive_id_btn_drive_start_stop.setText(R.string.drive_text_btn_drive_start);
+                    }
+                }
+            });
+
+            m_drive_id_btn_drive_fork_start_stop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (m_Command != null) {
+                        if (m_bDriveForkStartStopStatus == false) {
+                            m_bDriveForkStartStopStatus = true;
+                            m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_stop);
+
+                            // Wheel
+                            m_bDriveWheelStartStopStatus = false;
+                            m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_start);
+
+                            // Eseguo la tara dei valori dei sensori
+                            if (m_AzimPitchRoll != null) {
+                                m_fAzimTare = m_AzimPitchRoll[1];
+                                m_fPitchTare = m_AzimPitchRoll[2];
+                            }
+                        } else {
+                            m_bDriveForkStartStopStatus = false;
+                            m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_start);
                         }
                     }
                 }
@@ -486,6 +512,7 @@ public class MainActivity extends ActionBarActivity
 
                         // Set Command for Drive
                         DriveWheel(fAzim, fPitch);
+                        DriveFork(fAzim, fPitch);
                     }
                 }
             }
@@ -500,8 +527,8 @@ public class MainActivity extends ActionBarActivity
             float fSteering = 0;
             float fSteeringLEFT = 0;
             float fSteeringRIGHT = 0;
-            if(m_bStartStopStatus == true) {
-                m_bStartStopStatus_FP_Stop = false;
+            if(m_bDriveWheelStartStopStatus == true) {
+                m_bDriveWheelStartStopStatus_FP_Stop = false;
 
                 // Throttle
                 fThrottle = Math.abs(fAzim);
@@ -533,28 +560,119 @@ public class MainActivity extends ActionBarActivity
                     m_Command.setDriveWheelRIGHT(true);
                     m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
                 }
+
+                // Send Command
+                if(m_Command.isCommandChange() == true) {
+                    if(m_Command.setCommand() == false) {
+//                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
+                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
+                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
+                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
+
             } else {
-                if(m_bStartStopStatus_FP_Stop == false) {
-                    m_bStartStopStatus_FP_Stop = true;
+                if(m_bDriveWheelStartStopStatus_FP_Stop == false) {
+                    m_bDriveWheelStartStopStatus_FP_Stop = true;
 
                     m_Command.setDriveWheelFWD(false);
                     m_Command.setDriveWheelREV(false);
                     m_Command.setDriveWheelLEFT(false);
                     m_Command.setDriveWheelRIGHT(false);
+
+                    // Send Command
+                    if(m_Command.isCommandChange() == true) {
+                        if(m_Command.setCommand() == false) {
+//                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
+                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
+                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
+                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
                 }
              }
+        }
+        private void DriveFork(float fAzim, float fPitch) {
+            // Aggiorno i miei dati
+            // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
+            float fForkSpeedUpDown = 0;
+            float fForkUP = 0;
+            float fForkDOWN = 0;
+            float fForkSpeedOpenClose = 0;
+            float fForkOPEN = 0;
+            float fForkCLOSE = 0;
+            if(m_bDriveForkStartStopStatus == true) {
+                m_bDriveForkStartStopStatus_FP_Stop = false;
 
-            // Send Command
-            if(m_Command.isCommandChange() == true) {
-                if(m_Command.setCommand() == false) {
+                // Fork Up and Down
+                fForkSpeedUpDown = Math.abs(fAzim);
+                if(fAzim > 0) {
+                    fForkUP = fForkSpeedUpDown;
+                    fForkDOWN = 0;
+                    m_Command.setDriveForkUp(true);
+                    m_Command.setDriveSpeedForkUPDOWN(floatTobyte(fForkUP));
+                }
+                if(fAzim < 0) {
+                    fForkUP = 0;
+                    fForkDOWN = fForkSpeedUpDown;
+                    m_Command.setDriveForkDown(true);
+                    m_Command.setDriveSpeedForkUPDOWN(floatTobyte(fForkDOWN));
+                }
+
+                // Fork Open and Close
+                fForkSpeedOpenClose = Math.abs(fPitch);
+                // Send command only after a threshold
+                if(fPitch < 0) {
+                    fForkOPEN = fForkSpeedOpenClose;
+                    fForkCLOSE = 0;
+                    m_Command.setDriveForkOpen(true);
+                    m_Command.setDriveSpeedForkOPENCLOSE(floatTobyte(fForkOPEN));
+                }
+                if(fPitch > 0) {
+                    fForkOPEN = 0;
+                    fForkCLOSE = fForkSpeedOpenClose;
+                    m_Command.setDriveForkClose(true);
+                    m_Command.setDriveSpeedForkOPENCLOSE(floatTobyte(fForkCLOSE));
+                }
+
+                // Send Command
+                if(m_Command.isCommandChange() == true) {
+                    if(m_Command.setCommand() == false) {
 //                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatTobyte(fForkUP)));
+                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatTobyte(fForkDOWN)));
+                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatTobyte(fForkOPEN)));
+                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatTobyte(fForkCLOSE)));
+
+            } else {
+                if(m_bDriveForkStartStopStatus_FP_Stop == false) {
+                    m_bDriveForkStartStopStatus_FP_Stop = true;
+
+                    m_Command.setDriveForkUp(false);
+                    m_Command.setDriveForkDown(false);
+                    m_Command.setDriveForkOpen(false);
+                    m_Command.setDriveForkClose(false);
+
+                    // Send Command
+                    if(m_Command.isCommandChange() == true) {
+                        if(m_Command.setCommand() == false) {
+//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatTobyte(fForkUP)));
+                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatTobyte(fForkDOWN)));
+                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatTobyte(fForkOPEN)));
+                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatTobyte(fForkCLOSE)));
                 }
             }
 
-            m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
-            m_drive_text_tv_throttle_rev.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
-            m_drive_text_tv_steering_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
-            m_drive_text_tv_steering_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
         }
     }
 

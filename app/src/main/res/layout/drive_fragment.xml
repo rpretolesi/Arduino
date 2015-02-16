@@ -20,30 +20,30 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_throttle_fwd"
+        android:id="@+id/drive_id_tv_value_up"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_steering_left"
+        android:id="@+id/drive_id_tv_value_left"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/drive_text_btn_drive_start"
-        android:id="@+id/drive_id_btn_drive_start_stop"
-        android:layout_below="@+id/drive_id_tv_throttle_fwd"
+        android:text="@string/drive_text_btn_drive_wheel_start"
+        android:id="@+id/drive_id_btn_drive_wheel_start_stop"
+        android:layout_below="@+id/drive_id_tv_value_up"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="65dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_steering_right"
+        android:id="@+id/drive_id_tv_value_right"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
 
@@ -57,8 +57,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/drive_id_tv_throttle_rev"
+        android:id="@+id/drive_id_tv_value_down"
         android:layout_above="@id/drive_id_tv_communication_status"
         android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/drive_text_btn_drive_fork_start"
+        android:id="@+id/drive_id_btn_drive_wheel_fork_start_stop"
+        android:layout_above="@+id/drive_id_tv_value_down"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="54dp"/>
 
 </RelativeLayout>
