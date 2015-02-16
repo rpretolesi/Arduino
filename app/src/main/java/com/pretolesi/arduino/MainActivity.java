@@ -641,13 +641,13 @@ public class MainActivity extends ActionBarActivity
                     fForkUP = fForkSpeedUpDown;
                     fForkDOWN = 0;
                     m_Command.setDriveForkUp(true);
-                    m_Command.setDriveSpeedForkUPDOWN(floatTobyte(fForkUP));
+                    m_Command.setDriveSpeedForkUP(floatTobyte(fForkUP));
                 }
                 if(fAzim < 0) {
                     fForkUP = 0;
                     fForkDOWN = fForkSpeedUpDown;
                     m_Command.setDriveForkDown(true);
-                    m_Command.setDriveSpeedForkUPDOWN(floatTobyte(fForkDOWN));
+                    m_Command.setDriveSpeedForkDOWN(floatTobyte(fForkDOWN));
                 }
 
                 // Fork Open and Close
@@ -657,13 +657,13 @@ public class MainActivity extends ActionBarActivity
                     fForkOPEN = fForkSpeedOpenClose;
                     fForkCLOSE = 0;
                     m_Command.setDriveForkOpen(true);
-                    m_Command.setDriveSpeedForkOPENCLOSE(floatTobyte(fForkOPEN));
+                    m_Command.setDriveSpeedForkOPEN(floatTobyte(fForkOPEN));
                 }
                 if(fPitch > 0) {
                     fForkOPEN = 0;
                     fForkCLOSE = fForkSpeedOpenClose;
                     m_Command.setDriveForkClose(true);
-                    m_Command.setDriveSpeedForkOPENCLOSE(floatTobyte(fForkCLOSE));
+                    m_Command.setDriveSpeedForkCLOSE(floatTobyte(fForkCLOSE));
                 }
 
                 // Send Command
@@ -819,7 +819,7 @@ public class MainActivity extends ActionBarActivity
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
                             iPort = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
                             iTimeout = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
-                            iCommFrameDelay = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
+                            iCommFrameDelay = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY));
                         }
                         catch (Exception ex) {
                         }

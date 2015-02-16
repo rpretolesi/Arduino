@@ -227,17 +227,26 @@ public class Command {
         try {
             m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000001);
+                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000010);
             }
             m_bCommandActionChanged = true;
         } finally {
             m_LockCommand.unlock();
         }
     }
-    public void setDriveSpeedForkUPDOWN(byte value) {
+    public void setDriveSpeedForkUP(byte value) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[9] = value;
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveSpeedForkDOWN(byte value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[10] = value;
             m_bCommandActionChanged = true;
         } finally {
             m_LockCommand.unlock();
@@ -268,10 +277,19 @@ public class Command {
             m_LockCommand.unlock();
         }
     }
-    public void setDriveSpeedForkOPENCLOSE(byte value) {
+    public void setDriveSpeedForkOPEN(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[10] = value;
+            m_byteCommandAction[11] = value;
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public void setDriveSpeedForkCLOSE(byte value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[12] = value;
             m_bCommandActionChanged = true;
         } finally {
             m_LockCommand.unlock();
