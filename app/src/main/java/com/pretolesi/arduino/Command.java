@@ -137,7 +137,7 @@ public class Command {
         }
      }
 
-    public void setDriveFWD(boolean value) {
+    public void setDriveWheelFWD(boolean value) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
@@ -150,7 +150,7 @@ public class Command {
         }
     }
 
-    public void setDriveREV(boolean value) {
+    public void setDriveWheelREV(boolean value) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
@@ -183,7 +183,7 @@ public class Command {
         }
     }
 
-    public void setDriveLEFT(boolean value) {
+    public void setDriveWheelLEFT(boolean value) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11001111);
@@ -196,12 +196,26 @@ public class Command {
         }
     }
 
-    public void setDriveRIGHT(boolean value) {
+    public void setDriveWheelRIGHT(boolean value) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11001111);
             if(value == true) {
                 m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00100000);
+            }
+            m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    // Fork
+    public void setDriveWheelFWD(boolean value) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
+            if(value == true) {
+                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00000001);
             }
             m_bCommandActionChanged = true;
         } finally {

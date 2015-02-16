@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                tools:context=".SettingsActivity$SettingSensorFragment">
+
+    <TextView
+        android:id="@+id/settings_id_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/settings_id_tv_sensor_feedback_ampl_k"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_text_tv_sensor_feedback_ampl_k" />
+
+    <EditText
+        android:id="@+id/settings_id_et_sensor_feedback_ampl_k"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_tv_sensor_feedback_ampl_k"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/settings_hint_et_sensor_feedback_ampl_k"
+        android:inputType="number|none" />
+
+    <TextView
+        android:id="@+id/settings_id_tv_sensor_low_pass_filter_k"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_et_sensor_feedback_ampl_k"
+        android:text="@string/settings_text_tv_sensor_low_pass_filter_k" />
+
+    <EditText
+        android:id="@+id/settings_id_et_sensor_low_pass_filter_k"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_tv_sensor_low_pass_filter_k"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/settings_hint_et_sensor_low_pass_filter_k"
+        android:inputType="number|numberDecimal" />
+
+    <TextView
+        android:id="@+id/settings_id_tv_sensor_max_output_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_et_sensor_low_pass_filter_k"
+        android:text="@string/settings_text_tv_sensor_max_output_value" />
+
+    <EditText
+        android:id="@+id/settings_id_et_sensor_max_output_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_tv_sensor_max_output_value"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/settings_hint_et_sensor_max_output_value"
+        android:inputType="number|none" />
+
+    <TextView
+        android:id="@+id/settings_id_tv_comm_frame_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_et_sensor_max_output_value"
+        android:text="@string/settings_text_tv_comm_frame_delay" />
+
+    <EditText
+        android:id="@+id/settings_id_et_comm_frame_delay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_tv_comm_frame_delay"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/settings_hint_et_comm_frame_delay"
+        android:inputType="numberSigned" />
+
+    <Button
+        android:id="@+id/settings_id_btn_save_sensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/settings_text_btn_save_sensor" />
+
+</RelativeLayout>

@@ -13,8 +13,8 @@
     <string name="db_data_server_error">Errore nei Dati Server.</string>
 
 
-    <!-- Settings. -->
-    <string name="settings_title_setting_TCP_IP_Server">Server Settings</string>
+    <!-- Settings. Server-->
+    <string name="settings_title_setting_server">Server Settings</string>
     <string name="settings_text_tv_title">Opzioni di connessione al Server</string>
     <string name="settings_text_tv_server_ip_address">Indirizzo TCP/IP Server</string>
     <string name="settings_hint_et_server_ip_address">Indirizzo TCP/IP Server</string>
@@ -22,9 +22,21 @@
     <string name="settings_hint_et_server_port">Porta Server</string>
     <string name="settings_text_btn_start_comm">Start\nCom.</string>
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
-    <string name="settings_text_btn_save">Salva\nParametri</string>
     <string name="settings_text_tv_timeout">Timeout comunicazione</string>
     <string name="settings_hint_et_timeout">Timeout comunicazione</string>
+    <string name="settings_text_tv_comm_frame_delay">Ritardo Invio Frame Di Com(ms)</string>
+    <string name="settings_hint_et_comm_frame_delay">Ritardo Invio Frame Di Com(ms)</string>
+    <string name="settings_text_btn_save_server">Salva\nParametri</string>
+    <!-- Settings. Sensor-->
+    <string name="settings_title_setting_sensor">Sensor Settings</string>
+    <string name="settings_text_tv_title_setting_sensor">Opzioni di Set Sensori</string>
+    <string name="settings_text_tv_sensor_feedback_ampl_k">Amplificazione</string>
+    <string name="settings_hint_et_sensor_feedback_ampl_k">Amplificazione</string>
+    <string name="settings_text_tv_sensor_low_pass_filter_k">Filtro passa basso</string>
+    <string name="settings_hint_et_sensor_low_pass_filter_k">Filtro passa basso</string>
+    <string name="settings_text_tv_sensor_max_output_value">Max valore in uscita</string>
+    <string name="settings_hint_et_sensor_max_output_value">Max valore in uscita</string>
+    <string name="settings_text_btn_save_sensor">Salva\nParametri</string>
 
 
 

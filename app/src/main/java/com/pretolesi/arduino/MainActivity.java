@@ -256,10 +256,6 @@ public class MainActivity extends ActionBarActivity
         float m_AzimPitchRoll[] = null;
         float m_AzimPitchRollRaw[] = null;
         private long m_LastUpdate;
-        float m_fAzim_thr_FWD = (float)0.0;
-        float m_fAzim_thr_REV = (float)0.0;
-        float m_fPitch_thr_LEFT = (float)0.0;
-        float m_fPitch_thr_RIGHT = (float)0.0;
 
         private Button m_drive_id_btn_drive_start_stop;
         private boolean m_bStartStopStatus;
@@ -272,8 +268,12 @@ public class MainActivity extends ActionBarActivity
         private TextView m_drive_text_tv_steering_right;
         private TextView m_drive_id_tv_communication_status;
 
-        private float m_fThrottleTare;
-        private float m_fSteeringTare;
+        // Dati
+        private float m_fSensorFeedbackAmplK;
+        private float m_fSensorLowPassFilterK;
+        private float m_fSensorMaxOutputValue;
+        private float m_fAzimTare;
+        private float m_fPitchTare;
 
 
         /**
@@ -327,8 +327,8 @@ public class MainActivity extends ActionBarActivity
                             // Eseguo la tara dei valori dei sensori
                             if(m_AzimPitchRoll != null)
                             {
-                                m_fThrottleTare = (m_AzimPitchRoll[1] * 200);
-                                m_fSteeringTare = (m_AzimPitchRoll[2] * 200);
+                                m_fAzimTare = m_AzimPitchRoll[1];
+                                m_fPitchTare = m_AzimPitchRoll[2];
                             }
                         }
                         else
@@ -354,6 +354,12 @@ public class MainActivity extends ActionBarActivity
                     // Sensori disponibili
                 }
             }
+
+            // Inizializzo variabili per set sensori
+            m_fSensorFeedbackAmplK = 1.0f;
+            m_fSensorLowPassFilterK = 0.1f;
+            m_fSensorMaxOutputValue = 1.0f;
+
         }
 
         @Override
@@ -365,6 +371,22 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onResume() {
             super.onResume();
+            // Prelevo i dati dei sensori
+            String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K);
+            String strSettSensorLowPassFilterK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K);
+            String strSettSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
+            try{
+                m_fSensorFeedbackAmplK = Float.valueOf(strSettSensorFeedbackAmplK);
+            } catch (Exception Ex) {
+            }
+            try{
+                m_fSensorLowPassFilterK = Float.valueOf(strSettSensorLowPassFilterK);
+            } catch (Exception Ex) {
+            }
+            try{
+                m_fSensorMaxOutputValue = Float.valueOf(strSettSensorMaxOutputValue);
+            } catch (Exception Ex) {
+            }
 
             // Registro Listeners
             if(m_CommunicationTask != null) {
@@ -433,123 +455,106 @@ public class MainActivity extends ActionBarActivity
                         float rawZ = m_AzimPitchRollRaw[2];
 
                         // Apply low-pass filter
-                        m_AzimPitchRoll[0] = lowPass(rawX, m_AzimPitchRoll[0]);
-                        m_AzimPitchRoll[1] = lowPass(rawY, m_AzimPitchRoll[1]);
-                        m_AzimPitchRoll[2] = lowPass(rawZ, m_AzimPitchRoll[2]);
+                        m_AzimPitchRoll[0] = lowPass(rawX, m_AzimPitchRoll[0], m_fSensorLowPassFilterK);
+                        m_AzimPitchRoll[1] = lowPass(rawY, m_AzimPitchRoll[1], m_fSensorLowPassFilterK);
+                        m_AzimPitchRoll[2] = lowPass(rawZ, m_AzimPitchRoll[2], m_fSensorLowPassFilterK);
+
+                        float fAzim = (m_AzimPitchRoll[1] - m_fAzimTare) * m_fSensorFeedbackAmplK;
+                        if(Math.abs(fAzim) > Math.abs(m_fSensorMaxOutputValue))
+                        {
+                            if(fAzim < 0.0f)
+                            {
+                                fAzim = -Math.abs(m_fSensorMaxOutputValue);
+                            }
+                            if(fAzim > 0.0f)
+                            {
+                                fAzim = Math.abs(m_fSensorMaxOutputValue);
+                            }
+                        }
+                        float fPitch = (m_AzimPitchRoll[2] - m_fPitchTare) *  m_fSensorFeedbackAmplK;
+                        if(Math.abs(fPitch) > Math.abs(m_fSensorMaxOutputValue))
+                        {
+                            if(fPitch < 0.0f)
+                            {
+                                fPitch = -Math.abs(m_fSensorMaxOutputValue);
+                            }
+                            if(fPitch > 0.0f)
+                            {
+                                fPitch = Math.abs(m_fSensorMaxOutputValue);
+                            }
+                        }
 
                         // Set Command for Drive
-                        Drive();
+                        DriveWheel(fAzim, fPitch);
                     }
                 }
             }
         }
 
-        // Deemphasize transient forces
-        private float lowPass(float current, float gravity) {
-
-            float alpha = 0.3f;
-
-            return gravity * alpha + current * ((float)1.0 - alpha);
-
-        }
-
-        private void Drive() {
+        private void DriveWheel(float fAzim, float fPitch) {
             // Aggiorno i miei dati
-            if(m_AzimPitchRoll != null) {
-                // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
-                float fAzim = 0;
-                float fThrottle = 0;
-                float fThrottleFWD = 0;
-                float fThrottleREV = 0;
-                float fPitch = 0;
-                float fSteering = 0;
-                float fSteeringLEFT = 0;
-                float fSteeringRIGHT = 0;
-                if(m_bStartStopStatus == true) {
-                    m_bStartStopStatus_FP_Stop = false;
+            // Converto l'acceleratore da 0 a 100 e parto con la posizione attuale
+            float fThrottle = 0;
+            float fThrottleFWD = 0;
+            float fThrottleREV = 0;
+            float fSteering = 0;
+            float fSteeringLEFT = 0;
+            float fSteeringRIGHT = 0;
+            if(m_bStartStopStatus == true) {
+                m_bStartStopStatus_FP_Stop = false;
 
-                    // Throttle
-                    fAzim = (m_AzimPitchRoll[1] * 200) - m_fThrottleTare;
-                    fThrottle = Math.abs(fAzim);
-                    if(fThrottle > 100) {
-                        fThrottle = 100;
-                    }
-                    if(fAzim > 0) {
-                        fThrottleFWD = fThrottle;
-                        fThrottleREV = 0;
-                        if(Math.abs(fAzim - m_fAzim_thr_FWD) > 10) {
-                            m_fAzim_thr_FWD = fAzim;
-
-                            m_Command.setDriveFWD(true);
-                            m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
-                        }
-                    }
-                    if(fAzim < 0) {
-                        fThrottleFWD = 0;
-                        fThrottleREV = fThrottle;
-                        if (Math.abs(fAzim - m_fAzim_thr_FWD) > 10) {
-                            m_fAzim_thr_REV = fAzim;
-
-                            m_Command.setDriveREV(true);
-                            m_Command.setThrottleREV(floatTobyte(fThrottleREV));
-                        }
-                    }
-
-                    // Steering
-                    fPitch = (m_AzimPitchRoll[2] * 200) - m_fSteeringTare;
-                    fSteering = Math.abs(fPitch);
-                    if(fSteering > 100) {
-                        fSteering = 100;
-                    }
-                    // Send command only after a threshold
-                    if(fPitch < 0) {
-                        fSteeringLEFT = fSteering;
-                        fSteeringRIGHT = 0;
-                        if(Math.abs(fPitch - m_fPitch_thr_LEFT) > 10) {
-                            m_fPitch_thr_LEFT = fPitch;
-
-                            m_Command.setDriveLEFT(true);
-                            m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
-                        }
-                    }
-                    if(fPitch > 0) {
-                        fSteeringLEFT = 0;
-                        fSteeringRIGHT = fSteering;
-                        if(Math.abs(fPitch - m_fPitch_thr_RIGHT) > 10) {
-                            m_fPitch_thr_RIGHT = fPitch;
-
-                            m_Command.setDriveRIGHT(true);
-                            m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
-                        }
-                    }
-                } else {
-                    if(m_bStartStopStatus_FP_Stop == false) {
-                        m_bStartStopStatus_FP_Stop = true;
-
-                        m_fAzim_thr_FWD = (float)0.0;
-                        m_fAzim_thr_REV = (float)0.0;
-                        m_fPitch_thr_LEFT = (float)0.0;
-                        m_fPitch_thr_RIGHT = (float)0.0;
-
-                        m_Command.setDriveFWD(false);
-                        m_Command.setDriveREV(false);
-                        m_Command.setDriveLEFT(false);
-                        m_Command.setDriveRIGHT(false);
-                    }
-                 }
-
-                // Send Command
-                if(m_Command.isCommandChange() == true) {
-                    if(m_Command.setCommand() == false) {
-//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
-                    }
+                // Throttle
+                fThrottle = Math.abs(fAzim);
+                if(fAzim > 0) {
+                    fThrottleFWD = fThrottle;
+                    fThrottleREV = 0;
+                    m_Command.setDriveWheelFWD(true);
+                    m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
+                }
+                if(fAzim < 0) {
+                    fThrottleFWD = 0;
+                    fThrottleREV = fThrottle;
+                    m_Command.setDriveWheelREV(true);
+                    m_Command.setThrottleREV(floatTobyte(fThrottleREV));
                 }
 
-                m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
-                m_drive_text_tv_throttle_rev.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
-                m_drive_text_tv_steering_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
-                m_drive_text_tv_steering_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
+                // Steering
+                fSteering = Math.abs(fPitch);
+                // Send command only after a threshold
+                if(fPitch < 0) {
+                    fSteeringLEFT = fSteering;
+                    fSteeringRIGHT = 0;
+                    m_Command.setDriveWheelLEFT(true);
+                    m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
+                }
+                if(fPitch > 0) {
+                    fSteeringLEFT = 0;
+                    fSteeringRIGHT = fSteering;
+                    m_Command.setDriveWheelRIGHT(true);
+                    m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
+                }
+            } else {
+                if(m_bStartStopStatus_FP_Stop == false) {
+                    m_bStartStopStatus_FP_Stop = true;
+
+                    m_Command.setDriveWheelFWD(false);
+                    m_Command.setDriveWheelREV(false);
+                    m_Command.setDriveWheelLEFT(false);
+                    m_Command.setDriveWheelRIGHT(false);
+                }
+             }
+
+            // Send Command
+            if(m_Command.isCommandChange() == true) {
+                if(m_Command.setCommand() == false) {
+//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
+                }
             }
+
+            m_drive_text_tv_throttle_fwd.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
+            m_drive_text_tv_throttle_rev.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
+            m_drive_text_tv_steering_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
+            m_drive_text_tv_steering_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
         }
     }
 
@@ -647,6 +652,12 @@ public class MainActivity extends ActionBarActivity
             String strCommandInQueue = "";
             int iCommFrame = 0;
 
+            // Dati di set
+            String strIpAddress = "";
+            int iPort = 0;
+            int iTimeout = 0;
+            int iCommFrameDelay = 0;
+
             byte[] byteToRead = new byte[64];
 
             try {
@@ -659,14 +670,11 @@ public class MainActivity extends ActionBarActivity
                         strError = "";
                         this.publishProgress(strStatus, strError,strCommandInQueue);
 
-                        // Prelevo indirizzo IP
-                        String strIpAddress = "";
-                        int iPort = 0;
-                        int iTimeout = 0;
                         try {
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
                             iPort = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.PORT));
                             iTimeout = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
+                            iCommFrameDelay = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
                         }
                         catch (Exception ex) {
                         }
@@ -728,6 +736,15 @@ public class MainActivity extends ActionBarActivity
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
                                  this.publishProgress(strStatus, strError, strCommandInQueue);
 
+                                // attendo per non sovraccaricare CPU
+                                try {
+                                    if(iCommFrameDelay < 10)
+                                    {
+                                        iCommFrameDelay = 10;
+                                    }
+                                    Thread.sleep(iCommFrameDelay, 0);
+                                } catch (InterruptedException e) {
+                                }
                             } else {
                                  strStatus = getString(R.string.comm_status_error);
                                  strError = acs.getLastError();
@@ -775,13 +792,24 @@ public class MainActivity extends ActionBarActivity
 
     // Funzioni di supporto
     static byte floatTobyte(float f) {
-        if(f < 0) {
-            f = 0;
-        }
-        if(f > 127) {
-            f = 127;
-        }
+
+        byte byteRes = 0;
+
         DecimalFormat df = new DecimalFormat("###");
-        return Byte.valueOf(df.format(f));
+        try{
+            byteRes = Byte.valueOf(df.format(f));
+        } catch(Exception ex) {
+            if(f < 0.0f) {
+                byteRes = 0;
+            }
+            if(f > 127) {
+                byteRes = 127;
+            }
+        }
+        return byteRes;
+    }
+    // Deemphasize transient forces
+    static float lowPass(float current, float gravity, float alpha) {
+        return gravity * alpha + current * ((float)1.0 - alpha);
     }
 }

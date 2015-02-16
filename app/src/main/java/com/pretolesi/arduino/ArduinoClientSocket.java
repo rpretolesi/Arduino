@@ -164,11 +164,7 @@ public class ArduinoClientSocket
                 closeConnection();
             }
 */
-            // attendo per non sovraccaricare CPU
-            try {
-                Thread.sleep(100, 0);
-            } catch (InterruptedException e) {
-            }
+
             bRes = true;
 
         }
