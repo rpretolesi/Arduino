@@ -595,10 +595,10 @@ public class MainActivity extends ActionBarActivity
                     }
                 }
 
-                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
-                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
-                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
-                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
+                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
+                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
+                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
+                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
 
             } else {
                 if(m_bDriveWheelStartStopStatus_FP_Stop == false) {
@@ -616,10 +616,10 @@ public class MainActivity extends ActionBarActivity
                         }
                     }
 
-                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatTobyte(fThrottleFWD)));
-                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatTobyte(fThrottleREV)));
-                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatTobyte(fSteeringLEFT)));
-                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatTobyte(fSteeringRIGHT)));
+                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
+                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
+                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
+                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
                 }
              }
         }
@@ -673,10 +673,10 @@ public class MainActivity extends ActionBarActivity
                     }
                 }
 
-                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatTobyte(fForkUP)));
-                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatTobyte(fForkDOWN)));
-                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatTobyte(fForkOPEN)));
-                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatTobyte(fForkCLOSE)));
+                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
+                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatToshort(fForkDOWN)));
+                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatToshort(fForkOPEN)));
+                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatToshort(fForkCLOSE)));
 
             } else {
                 if(m_bDriveForkStartStopStatus_FP_Stop == false) {
@@ -693,10 +693,10 @@ public class MainActivity extends ActionBarActivity
 //                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
                         }
                     }
-                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatTobyte(fForkUP)));
-                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatTobyte(fForkDOWN)));
-                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatTobyte(fForkOPEN)));
-                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatTobyte(fForkCLOSE)));
+                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
+                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatToshort(fForkDOWN)));
+                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatToshort(fForkOPEN)));
+                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatToshort(fForkCLOSE)));
                 }
             }
 
@@ -938,20 +938,28 @@ public class MainActivity extends ActionBarActivity
     // Funzioni di supporto
     static byte floatTobyte(float f) {
 
+        short sh_1 = 0;
         byte byteRes = 0;
 
-        DecimalFormat df = new DecimalFormat("###");
-        try{
-            byteRes = Byte.valueOf(df.format(f));
-        } catch(Exception ex) {
-            if(f < 0.0f) {
-                byteRes = 0;
-            }
-            if(f > 127) {
-                byteRes = 127;
-            }
+        if(f < 0.0f) {
+            f = 0.0f;
         }
+        if(f > 255.0f) {
+            f = 255.0f;
+        }
+
+        DecimalFormat df = new DecimalFormat("###");
+        sh_1 = Short.valueOf(df.format(f));
+        byteRes = (byte) (sh_1 & 0xFF);
+
+        String str = Integer.toBinaryString(byteRes);
+
         return byteRes;
+    }
+    static short floatToshort(float f) {
+        byte byte_1 = floatTobyte(f);
+        short sh_1 = (short)(byte_1 & 0xff);
+        return sh_1;
     }
     // Deemphasize transient forces
     static float lowPass(float current, float gravity, float alpha) {
