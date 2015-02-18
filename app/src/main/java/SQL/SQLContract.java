@@ -29,27 +29,31 @@ public class SQLContract
     }
     public enum Parameter
     {
-        SCHEDULED_REMINDER_FREQUENCY(0),
-        SCHEDULED_UPDATE_FREQUENCY(1),
-        IP_ADDRESS(2),
-        PORT(3),
-        TIMEOUT(4),
-        COMM_FRAME_DELAY(5),
-        SETT_SENSOR_FEEDBACK_AMPL_K(10),
-        SETT_SENSOR_LOW_PASS_FILTER_K(11),
-        SETT_SENSOR_MAX_OUTPUT_VALUE(12),
-        SETT_SENSOR_MIN_VALUE_START_OUTPUT(13);
+        SCHEDULED_REMINDER_FREQUENCY(0, "0"),
+        SCHEDULED_UPDATE_FREQUENCY(1, "0"),
+        IP_ADDRESS(2, "192.168.1.1"),
+        PORT(3, "502"),
+        TIMEOUT(4, "3000"),
+        COMM_FRAME_DELAY(5, "100"),
+        SETT_SENSOR_FEEDBACK_AMPL_K(10, "300.0"),
+        SETT_SENSOR_LOW_PASS_FILTER_K(11, "0.3"),
+        SETT_SENSOR_MAX_OUTPUT_VALUE(12, "250"),
+        SETT_SENSOR_MIN_VALUE_START_OUTPUT(13, "50");
 
         private int value;
+        private String defaultValue;
 
-        private Parameter(int value)
-        {
+        private Parameter(int value, String defaultValue) {
             this.value = value;
+            this.defaultValue = defaultValue;
         }
 
-        public int getValue()
-        {
+        public int getValue() {
             return value;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
         }
     }
     /*
@@ -122,7 +126,7 @@ public class SQLContract
             return false;
         }
 
-        public static String getParameter(Context context, Parameter pType, String strDefaultValue)
+        public static String getParameter(Context context, Parameter pType)
         {
             m_LockCommandHolder.lock();
 
@@ -144,6 +148,8 @@ public class SQLContract
                     String selection = COLUMN_NAME_PARAMETER_ID + " = ?";
 
                     String[] selectionArgs = { String.valueOf(pType.getValue())  };
+
+                    String strDefaultValue = pType.getDefaultValue();
 
                     // How you want the results sorted in the resulting Cursor
                     String sortOrder = "";

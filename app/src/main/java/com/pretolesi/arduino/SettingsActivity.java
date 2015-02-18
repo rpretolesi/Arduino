@@ -217,19 +217,19 @@ public class SettingsActivity extends ActionBarActivity
             // Load the data from Database
             if(m_settings_id_et_server_ip_address != null)
             {
-                m_settings_id_et_server_ip_address.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, "192.168.1.1"));
+                m_settings_id_et_server_ip_address.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS));
             }
             if(m_settings_id_et_server_port != null)
             {
-                m_settings_id_et_server_port.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, "502"));
+                m_settings_id_et_server_port.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT));
             }
             if(m_settings_id_et_timeout != null)
             {
-                m_settings_id_et_timeout.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, "3000"));
+                m_settings_id_et_timeout.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT));
             }
             if(m_settings_id_et_comm_frame_delay != null)
             {
-                m_settings_id_et_comm_frame_delay.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, "100"));
+                m_settings_id_et_comm_frame_delay.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY));
             }
 
         }
@@ -350,19 +350,19 @@ public class SettingsActivity extends ActionBarActivity
             // Load the data from Database
             if(m_settings_id_et_sensor_feedback_ampl_k != null)
             {
-                m_settings_id_et_sensor_feedback_ampl_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K, "300.0f"));
+                m_settings_id_et_sensor_feedback_ampl_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K));
             }
             if(m_settings_id_et_sensor_low_pass_filter_k != null)
             {
-                m_settings_id_et_sensor_low_pass_filter_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K, "0.3f"));
+                m_settings_id_et_sensor_low_pass_filter_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K));
             }
             if(m_settings_id_et_sensor_max_output_value != null)
             {
-                m_settings_id_et_sensor_max_output_value.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE, "250.0f"));
+                m_settings_id_et_sensor_max_output_value.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE));
             }
             if(m_settings_id_et_sensor_min_value_start_output != null)
             {
-                m_settings_id_et_sensor_min_value_start_output.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT, "10.0f"));
+                m_settings_id_et_sensor_min_value_start_output.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT));
             }
         }
 
