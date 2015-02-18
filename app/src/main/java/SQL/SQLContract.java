@@ -72,7 +72,7 @@ public class SQLContract
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        public static boolean setParameter(Context context, Parameter pType, String strpValue )
+        public static boolean setParameter(Context context, Parameter pType, String strpValue)
         {
             m_LockCommandHolder.lock();
 
@@ -122,7 +122,7 @@ public class SQLContract
             return false;
         }
 
-        public static String getParameter(Context context, Parameter pType)
+        public static String getParameter(Context context, Parameter pType, String strDefaultValue)
         {
             m_LockCommandHolder.lock();
 
@@ -162,6 +162,10 @@ public class SQLContract
                     {
                         cursor.moveToFirst();
                         strRes = cursor.getString(cursor.getColumnIndex(COLUMN_NAME_PARAMETER_VALUE));
+                    }
+                    else
+                    {
+                        strRes = strDefaultValue;
                     }
 
                 }
