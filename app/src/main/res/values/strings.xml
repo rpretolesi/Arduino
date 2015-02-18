@@ -31,11 +31,13 @@
     <string name="settings_title_setting_sensor">Sensor Settings</string>
     <string name="settings_text_tv_title_setting_sensor">Opzioni di Set Sensori</string>
     <string name="settings_text_tv_sensor_feedback_ampl_k">Amplificazione</string>
-    <string name="settings_hint_et_sensor_feedback_ampl_k">10 - 500</string>
+    <string name="settings_hint_et_sensor_feedback_ampl_k">1 - 1000</string>
     <string name="settings_text_tv_sensor_low_pass_filter_k">Filtro passa basso</string>
     <string name="settings_hint_et_sensor_low_pass_filter_k">0.1 - 0.9</string>
     <string name="settings_text_tv_sensor_max_output_value">Max valore in uscita</string>
     <string name="settings_hint_et_sensor_max_output_value">0 - 255</string>
+    <string name="settings_text_tv_sensor_min_value_start_output">Min valore attivazione sensore</string>
+    <string name="settings_hint_et_sensor_min_value_start_output">0 - 255</string>
     <string name="settings_text_btn_save_sensor">Salva\nParametri</string>
 
 
@@ -72,4 +74,9 @@
     <string name="comm_status_queue">Comandi\nin Coda: </string>
     <string name="comm_status_timeout">Timeout</string>
     <string name="comm_status_eof">EOF-likely connection close by peer</string>
+
+    <!-- Dialogs. Input Limit-->
+    <string name="dialog_ifmm_title">Verificare limiti dei valori inseriti</string>
+    <string name="dialog_ifmm_ok_button">Ok</string>
+
 </resources>

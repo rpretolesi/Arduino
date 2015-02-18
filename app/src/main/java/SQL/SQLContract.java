@@ -37,7 +37,8 @@ public class SQLContract
         COMM_FRAME_DELAY(5),
         SETT_SENSOR_FEEDBACK_AMPL_K(10),
         SETT_SENSOR_LOW_PASS_FILTER_K(11),
-        SETT_SENSOR_MAX_OUTPUT_VALUE(12);
+        SETT_SENSOR_MAX_OUTPUT_VALUE(12),
+        SETT_SENSOR_MIN_VALUE_START_OUTPUT(13);
 
         private int value;
 

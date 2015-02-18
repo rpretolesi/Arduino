@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -249,8 +250,8 @@ public class SettingsActivity extends ActionBarActivity
         private EditText m_settings_id_et_sensor_feedback_ampl_k;
         private EditText m_settings_id_et_sensor_low_pass_filter_k;
         private EditText m_settings_id_et_sensor_max_output_value;
-//        private EditText m_settings_id_et_timeout;
-//        private EditText m_settings_id_et_comm_frame_delay;
+        private EditText m_settings_id_et_sensor_min_value_start_output;
+
         private Button m_settings_id_btn_save_sensor;
 
         /**
@@ -287,9 +288,12 @@ public class SettingsActivity extends ActionBarActivity
             super.onActivityCreated(savedInstanceState);
 
             m_settings_id_et_sensor_feedback_ampl_k = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_feedback_ampl_k);
+            m_settings_id_et_sensor_feedback_ampl_k.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_sensor_feedback_ampl_k.getContext(),1.0f, 1000.0f)});
+
             m_settings_id_et_sensor_low_pass_filter_k = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_low_pass_filter_k);
             m_settings_id_et_sensor_max_output_value = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_max_output_value);
-//            m_settings_id_et_comm_frame_delay = (EditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
+            m_settings_id_et_sensor_min_value_start_output = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_min_value_start_output);
+
             m_settings_id_btn_save_sensor = (Button) getActivity().findViewById(R.id.settings_id_btn_save_sensor);
 
 
@@ -303,8 +307,9 @@ public class SettingsActivity extends ActionBarActivity
                     String strSensorFeedbackAmplK = m_settings_id_et_sensor_feedback_ampl_k.getText().toString();
                     String strSensorLowPassFilterK = m_settings_id_et_sensor_low_pass_filter_k.getText().toString();
                     String strSensorMaxOutputValue = m_settings_id_et_sensor_max_output_value.getText().toString();
-//                    String strTimeout = m_settings_id_et_timeout.getText().toString();
-//                    String strCommFrameDelay = m_settings_id_et_comm_frame_delay.getText().toString();
+                    String strSensorMinValueStartOutput = m_settings_id_et_sensor_min_value_start_output.getText().toString();
+
+
                     // set a Parameter
                     if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K, String.valueOf(strSensorFeedbackAmplK)) == false)
                     {
@@ -318,12 +323,11 @@ public class SettingsActivity extends ActionBarActivity
                     {
                         bSaveStatus = false;
                     }
- /*
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, String.valueOf(strCommFrameDelay)) == false)
+                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT, String.valueOf(strSensorMinValueStartOutput)) == false)
                     {
                         bSaveStatus = false;
                     }
-*/
+
                     if(bSaveStatus == true)
                     {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
@@ -354,12 +358,10 @@ public class SettingsActivity extends ActionBarActivity
             {
                 m_settings_id_et_sensor_max_output_value.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE));
             }
-/*
-            if(m_settings_id_et_comm_frame_delay != null)
+            if(m_settings_id_et_sensor_min_value_start_output != null)
             {
-                m_settings_id_et_comm_frame_delay.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY));
+                m_settings_id_et_sensor_min_value_start_output.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT));
             }
-*/
         }
 
         @Override

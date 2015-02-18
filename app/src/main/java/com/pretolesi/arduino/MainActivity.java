@@ -302,6 +302,8 @@ public class MainActivity extends ActionBarActivity
         private float m_fSensorFeedbackAmplK;
         private float m_fSensorLowPassFilterK;
         private float m_fSensorMaxOutputValue;
+        private float m_fSensorMinValueStartOutput;
+
         private float m_fAzimTare;
         private float m_fPitchTare;
 
@@ -412,7 +414,7 @@ public class MainActivity extends ActionBarActivity
             m_fSensorFeedbackAmplK = 1.0f;
             m_fSensorLowPassFilterK = 0.1f;
             m_fSensorMaxOutputValue = 1.0f;
-
+            m_fSensorMinValueStartOutput = 10.0f;
         }
 
         @Override
@@ -428,6 +430,8 @@ public class MainActivity extends ActionBarActivity
             String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K);
             String strSettSensorLowPassFilterK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K);
             String strSettSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
+            String strSensorMinValueStartOutput = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT);
+
             try{
                 m_fSensorFeedbackAmplK = Float.valueOf(strSettSensorFeedbackAmplK);
             } catch (Exception Ex) {
@@ -440,6 +444,11 @@ public class MainActivity extends ActionBarActivity
                 m_fSensorMaxOutputValue = Float.valueOf(strSettSensorMaxOutputValue);
             } catch (Exception Ex) {
             }
+            try{
+                m_fSensorMinValueStartOutput = Float.valueOf(strSensorMinValueStartOutput);
+            } catch (Exception Ex) {
+            }
+
 
             // Registro Listeners
             if(m_CommunicationTask != null) {
@@ -562,13 +571,28 @@ public class MainActivity extends ActionBarActivity
                 if(fAzim > 0) {
                     fThrottleFWD = fThrottle;
                     fThrottleREV = 0;
-                    m_Command.setDriveWheelFWD(true);
+                    if(fThrottleFWD > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveWheelFWD(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveWheelFWD(false);
+                    }
                     m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
                 }
                 if(fAzim < 0) {
                     fThrottleFWD = 0;
                     fThrottleREV = fThrottle;
-                    m_Command.setDriveWheelREV(true);
+
+                    if(fThrottleREV > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveWheelREV(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveWheelREV(false);
+                    }
                     m_Command.setThrottleREV(floatTobyte(fThrottleREV));
                 }
 
@@ -578,13 +602,27 @@ public class MainActivity extends ActionBarActivity
                 if(fPitch < 0) {
                     fSteeringLEFT = fSteering;
                     fSteeringRIGHT = 0;
-                    m_Command.setDriveWheelLEFT(true);
+                    if(fSteeringLEFT > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveWheelLEFT(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveWheelLEFT(false);
+                    }
                     m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
                 }
                 if(fPitch > 0) {
                     fSteeringLEFT = 0;
                     fSteeringRIGHT = fSteering;
-                    m_Command.setDriveWheelRIGHT(true);
+                    if(fSteeringRIGHT > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveWheelRIGHT(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveWheelRIGHT(false);
+                    }
                     m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
                 }
 
@@ -640,13 +678,27 @@ public class MainActivity extends ActionBarActivity
                 if(fAzim > 0) {
                     fForkUP = fForkSpeedUpDown;
                     fForkDOWN = 0;
-                    m_Command.setDriveForkUp(true);
+                    if(fForkUP > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveForkUp(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveForkUp(false);
+                    }
                     m_Command.setDriveSpeedForkUP(floatTobyte(fForkUP));
                 }
                 if(fAzim < 0) {
                     fForkUP = 0;
                     fForkDOWN = fForkSpeedUpDown;
-                    m_Command.setDriveForkDown(true);
+                    if(fForkDOWN > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveForkDown(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveForkDown(false);
+                    }
                     m_Command.setDriveSpeedForkDOWN(floatTobyte(fForkDOWN));
                 }
 
@@ -656,13 +708,27 @@ public class MainActivity extends ActionBarActivity
                 if(fPitch < 0) {
                     fForkOPEN = fForkSpeedOpenClose;
                     fForkCLOSE = 0;
-                    m_Command.setDriveForkOpen(true);
+                    if(fForkOPEN > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveForkOpen(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveForkOpen(false);
+                    }
                     m_Command.setDriveSpeedForkOPEN(floatTobyte(fForkOPEN));
                 }
                 if(fPitch > 0) {
                     fForkOPEN = 0;
                     fForkCLOSE = fForkSpeedOpenClose;
-                    m_Command.setDriveForkClose(true);
+                    if(fForkCLOSE > m_fSensorMinValueStartOutput)
+                    {
+                        m_Command.setDriveForkClose(true);
+                    }
+                    else
+                    {
+                        m_Command.setDriveForkClose(false);
+                    }
                     m_Command.setDriveSpeedForkCLOSE(floatTobyte(fForkCLOSE));
                 }
 

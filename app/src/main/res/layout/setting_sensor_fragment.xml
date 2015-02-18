@@ -61,6 +61,22 @@
         android:hint="@string/settings_hint_et_sensor_max_output_value"
         android:inputType="number|none" />
 
+    <TextView
+        android:id="@+id/settings_id_tv_sensor_min_value_start_output"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_et_sensor_max_output_value"
+        android:text="@string/settings_text_tv_sensor_min_value_start_output" />
+
+    <EditText
+        android:id="@+id/settings_id_et_sensor_min_value_start_output"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_tv_sensor_min_value_start_output"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/settings_hint_et_sensor_min_value_start_output"
+        android:inputType="number|none" />
+
     <Button
         android:id="@+id/settings_id_btn_save_sensor"
         android:layout_width="wrap_content"
