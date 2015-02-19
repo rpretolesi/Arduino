@@ -1,5 +1,6 @@
 package com.pretolesi.arduino;
 
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -85,7 +86,8 @@ public class Command {
     public void setData(byte[] byteData) {
         m_LockCommand.lock();
         try {
-                m_byteCommandData = byteData;
+
+                m_byteCommandData = Arrays.copyOf(byteData, m_byteCommandData.length);
         }
         finally {
             m_LockCommand.unlock();
@@ -156,8 +158,7 @@ public class Command {
     public boolean getDriveWheelFWD() {
         m_LockCommand.lock();
         try {
-            //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00000001) > 0 ? false : true;
+            return (m_byteCommandData[1] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -180,7 +181,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00000010) > 0 ? false : true;
+            return (m_byteCommandData[1] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -223,7 +224,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00010000) > 0 ? false : true;
+            return (m_byteCommandData[1] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -247,7 +248,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00100000) > 0 ? false : true;
+            return (m_byteCommandData[1] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -270,7 +271,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000001) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -279,7 +280,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000100) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00000100) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -301,7 +302,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000010) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -310,7 +311,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00001000) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00001000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -351,7 +352,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00010000) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -360,7 +361,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b01000000) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b01000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -382,7 +383,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00100000) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -391,7 +392,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b10000000) > 0 ? false : true;
+            return (m_byteCommandData[2] & 0b10000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }

@@ -387,8 +387,8 @@ public class MainActivity extends ActionBarActivity
 
                             // Eseguo la tara dei valori dei sensori
                             if (m_AzimPitchRoll != null) {
-                                m_fAzimTare = m_AzimPitchRoll[1];
-                                m_fPitchTare = m_AzimPitchRoll[2];
+//                                m_fAzimTare = m_AzimPitchRoll[1];
+//                                m_fPitchTare = m_AzimPitchRoll[2];
                             }
                         } else {
                             m_bDriveForkStartStopStatus = false;
