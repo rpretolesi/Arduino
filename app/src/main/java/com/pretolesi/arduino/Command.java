@@ -12,11 +12,14 @@ public class Command {
 
     private ReentrantLock m_LockCommand = null;
 
+    // Dati da inviare
     private byte[] m_byteCommandAction = null;
     private boolean m_bCommandActionChanged = false;
 
+    // Coda Dati da inviare
     private BlockingQueue<byte[]> m_abqCommandActionQueue;
 
+    // Dati Ricevuti
     private byte[] m_byteCommandData = null;
 
     public Command(){
@@ -150,6 +153,16 @@ public class Command {
         }
     }
 
+    public boolean getDriveWheelFWD() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[1] & 0b00000001) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setDriveWheelREV(boolean value) {
         m_LockCommand.lock();
         try {
@@ -158,6 +171,16 @@ public class Command {
                 m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00000010);
             }
             m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    public boolean getDriveWheelREV() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[1] & 0b00000010) > 0 ? false : true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -196,6 +219,17 @@ public class Command {
         }
     }
 
+    public boolean getDriveWheelLEFT() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[1] & 0b00010000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+
     public void setDriveWheelRIGHT(boolean value) {
         m_LockCommand.lock();
         try {
@@ -204,6 +238,16 @@ public class Command {
                 m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00100000);
             }
             m_bCommandActionChanged = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    public boolean getDriveWheelRIGHT() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[1] & 0b00100000) > 0 ? false : true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -222,6 +266,25 @@ public class Command {
             m_LockCommand.unlock();
         }
     }
+    public boolean getDriveForkUp() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00000001) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public boolean getDriveForkUpStatus() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00000100) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setDriveForkDown(boolean value) {
         m_LockCommand.lock();
         try {
@@ -234,6 +297,25 @@ public class Command {
             m_LockCommand.unlock();
         }
     }
+    public boolean getDriveForkDown() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00000010) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public boolean getDriveForkDownStatus() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00001000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setDriveSpeedForkUP(byte value) {
         m_LockCommand.lock();
         try {
@@ -265,6 +347,25 @@ public class Command {
             m_LockCommand.unlock();
         }
     }
+    public boolean getDriveForkOpen() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00010000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public boolean getDriveForkOpenStatus() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b01000000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setDriveForkClose(boolean value) {
         m_LockCommand.lock();
         try {
@@ -277,6 +378,25 @@ public class Command {
             m_LockCommand.unlock();
         }
     }
+    public boolean getDriveForkClose() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b00100000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+    public boolean getDriveForkCloseStatus() {
+        m_LockCommand.lock();
+        try {
+            //int iRes = m_byteCommandData[1] & 0b00000001;
+            return (m_byteCommandData[2] & 0b10000000) > 0 ? false : true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setDriveSpeedForkOPEN(byte value) {
         m_LockCommand.lock();
         try {

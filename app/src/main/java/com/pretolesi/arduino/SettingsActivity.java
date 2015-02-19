@@ -163,8 +163,12 @@ public class SettingsActivity extends ActionBarActivity
 
             m_settings_id_et_server_ip_address = (EditText) getActivity().findViewById(R.id.settings_id_et_server_ip_address);
             m_settings_id_et_server_port = (EditText) getActivity().findViewById(R.id.settings_id_et_server_port);
+            m_settings_id_et_server_port.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_server_port.getContext(),1, 65535)});
             m_settings_id_et_timeout = (EditText) getActivity().findViewById(R.id.settings_id_et_timeout);
+            m_settings_id_et_timeout.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_timeout.getContext(),1, 65535)});
             m_settings_id_et_comm_frame_delay = (EditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
+            m_settings_id_et_comm_frame_delay.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_comm_frame_delay.getContext(),50, 65535)});
+
             m_settings_id_btn_save_server = (Button) getActivity().findViewById(R.id.settings_id_btn_save_server);
 
 

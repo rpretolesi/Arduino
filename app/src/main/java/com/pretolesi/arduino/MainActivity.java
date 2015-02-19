@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.lang.Math;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -299,6 +301,7 @@ public class MainActivity extends ActionBarActivity
         private TextView m_drive_id_tv_communication_status;
 
         // Dati
+        private float m_settings_id_et_comm_frame_delay;
         private float m_fSensorFeedbackAmplK;
         private float m_fSensorLowPassFilterK;
         private float m_fSensorMaxOutputValue;
@@ -427,11 +430,16 @@ public class MainActivity extends ActionBarActivity
         public void onResume() {
             super.onResume();
             // Prelevo i dati dei sensori
+            String strCommFrameDelay = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY);
             String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K);
             String strSettSensorLowPassFilterK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K);
             String strSettSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
             String strSensorMinValueStartOutput = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT);
 
+            try{
+                m_settings_id_et_comm_frame_delay = Integer.parseInt(strCommFrameDelay);
+            } catch (Exception Ex) {
+            }
             try{
                 m_fSensorFeedbackAmplK = Float.valueOf(strSettSensorFeedbackAmplK);
             } catch (Exception Ex) {
@@ -461,6 +469,66 @@ public class MainActivity extends ActionBarActivity
                         }
                         if(m_drive_id_tv_command_queue != null) {
                             m_drive_id_tv_command_queue.setText(getText(R.string.comm_status_queue) + strStatus[2]);
+                        }
+                        if(m_Command != null) {
+                            if(m_bDriveWheelStartStopStatus == true) {
+                                // Aggiorno lo stato dei colori
+                                if(m_Command.getDriveWheelFWD() == true) {
+                                    m_drive_text_tv_value_up.setTextColor(Color.GREEN);
+                                } else {
+                                    m_drive_text_tv_value_up.setTextColor(Color.BLACK);
+                                }
+                                if(m_Command.getDriveWheelREV() == true) {
+                                    m_drive_text_tv_value_down.setTextColor(Color.GREEN);
+                                } else {
+                                    m_drive_text_tv_value_down.setTextColor(Color.BLACK);
+                                }
+                                if(m_Command.getDriveWheelLEFT() == true) {
+                                    m_drive_text_tv_value_left.setTextColor(Color.GREEN);
+                                } else {
+                                    m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                                }
+                                if(m_Command.getDriveWheelRIGHT() == true) {
+                                    m_drive_text_tv_value_right.setTextColor(Color.GREEN);
+                                } else {
+                                    m_drive_text_tv_value_right.setTextColor(Color.BLACK);
+                                }
+                            }
+                            if(m_bDriveForkStartStopStatus == true) {
+                                // Aggiorno lo stato dei colori
+                                if(m_Command.getDriveForkUpStatus() == true) {
+                                    m_drive_text_tv_value_up.setTextColor(Color.GREEN);
+                                } else if(m_Command.getDriveForkUp() == true) {
+                                    m_drive_text_tv_value_up.setTextColor(Color.YELLOW);
+                                } else {
+                                    m_drive_text_tv_value_up.setTextColor(Color.BLACK);
+                                }
+
+                                if(m_Command.getDriveForkDownStatus() == true) {
+                                    m_drive_text_tv_value_down.setTextColor(Color.GREEN);
+                                } else if(m_Command.getDriveForkDown() == true) {
+                                    m_drive_text_tv_value_down.setTextColor(Color.YELLOW);
+                                } else {
+                                    m_drive_text_tv_value_down.setTextColor(Color.BLACK);
+                                }
+
+                                if(m_Command.getDriveForkOpenStatus() == true) {
+                                    m_drive_text_tv_value_left.setTextColor(Color.GREEN);
+                                } else if(m_Command.getDriveForkOpen() == true) {
+                                    m_drive_text_tv_value_left.setTextColor(Color.YELLOW);
+                                } else {
+                                    m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                                }
+
+                                if(m_Command.getDriveForkCloseStatus() == true) {
+                                    m_drive_text_tv_value_right.setTextColor(Color.GREEN);
+                                }
+                                else if(m_Command.getDriveForkClose() == true) {
+                                    m_drive_text_tv_value_right.setTextColor(Color.YELLOW);
+                                } else {
+                                    m_drive_text_tv_value_right.setTextColor(Color.BLACK);
+                                }
+                            }
                         }
                     }
                 });
@@ -510,7 +578,7 @@ public class MainActivity extends ActionBarActivity
 
                     SensorManager.getOrientation(faRot, m_AzimPitchRollRaw);
                     long actualTime = System.currentTimeMillis();
-                    if (actualTime - m_LastUpdate > 500) {
+                    if (actualTime - m_LastUpdate > m_settings_id_et_comm_frame_delay) {
                         m_LastUpdate = actualTime;
                         float rawX = m_AzimPitchRollRaw[0];
                         float rawY = m_AzimPitchRollRaw[1];
@@ -949,11 +1017,11 @@ public class MainActivity extends ActionBarActivity
 
                                 // attendo per non sovraccaricare CPU
                                 try {
-                                    if(iCommFrameDelay < 10)
+                                    if((iCommFrameDelay * 2) < 10)
                                     {
                                         iCommFrameDelay = 10;
                                     }
-                                    Thread.sleep(iCommFrameDelay, 0);
+                                    Thread.sleep((iCommFrameDelay * 2), 0);
                                 } catch (InterruptedException e) {
                                 }
                             } else {

@@ -6,10 +6,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 
 /**
  * Created by RPRETOLESI on 11/02/2015.
@@ -138,6 +140,7 @@ public class ArduinoClientSocket
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
                             cmd.setData(m_byteInputStreamBuf);
+                            Arrays.fill(m_byteInputStreamBuf, (byte)0);
                         }
                     }
                 }
@@ -162,17 +165,13 @@ public class ArduinoClientSocket
                 m_strLastError = ex.getMessage();
                 closeConnection();
             }
-
-
-//            bRes = true;
-
         }
 
         m_timeMillisecondsGet = System.currentTimeMillis();
 
         return bRes;
     }
-
+/*
     public boolean getData1(Command cmd)
     {
         boolean bRes = false;
@@ -235,7 +234,7 @@ public class ArduinoClientSocket
 
         return bRes;
     }
-
+*/
     public long getSendGetAnswerTimeMilliseconds()
     {
         return (m_timeMillisecondsGet - m_timeMillisecondsSend);

@@ -22,8 +22,8 @@
     <string name="settings_hint_et_server_port">Porta Server</string>
     <string name="settings_text_btn_start_comm">Start\nCom.</string>
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
-    <string name="settings_text_tv_timeout">Timeout comunicazione</string>
-    <string name="settings_hint_et_timeout">Timeout comunicazione</string>
+    <string name="settings_text_tv_timeout">Timeout comunicazione(ms)</string>
+    <string name="settings_hint_et_timeout">Timeout comunicazione(ms)</string>
     <string name="settings_text_tv_comm_frame_delay">Ritardo Invio Frame Di Com(ms)</string>
     <string name="settings_hint_et_comm_frame_delay">Ritardo Invio Frame Di Com(ms)</string>
     <string name="settings_text_btn_save_server">Salva\nParametri</string>
