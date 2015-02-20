@@ -16,12 +16,12 @@ public class Command {
     // Dati da inviare
     private byte[] m_byteCommandAction = null;
     private boolean m_bCommandActionChanged = false;
-
-    // Coda Dati da inviare
-    private BlockingQueue<byte[]> m_abqCommandActionQueue;
+    private boolean m_bCommandActionReadyToSend = false;
 
     // Dati Ricevuti
-    private byte[] m_byteCommandData = null;
+    private byte[] m_byteCommandDataEnq = null;
+    private byte[] m_byteCommandDataRec = null;
+    private boolean m_bCommandDataChanged = false;
 
     public Command(){
         byte SOH = 0x01;
@@ -34,46 +34,63 @@ public class Command {
         m_byteCommandAction[0] = SOH;
         m_byteCommandAction[15] = EOT;
         m_bCommandActionChanged = false;
+        m_bCommandActionReadyToSend = false;
 
-        m_abqCommandActionQueue = new ArrayBlockingQueue<>(3);
-        m_abqCommandActionQueue.clear();
-
-        m_byteCommandData = new byte[16];
+        m_byteCommandDataRec = new byte[16];
+        m_bCommandDataChanged = false;
     }
 
-    public void reset(){
+    // Richiesta dati
+    public void setCommandData(byte[] byteData) {
         m_LockCommand.lock();
         try {
-            if(m_abqCommandActionQueue != null) {
-                m_abqCommandActionQueue.clear();
-            }
+            m_byteCommandDataRec = Arrays.copyOf(byteData, m_byteCommandDataRec.length);
         }
         finally {
             m_LockCommand.unlock();
         }
     }
 
-    public void set(byte[] value) {
+    public void setCommandActionForRequest() {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction = value;
+            m_byteCommandAction[0] & 0b00000010) > 0 ? true : false;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    // Invio Comandi
+    public void setCommandAction(byte[] byteAction) {
+        m_LockCommand.lock();
+        try {
+            m_byteCommandAction = Arrays.copyOf(byteAction, m_byteCommandAction.length);
             m_bCommandActionChanged = true;
         } finally {
             m_LockCommand.unlock();
         }
     }
 
-    public byte[] get() {
+    public void setCommandActionAsReadyToSend() {
+        m_LockCommand.lock();
+        try {
+                m_bCommandActionReadyToSend = true;
+        } catch (Exception ex) {
+
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
+    public byte[] getCommandAction() {
         byte[] byteRes = null;
         m_LockCommand.lock();
         try {
-//            byteRes = m_abqCommandActionQueue.poll();
-//            if(byteRes == null) {
-            // No data
-            //byteRes = m_byteCommandTest;
-            byteRes = m_byteCommandAction;
-//            }
-
+            if (m_bCommandActionReadyToSend == true){
+                byteRes = m_byteCommandAction;
+                m_bCommandActionChanged = false;
+                m_bCommandActionReadyToSend = false;
+            }
         } catch (Exception ex) {
 
         } finally {
@@ -83,18 +100,7 @@ public class Command {
         return byteRes;
     }
 
-    public void setData(byte[] byteData) {
-        m_LockCommand.lock();
-        try {
-
-                m_byteCommandData = Arrays.copyOf(byteData, m_byteCommandData.length);
-        }
-        finally {
-            m_LockCommand.unlock();
-        }
-    }
-
-    public int getLength() {
+    public int getActionLength() {
         m_LockCommand.lock();
         try {
             return m_byteCommandAction.length;
@@ -103,16 +109,7 @@ public class Command {
         }
     }
 
-    public int getQueueLength() {
-        m_LockCommand.lock();
-        try {
-            return m_abqCommandActionQueue.size();
-        } finally {
-            m_LockCommand.unlock();
-        }
-    }
-
-    public void setByte(byte value, int index) {
+    public void setActionByte(byte value, int index) {
         m_LockCommand.lock();
         try {
             m_byteCommandAction[index] = value;
@@ -158,7 +155,7 @@ public class Command {
     public boolean getDriveWheelFWD() {
         m_LockCommand.lock();
         try {
-            return (m_byteCommandData[1] & 0b00000001) > 0 ? true : false;
+            return (m_byteCommandDataRec[1] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -181,7 +178,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00000010) > 0 ? true : false;
+            return (m_byteCommandDataRec[1] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -224,7 +221,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00010000) > 0 ? true : false;
+            return (m_byteCommandDataRec[1] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -248,7 +245,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[1] & 0b00100000) > 0 ? true : false;
+            return (m_byteCommandDataRec[1] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -271,7 +268,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000001) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -280,7 +277,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000100) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00000100) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -302,7 +299,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00000010) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -311,7 +308,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00001000) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00001000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -351,8 +348,7 @@ public class Command {
     public boolean getDriveForkOpen() {
         m_LockCommand.lock();
         try {
-            //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00010000) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -361,7 +357,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b01000000) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b01000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -383,7 +379,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b00100000) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -392,7 +388,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandData[2] & 0b10000000) > 0 ? true : false;
+            return (m_byteCommandDataRec[2] & 0b10000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -417,7 +413,7 @@ public class Command {
         }
     }
 
-    public boolean isCommandChange() {
+    public boolean isCommandActionChanged() {
         m_LockCommand.lock();
         try {
             return m_bCommandActionChanged;
@@ -426,15 +422,4 @@ public class Command {
         }
     }
 
-    public boolean setCommand() {
-        boolean bRes = false;
-        m_LockCommand.lock();
-        try {
-            bRes = m_abqCommandActionQueue.offer(m_byteCommandAction);
-            m_bCommandActionChanged = false;
-        } finally {
-            m_LockCommand.unlock();
-        }
-        return bRes;
-    }
 }

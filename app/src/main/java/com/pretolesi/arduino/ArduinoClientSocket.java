@@ -46,11 +46,6 @@ public class ArduinoClientSocket
             // Prima chiudo la connessione
             closeConnection();
 
-            if(cmd != null)
-            {
-                cmd.reset();
-            }
-
             m_socketAddress = new InetSocketAddress(strHost , iPort);
             if(m_clientSocket == null)
             {
@@ -96,15 +91,17 @@ public class ArduinoClientSocket
         {
             try
             {
-                byte[] byteCmd = cmd.get();
+                byte[] byteCmd = null;
+                try {
+                    byteCmd = Arrays.copyOf(cmd.getCommandAction(), cmd.getCommandAction().length);
+                }
+                catch (Exception ex) {
+                }
                 if(byteCmd != null)
                 {
                     m_dataOutputStream.write(byteCmd, 0, byteCmd.length);
                 }
-                else
-                {
-                    m_dataOutputStream.write(ENQ);
-                }
+
                 m_strLastError = "";
                 bRes = true;
             }
@@ -139,7 +136,7 @@ public class ArduinoClientSocket
                         m_NrOfByteInInputStreamBuf = 0;
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
-                            cmd.setData(m_byteInputStreamBuf);
+                            cmd.setCommandData(m_byteInputStreamBuf);
                             Arrays.fill(m_byteInputStreamBuf, (byte)0);
                         }
                     }
@@ -147,21 +144,15 @@ public class ArduinoClientSocket
 
                 m_strLastError = "";
                 bRes = true;
-            }
-            catch (SocketTimeoutException ex)
-            {
+            } catch (SocketTimeoutException ex) {
                 m_strLastError = "";
                 bRes = true;
 //                m_strLastError = m_context.getString(R.string.comm_status_timeout);
 //                closeConnection();
-            }
-            catch (EOFException eofx)
-            {
+            } catch (EOFException eofx) {
                 m_strLastError = m_context.getString(R.string.comm_status_eof);
                 closeConnection();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 m_strLastError = ex.getMessage();
                 closeConnection();
             }

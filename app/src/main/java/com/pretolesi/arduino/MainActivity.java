@@ -695,10 +695,8 @@ public class MainActivity extends ActionBarActivity
                 }
 
                 // Send Command
-                if(m_Command.isCommandChange() == true) {
-                    if(m_Command.setCommand() == false) {
-//                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_SHORT).show();
-                    }
+                if(m_Command.isCommandActionChanged() == true) {
+                    m_Command.setCommandActionAsReadyToSend();
                 }
 
                 m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
@@ -716,10 +714,8 @@ public class MainActivity extends ActionBarActivity
                     m_Command.setDriveWheelRIGHT(false);
 
                     // Send Command
-                    if(m_Command.isCommandChange() == true) {
-                        if(m_Command.setCommand() == false) {
-//                        Toast.makeText(getActivity().getApplicationContext(), R.string.comm_status_queue_full, Toast.LENGTH_SHORT).show();
-                        }
+                    if(m_Command.isCommandActionChanged() == true) {
+                        m_Command.setCommandActionAsReadyToSend();
                     }
 
                     m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
@@ -801,10 +797,8 @@ public class MainActivity extends ActionBarActivity
                 }
 
                 // Send Command
-                if(m_Command.isCommandChange() == true) {
-                    if(m_Command.setCommand() == false) {
-//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
-                    }
+                if(m_Command.isCommandActionChanged() == true) {
+                    m_Command.setCommandActionAsReadyToSend();
                 }
 
                 m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
@@ -822,11 +816,10 @@ public class MainActivity extends ActionBarActivity
                     m_Command.setDriveForkClose(false);
 
                     // Send Command
-                    if(m_Command.isCommandChange() == true) {
-                        if(m_Command.setCommand() == false) {
-//                        Toast.makeText(getActivity().getApplicationContext(), R.string.ccomm_status_queue_full, Toast.LENGTH_SHORT).show();
-                        }
+                    if(m_Command.isCommandActionChanged() == true) {
+                        m_Command.setCommandActionAsReadyToSend();
                     }
+
                     m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
                     m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down) + "-" + String.valueOf(floatToshort(fForkDOWN)));
                     m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open) + "-" + String.valueOf(floatToshort(fForkOPEN)));
@@ -928,7 +921,6 @@ public class MainActivity extends ActionBarActivity
             Command cmd = (Command) obj[1];
             String strStatus = "";
             String strError = "";
-            String strCommandInQueue = "";
             int iCommFrame = 0;
 
             // Dati di set
@@ -941,13 +933,12 @@ public class MainActivity extends ActionBarActivity
 
             try {
                 while (!isCancelled() && acs != null && cmd != null) {
-                    strCommandInQueue = String.valueOf(cmd.getQueueLength());
 
                     if (acs.isConnected() == false) {
                         // Pubblico i dati
                         strStatus = getString(R.string.comm_status_connecting);
                         strError = "";
-                        this.publishProgress(strStatus, strError,strCommandInQueue);
+                        this.publishProgress(strStatus, strError,"");
 
                         try {
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
@@ -961,11 +952,11 @@ public class MainActivity extends ActionBarActivity
                             if (acs.connectToArduino(strIpAddress, iPort, iTimeout, cmd) == true) {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
-                                this.publishProgress(strStatus, strError, strCommandInQueue);
+                                this.publishProgress(strStatus, strError, "");
                             } else {
                                 strStatus = getString(R.string.comm_status_error);
                                 strError = acs.getLastError();
-                                this.publishProgress(strStatus, strError,strCommandInQueue);
+                                this.publishProgress(strStatus, strError,"");
 
                                 // attendo per non sovraccaricare CPU
                                 try {
@@ -978,7 +969,7 @@ public class MainActivity extends ActionBarActivity
                         {
                             strStatus = getString(R.string.comm_status_error);
                             strError = getString(R.string.db_data_server_error);
-                            this.publishProgress(strStatus, strError,strCommandInQueue);
+                            this.publishProgress(strStatus, strError,"");
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
@@ -1013,7 +1004,7 @@ public class MainActivity extends ActionBarActivity
                                      }
                                  }
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
-                                 this.publishProgress(strStatus, strError, strCommandInQueue);
+                                 this.publishProgress(strStatus, strError, "");
 
                                 // attendo per non sovraccaricare CPU
                                 try {
@@ -1027,7 +1018,7 @@ public class MainActivity extends ActionBarActivity
                             } else {
                                  strStatus = getString(R.string.comm_status_error);
                                  strError = acs.getLastError();
-                                 this.publishProgress(strStatus, strError, strCommandInQueue);
+                                 this.publishProgress(strStatus, strError, "");
                                  // attendo per non sovraccaricare CPU
                                  try {
                                      Thread.sleep(3000, 0);
@@ -1037,7 +1028,7 @@ public class MainActivity extends ActionBarActivity
                         } else {
                             strStatus = getString(R.string.comm_status_error);
                             strError = acs.getLastError();
-                            this.publishProgress(strStatus, strError, strCommandInQueue);
+                            this.publishProgress(strStatus, strError, "");
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
@@ -1054,7 +1045,7 @@ public class MainActivity extends ActionBarActivity
             // Pubblico i dati
             acs.closeConnection();
             strStatus = getString(R.string.comm_status_closed);
-            this.publishProgress(strStatus,strError,strCommandInQueue);
+            this.publishProgress(strStatus,strError,"");
 
             return null;
         }
