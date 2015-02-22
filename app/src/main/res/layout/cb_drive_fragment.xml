@@ -17,56 +17,56 @@
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton1" />
+            android:id="@+id/toggleButton_byte_1_1" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton2" />
+            android:id="@+id/toggleButton_byte_1_2" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton3" />
+            android:id="@+id/toggleButton_byte_1_3" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton4" />
+            android:id="@+id/toggleButton_byte_1_4" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton5" />
+            android:id="@+id/toggleButton_byte_1_5" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton6" />
+            android:id="@+id/toggleButton_byte_1_6" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton7" />
+            android:id="@+id/toggleButton_byte_1_7" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButton8" />
+            android:id="@+id/toggleButton_byte_1_8" />
 
     </LinearLayout>
 
@@ -74,8 +74,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/drive_id_tv_byte_1"
+        android:id="@+id/id_tv_byte_1"
+        android:layout_marginTop="5dp"
         android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_below="@+id/linear_layout_1"
         android:layout_centerVertical="true"/>
 
@@ -84,63 +86,63 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/drive_id_tv_byte_1">
+        android:layout_below="@+id/id_tv_byte_1">
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb1" />
+            android:id="@+id/toggleButton_byte_2_1" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb2" />
+            android:id="@+id/toggleButton_byte_2_2" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb3" />
+            android:id="@+id/toggleButton_byte_2_3" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb4" />
+            android:id="@+id/toggleButton_byte_2_4" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb5" />
+            android:id="@+id/toggleButton_byte_2_5" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb6" />
+            android:id="@+id/toggleButton_byte_2_6" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb7" />
+            android:id="@+id/toggleButton_byte_2_7" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:text="New ToggleButton"
-            android:id="@+id/toggleButtonb8" />
+            android:id="@+id/toggleButton_byte_2_8" />
     </LinearLayout>
 
     <TextView
@@ -148,17 +150,19 @@
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/drive_id_tv_byte_2"
+        android:layout_marginTop="5dp"
         android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_below="@+id/linear_layout_2"
         android:layout_centerVertical="true"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/linear_layout_3"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/drive_id_tv_byte_2"
-    android:layout_alignParentStart="true" >
+        android:id="@+id/linear_layout_3"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drive_id_tv_byte_2"
+        android:layout_alignParentStart="true" >
 
         <SeekBar
             android:layout_width="200dp"
@@ -283,9 +287,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_3" />
 
         <TextView
@@ -293,7 +297,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_4" />
 
         <TextView
@@ -301,7 +307,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_5" />
 
         <TextView
@@ -309,7 +317,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_6" />
 
         <TextView
@@ -317,7 +327,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_7" />
 
         <TextView
@@ -325,15 +337,19 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
-            android:id="@+id/drive_id_tv_byte_8" />
+            android:layout_marginBottom="6dp"
+           android:id="@+id/drive_id_tv_byte_8" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_9" />
 
         <TextView
@@ -341,7 +357,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_10" />
 
         <TextView
@@ -349,7 +367,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_11" />
 
         <TextView
@@ -357,7 +377,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_12" />
 
         <TextView
@@ -365,7 +387,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_13" />
 
         <TextView
@@ -373,7 +397,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_14" />
     </LinearLayout>
 

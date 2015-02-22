@@ -124,6 +124,42 @@ public class Message {
         }
     }
 
+    public void setActionBit(int index, int bit, boolean value) {
+        m_LockCommand.lock();
+        int iMask;
+        try {
+            switch (bit) {
+                case 1: iMask = 0b00000001;
+                    break;
+                case 2: iMask = 0b00000010;
+                    break;
+                case 3: iMask = 0b00000100;
+                    break;
+                case 4: iMask = 0b00001000;
+                    break;
+                case 5: iMask = 0b00010000;
+                    break;
+                case 6: iMask = 0b00100000;
+                    break;
+                case 7: iMask = 0b01000000;
+                    break;
+                case 8: iMask = 0b10000000;
+                    break;
+                default: iMask = 0b00000000;
+                    break;
+            }
+            if(value) {
+                m_byteCommand[index] = (byte)(m_byteCommand[index] | iMask);
+            } else {
+                m_byteCommand[index] = (byte)(m_byteCommand[index] & iMask);
+            }
+
+            m_bCommandAction = true;
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public void setThrottleFWD(byte value) {
         m_LockCommand.lock();
         try {
