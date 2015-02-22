@@ -5,7 +5,6 @@ import java.util.Locale;
 import java.lang.Math;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,7 +12,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -78,7 +76,7 @@ public class MainActivity extends ActionBarActivity
 
     // Command to send
     private static ArduinoClientSocket m_acs;
-    private static Command m_Command;
+    private static Message m_Message;
 
     // Task di comunicazione
     private static CommunicationTask m_CommunicationTask = null;
@@ -131,9 +129,9 @@ public class MainActivity extends ActionBarActivity
         {
             m_acs = new ArduinoClientSocket(getApplicationContext());
         }
-        if(m_Command == null)
+        if(m_Message == null)
         {
-            m_Command = new Command();
+            m_Message = new Message();
         }
     }
 
@@ -147,7 +145,7 @@ public class MainActivity extends ActionBarActivity
         m_CommunicationTask = new CommunicationTask();
         if(m_CommunicationTask != null)
         {
-            m_CommunicationTask.execute(m_acs, m_Command);
+            m_CommunicationTask.execute(m_acs, m_Message);
         }
    }
 
@@ -283,6 +281,8 @@ public class MainActivity extends ActionBarActivity
         float[] m_faGravity;
         float[] m_faGeomagnetic;
         float m_AzimPitchRoll[] = null;
+        float m_AzimOld;
+        float m_PitchOld;
         float m_AzimPitchRollRaw[] = null;
         private long m_LastUpdate;
 
@@ -351,8 +351,8 @@ public class MainActivity extends ActionBarActivity
             m_drive_id_btn_drive_wheel_start_stop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (m_Command != null) {
-                        if (m_bDriveWheelStartStopStatus == false) {
+                    if (m_Message != null) {
+                        if (!m_bDriveWheelStartStopStatus) {
                             m_bDriveWheelStartStopStatus = true;
                             m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_stop);
 
@@ -362,8 +362,8 @@ public class MainActivity extends ActionBarActivity
 
                             // Eseguo la tara dei valori dei sensori
                             if (m_AzimPitchRoll != null) {
-                                m_fAzimTare = m_AzimPitchRoll[1];
-                                m_fPitchTare = m_AzimPitchRoll[2];
+//                                m_fAzimTare = m_AzimPitchRoll[1];
+//                                m_fPitchTare = m_AzimPitchRoll[2];
                             }
                         } else {
                             m_bDriveWheelStartStopStatus = false;
@@ -376,8 +376,8 @@ public class MainActivity extends ActionBarActivity
             m_drive_id_btn_drive_fork_start_stop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (m_Command != null) {
-                        if (m_bDriveForkStartStopStatus == false) {
+                    if (m_Message != null) {
+                        if (!m_bDriveForkStartStopStatus) {
                             m_bDriveForkStartStopStatus = true;
                             m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_stop);
 
@@ -470,60 +470,62 @@ public class MainActivity extends ActionBarActivity
                         if(m_drive_id_tv_command_queue != null) {
                             m_drive_id_tv_command_queue.setText(getText(R.string.comm_status_queue) + strStatus[2]);
                         }
-                        if(m_Command != null) {
-                            if(m_bDriveWheelStartStopStatus == true) {
+                        if(m_Message != null) {
+                            if(m_bDriveWheelStartStopStatus) {
                                 // Aggiorno lo stato dei colori
-                                if(m_Command.getDriveWheelFWD() == true) {
+                                if(m_Message.getDriveWheelFWD()) {
                                     m_drive_text_tv_value_up.setTextColor(Color.GREEN);
                                 } else {
                                     m_drive_text_tv_value_up.setTextColor(Color.BLACK);
                                 }
-                                if(m_Command.getDriveWheelREV() == true) {
+                                if(m_Message.getDriveWheelREV()) {
                                     m_drive_text_tv_value_down.setTextColor(Color.GREEN);
                                 } else {
                                     m_drive_text_tv_value_down.setTextColor(Color.BLACK);
                                 }
-                                if(m_Command.getDriveWheelLEFT() == true) {
+                                if(m_Message.getDriveWheelLEFT()) {
                                     m_drive_text_tv_value_left.setTextColor(Color.GREEN);
                                 } else {
                                     m_drive_text_tv_value_left.setTextColor(Color.BLACK);
                                 }
-                                if(m_Command.getDriveWheelRIGHT() == true) {
+                                if(m_Message.getDriveWheelRIGHT()) {
                                     m_drive_text_tv_value_right.setTextColor(Color.GREEN);
                                 } else {
                                     m_drive_text_tv_value_right.setTextColor(Color.BLACK);
                                 }
                             }
-                            if(m_bDriveForkStartStopStatus == true) {
+                            if(m_bDriveForkStartStopStatus) {
                                 // Aggiorno lo stato dei colori
-                                if(m_Command.getDriveForkUpStatus() == true) {
+                                if(m_Message.getDriveForkUpStatus()) {
                                     m_drive_text_tv_value_up.setTextColor(Color.GREEN);
-                                } else if(m_Command.getDriveForkUp() == true) {
+                                } else if(m_Message.getDriveForkUp()) {
                                     m_drive_text_tv_value_up.setTextColor(Color.YELLOW);
                                 } else {
                                     m_drive_text_tv_value_up.setTextColor(Color.BLACK);
                                 }
 
-                                if(m_Command.getDriveForkDownStatus() == true) {
+                                if(m_Message.getDriveForkDownStatus()) {
                                     m_drive_text_tv_value_down.setTextColor(Color.GREEN);
-                                } else if(m_Command.getDriveForkDown() == true) {
+                                } else if(m_Message.getDriveForkDown()) {
                                     m_drive_text_tv_value_down.setTextColor(Color.YELLOW);
                                 } else {
                                     m_drive_text_tv_value_down.setTextColor(Color.BLACK);
                                 }
 
-                                if(m_Command.getDriveForkOpenStatus() == true) {
-                                    m_drive_text_tv_value_left.setTextColor(Color.GREEN);
-                                } else if(m_Command.getDriveForkOpen() == true) {
-                                    m_drive_text_tv_value_left.setTextColor(Color.YELLOW);
+                                if (!m_Message.getDriveForkOpenStatus()) {
+                                    if(m_Message.getDriveForkOpen()) {
+                                        m_drive_text_tv_value_left.setTextColor(Color.YELLOW);
+                                    } else {
+                                        m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                                    }
                                 } else {
-                                    m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                                    m_drive_text_tv_value_left.setTextColor(Color.GREEN);
                                 }
 
-                                if(m_Command.getDriveForkCloseStatus() == true) {
+                                if(m_Message.getDriveForkCloseStatus()) {
                                     m_drive_text_tv_value_right.setTextColor(Color.GREEN);
                                 }
-                                else if(m_Command.getDriveForkClose() == true) {
+                                else if(m_Message.getDriveForkClose()) {
                                     m_drive_text_tv_value_right.setTextColor(Color.YELLOW);
                                 } else {
                                     m_drive_text_tv_value_right.setTextColor(Color.BLACK);
@@ -568,7 +570,7 @@ public class MainActivity extends ActionBarActivity
                 float faRot[] = new float[9];
                 float faIncl[] = new float[9];
                 boolean bRes = SensorManager.getRotationMatrix(faRot, faIncl, m_faGravity, m_faGeomagnetic);
-                if (bRes ==  true) {
+                if (bRes) {
                     if(m_AzimPitchRoll == null) {
                         m_AzimPitchRoll = new float[3];
                     }
@@ -580,6 +582,7 @@ public class MainActivity extends ActionBarActivity
                     long actualTime = System.currentTimeMillis();
                     if (actualTime - m_LastUpdate > m_settings_id_et_comm_frame_delay) {
                         m_LastUpdate = actualTime;
+
                         float rawX = m_AzimPitchRollRaw[0];
                         float rawY = m_AzimPitchRollRaw[1];
                         float rawZ = m_AzimPitchRollRaw[2];
@@ -601,6 +604,7 @@ public class MainActivity extends ActionBarActivity
                                 fAzim = Math.abs(m_fSensorMaxOutputValue);
                             }
                         }
+
                         float fPitch = (m_AzimPitchRoll[2] - m_fPitchTare) *  m_fSensorFeedbackAmplK;
                         if(Math.abs(fPitch) > Math.abs(m_fSensorMaxOutputValue))
                         {
@@ -615,8 +619,24 @@ public class MainActivity extends ActionBarActivity
                         }
 
                         // Set Command for Drive
-                        DriveWheel(fAzim, fPitch);
-                        DriveFork(fAzim, fPitch);
+                        if((Math.abs(fAzim - m_AzimOld) >= 10.0f) || (Math.abs(fPitch - m_PitchOld) >= 10.0f)) {
+                            m_AzimOld = fAzim;
+                            m_PitchOld = fPitch;
+                            if((fAzim + 10) >= 250) {
+                                fAzim = 250;
+                            }
+                            if((fAzim - 10) <= -250) {
+                                fAzim = -250;
+                            }
+                            if((fPitch + 10) >= 250) {
+                                fPitch = 250;
+                            }
+                            if((fPitch - 10) <= -250) {
+                                fPitch = -250;
+                            }
+                            DriveWheel(fAzim, fPitch);
+                            DriveFork(fAzim, fPitch);
+                        }
                     }
                 }
             }
@@ -631,7 +651,7 @@ public class MainActivity extends ActionBarActivity
             float fSteering = 0;
             float fSteeringLEFT = 0;
             float fSteeringRIGHT = 0;
-            if(m_bDriveWheelStartStopStatus == true) {
+            if(m_bDriveWheelStartStopStatus) {
                 m_bDriveWheelStartStopStatus_FP_Stop = false;
 
                 // Throttle
@@ -641,13 +661,13 @@ public class MainActivity extends ActionBarActivity
                     fThrottleREV = 0;
                     if(fThrottleFWD > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveWheelFWD(true);
+                        m_Message.setDriveWheelFWD(true);
                     }
                     else
                     {
-                        m_Command.setDriveWheelFWD(false);
+                        m_Message.setDriveWheelFWD(false);
                     }
-                    m_Command.setThrottleFWD(floatTobyte(fThrottleFWD));
+                    m_Message.setThrottleFWD(floatTobyte(fThrottleFWD));
                 }
                 if(fAzim < 0) {
                     fThrottleFWD = 0;
@@ -655,13 +675,13 @@ public class MainActivity extends ActionBarActivity
 
                     if(fThrottleREV > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveWheelREV(true);
+                        m_Message.setDriveWheelREV(true);
                     }
                     else
                     {
-                        m_Command.setDriveWheelREV(false);
+                        m_Message.setDriveWheelREV(false);
                     }
-                    m_Command.setThrottleREV(floatTobyte(fThrottleREV));
+                    m_Message.setThrottleREV(floatTobyte(fThrottleREV));
                 }
 
                 // Steering
@@ -672,31 +692,32 @@ public class MainActivity extends ActionBarActivity
                     fSteeringRIGHT = 0;
                     if(fSteeringLEFT > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveWheelLEFT(true);
+                        m_Message.setDriveWheelLEFT(true);
                     }
                     else
                     {
-                        m_Command.setDriveWheelLEFT(false);
+                        m_Message.setDriveWheelLEFT(false);
                     }
-                    m_Command.setSteeringLEFT(floatTobyte(fSteeringLEFT));
+                    m_Message.setSteeringLEFT(floatTobyte(fSteeringLEFT));
                 }
                 if(fPitch > 0) {
                     fSteeringLEFT = 0;
                     fSteeringRIGHT = fSteering;
                     if(fSteeringRIGHT > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveWheelRIGHT(true);
+                        m_Message.setDriveWheelRIGHT(true);
                     }
                     else
                     {
-                        m_Command.setDriveWheelRIGHT(false);
+                        m_Message.setDriveWheelRIGHT(false);
                     }
-                    m_Command.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
+                    m_Message.setSteeringRIGHT(floatTobyte(fSteeringRIGHT));
                 }
 
                 // Send Command
-                if(m_Command.isCommandActionChanged() == true) {
-                    m_Command.setCommandActionAsReadyToSend();
+                if(m_Message.isCommandActionChanged()) {
+                    m_Message.setRequest();
+                    m_Message.setCommandAsToSend();
                 }
 
                 m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
@@ -705,17 +726,18 @@ public class MainActivity extends ActionBarActivity
                 m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
 
             } else {
-                if(m_bDriveWheelStartStopStatus_FP_Stop == false) {
+                if(!m_bDriveWheelStartStopStatus_FP_Stop) {
                     m_bDriveWheelStartStopStatus_FP_Stop = true;
 
-                    m_Command.setDriveWheelFWD(false);
-                    m_Command.setDriveWheelREV(false);
-                    m_Command.setDriveWheelLEFT(false);
-                    m_Command.setDriveWheelRIGHT(false);
+                    m_Message.setDriveWheelFWD(false);
+                    m_Message.setDriveWheelREV(false);
+                    m_Message.setDriveWheelLEFT(false);
+                    m_Message.setDriveWheelRIGHT(false);
 
                     // Send Command
-                    if(m_Command.isCommandActionChanged() == true) {
-                        m_Command.setCommandActionAsReadyToSend();
+                    if(m_Message.isCommandActionChanged()) {
+                        m_Message.setRequest();
+                        m_Message.setCommandAsToSend();
                     }
 
                     m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
@@ -734,7 +756,7 @@ public class MainActivity extends ActionBarActivity
             float fForkSpeedOpenClose = 0;
             float fForkOPEN = 0;
             float fForkCLOSE = 0;
-            if(m_bDriveForkStartStopStatus == true) {
+            if(m_bDriveForkStartStopStatus) {
                 m_bDriveForkStartStopStatus_FP_Stop = false;
 
                 // Fork Up and Down
@@ -744,26 +766,26 @@ public class MainActivity extends ActionBarActivity
                     fForkDOWN = 0;
                     if(fForkUP > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveForkUp(true);
+                        m_Message.setDriveForkUp(true);
                     }
                     else
                     {
-                        m_Command.setDriveForkUp(false);
+                        m_Message.setDriveForkUp(false);
                     }
-                    m_Command.setDriveSpeedForkUP(floatTobyte(fForkUP));
+                    m_Message.setDriveSpeedForkUP(floatTobyte(fForkUP));
                 }
                 if(fAzim < 0) {
                     fForkUP = 0;
                     fForkDOWN = fForkSpeedUpDown;
                     if(fForkDOWN > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveForkDown(true);
+                        m_Message.setDriveForkDown(true);
                     }
                     else
                     {
-                        m_Command.setDriveForkDown(false);
+                        m_Message.setDriveForkDown(false);
                     }
-                    m_Command.setDriveSpeedForkDOWN(floatTobyte(fForkDOWN));
+                    m_Message.setDriveSpeedForkDOWN(floatTobyte(fForkDOWN));
                 }
 
                 // Fork Open and Close
@@ -774,31 +796,32 @@ public class MainActivity extends ActionBarActivity
                     fForkCLOSE = 0;
                     if(fForkOPEN > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveForkOpen(true);
+                        m_Message.setDriveForkOpen(true);
                     }
                     else
                     {
-                        m_Command.setDriveForkOpen(false);
+                        m_Message.setDriveForkOpen(false);
                     }
-                    m_Command.setDriveSpeedForkOPEN(floatTobyte(fForkOPEN));
+                    m_Message.setDriveSpeedForkOPEN(floatTobyte(fForkOPEN));
                 }
                 if(fPitch > 0) {
                     fForkOPEN = 0;
                     fForkCLOSE = fForkSpeedOpenClose;
                     if(fForkCLOSE > m_fSensorMinValueStartOutput)
                     {
-                        m_Command.setDriveForkClose(true);
+                        m_Message.setDriveForkClose(true);
                     }
                     else
                     {
-                        m_Command.setDriveForkClose(false);
+                        m_Message.setDriveForkClose(false);
                     }
-                    m_Command.setDriveSpeedForkCLOSE(floatTobyte(fForkCLOSE));
+                    m_Message.setDriveSpeedForkCLOSE(floatTobyte(fForkCLOSE));
                 }
 
                 // Send Command
-                if(m_Command.isCommandActionChanged() == true) {
-                    m_Command.setCommandActionAsReadyToSend();
+                if(m_Message.isCommandActionChanged()) {
+                    m_Message.setRequest();
+                    m_Message.setCommandAsToSend();
                 }
 
                 m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
@@ -807,17 +830,18 @@ public class MainActivity extends ActionBarActivity
                 m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close) + "-" + String.valueOf(floatToshort(fForkCLOSE)));
 
             } else {
-                if(m_bDriveForkStartStopStatus_FP_Stop == false) {
+                if(!m_bDriveForkStartStopStatus_FP_Stop) {
                     m_bDriveForkStartStopStatus_FP_Stop = true;
 
-                    m_Command.setDriveForkUp(false);
-                    m_Command.setDriveForkDown(false);
-                    m_Command.setDriveForkOpen(false);
-                    m_Command.setDriveForkClose(false);
+                    m_Message.setDriveForkUp(false);
+                    m_Message.setDriveForkDown(false);
+                    m_Message.setDriveForkOpen(false);
+                    m_Message.setDriveForkClose(false);
 
                     // Send Command
-                    if(m_Command.isCommandActionChanged() == true) {
-                        m_Command.setCommandActionAsReadyToSend();
+                    if(m_Message.isCommandActionChanged()) {
+                        m_Message.setRequest();
+                        m_Message.setCommandAsToSend();
                     }
 
                     m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up) + "-" + String.valueOf(floatToshort(fForkUP)));
@@ -833,8 +857,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class AlarmListFragment extends ListFragment {
-        private AlarmListAdapter m_adapter;
+    public static class AlarmListFragment extends Fragment {
 
         /**
          * The fragment argument representing the section number for this
@@ -858,16 +881,16 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
-            return super.onCreateView(inflater, container, savedInstanceState);
-        }
-        @Override
         public void onActivityCreated (Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-
-            m_adapter = new AlarmListAdapter(getActivity());
-            setListAdapter(m_adapter);
         }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.cb_drive_fragment, container, false);
+            return rootView;
+        }
+
         @Override
         public void onResume() {
             super.onResume();
@@ -891,9 +914,6 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-
-            // free adapter
-            setListAdapter(null);
         }
     }
 
@@ -918,7 +938,7 @@ public class MainActivity extends ActionBarActivity
         protected Void doInBackground(Object...obj) {
             //Prendo i parametri
             ArduinoClientSocket acs = (ArduinoClientSocket) obj[0];
-            Command cmd = (Command) obj[1];
+            Message msg = (Message) obj[1];
             String strStatus = "";
             String strError = "";
             int iCommFrame = 0;
@@ -932,7 +952,7 @@ public class MainActivity extends ActionBarActivity
             byte[] byteToRead = new byte[64];
 
             try {
-                while (!isCancelled() && acs != null && cmd != null) {
+                while (!isCancelled() && acs != null && msg != null) {
 
                     if (acs.isConnected() == false) {
                         // Pubblico i dati
@@ -949,7 +969,7 @@ public class MainActivity extends ActionBarActivity
                         catch (Exception ex) {
                         }
                         if(strIpAddress.equals("") == false && iPort > 0 && iTimeout > 0) {
-                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout, cmd) == true) {
+                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout) == true) {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
                                 this.publishProgress(strStatus, strError, "");
@@ -979,10 +999,10 @@ public class MainActivity extends ActionBarActivity
                     } else {
                         long lTime_1;
                         long lTime_2;
-                        if(acs.sendData(cmd) == true) {
+                        if(acs.sendData(msg) == true) {
                             lTime_1 = acs.getGetSendAnswerTimeMilliseconds();
 
-                            if(acs.getData(cmd) == true) {
+                            if(acs.getData(msg) == true) {
                                 lTime_2 = acs.getSendGetAnswerTimeMilliseconds();
                                  // Tutto Ok, posso leggere i dati ricevuti
 

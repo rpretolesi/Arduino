@@ -1,80 +1,70 @@
 package com.pretolesi.arduino;
 
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Command class
  */
-public class Command {
+public class Message {
 //    private static byte ACK = 0x06;
+    private static byte SOH = 0x01;
+    private static byte EOT = 0x04;
+    private static byte ENQ = 0x05;
 
     private ReentrantLock m_LockCommand = null;
 
     // Dati da inviare
-    private byte[] m_byteCommandAction = null;
-    private boolean m_bCommandActionChanged = false;
-    private boolean m_bCommandActionReadyToSend = false;
+    private byte[] m_byteCommand = null;
+    private byte[] m_byteENQ = null;
+    private boolean m_bCommandAction = false;
+    private boolean m_bCommandENQ = false;
+    private boolean m_bCommandSetAsToSend = false;
 
     // Dati Ricevuti
-    private byte[] m_byteCommandDataEnq = null;
-    private byte[] m_byteCommandDataRec = null;
-    private boolean m_bCommandDataChanged = false;
+    private byte[] m_byteData = null;
 
-    public Command(){
-        byte SOH = 0x01;
-        byte EOT = 0x04;
-        byte ENQ = 0x05;
+    public Message(){
 
         m_LockCommand = new ReentrantLock();
 
-        m_byteCommandAction = new byte[16];
-        m_byteCommandAction[0] = SOH;
-        m_byteCommandAction[15] = EOT;
-        m_bCommandActionChanged = false;
-        m_bCommandActionReadyToSend = false;
+        m_byteCommand = new byte[16];
+        m_byteENQ = new byte[1];
 
-        m_byteCommandDataRec = new byte[16];
-        m_bCommandDataChanged = false;
+        m_byteCommand[15] = EOT;
+        m_byteENQ[0] = ENQ;
+        m_bCommandAction = false;
+        m_bCommandENQ = false;
+        m_bCommandSetAsToSend = false;
+
+        m_byteData = new byte[16];
     }
 
     // Richiesta dati
-    public void setCommandData(byte[] byteData) {
+    public void setData(byte[] byteData) {
         m_LockCommand.lock();
         try {
-            m_byteCommandDataRec = Arrays.copyOf(byteData, m_byteCommandDataRec.length);
+            m_byteData = Arrays.copyOf(byteData, m_byteData.length);
         }
         finally {
             m_LockCommand.unlock();
         }
     }
 
-    public void setCommandActionForRequest() {
-        m_LockCommand.lock();
-        try {
-            m_byteCommandAction[0] & 0b00000010) > 0 ? true : false;
-        } finally {
-            m_LockCommand.unlock();
-        }
-    }
-
     // Invio Comandi
-    public void setCommandAction(byte[] byteAction) {
+    public void setRequest() {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction = Arrays.copyOf(byteAction, m_byteCommandAction.length);
-            m_bCommandActionChanged = true;
+            m_bCommandENQ = true;
         } finally {
             m_LockCommand.unlock();
         }
     }
 
-    public void setCommandActionAsReadyToSend() {
+    public void setCommandAsToSend() {
         m_LockCommand.lock();
         try {
-                m_bCommandActionReadyToSend = true;
+            m_bCommandSetAsToSend = true;
         } catch (Exception ex) {
 
         } finally {
@@ -82,28 +72,43 @@ public class Command {
         }
     }
 
-    public byte[] getCommandAction() {
-        byte[] byteRes = null;
+    public byte[] getCommand() {
+
         m_LockCommand.lock();
         try {
-            if (m_bCommandActionReadyToSend == true){
-                byteRes = m_byteCommandAction;
-                m_bCommandActionChanged = false;
-                m_bCommandActionReadyToSend = false;
+            byte[] byteRes = null;
+
+            if (m_bCommandSetAsToSend) {
+                if(m_bCommandAction && m_bCommandENQ) {
+                    m_byteCommand[0] = ENQ;
+                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
+                }
+                if(m_bCommandAction && !m_bCommandENQ){
+                    m_byteCommand[0] = SOH;
+                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
+                }
+                if(!m_bCommandAction && m_bCommandENQ){
+                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
+                }
+
+                m_bCommandENQ = false;
+                m_bCommandAction = false;
+                m_bCommandSetAsToSend = false;
+
+                return byteRes;
             }
-        } catch (Exception ex) {
-
+        } catch (Exception ignored) {
         } finally {
             m_LockCommand.unlock();
         }
 
-        return byteRes;
+        return null;
     }
 
     public int getActionLength() {
         m_LockCommand.lock();
         try {
-            return m_byteCommandAction.length;
+            return m_byteCommand.length;
         } finally {
             m_LockCommand.unlock();
         }
@@ -112,8 +117,8 @@ public class Command {
     public void setActionByte(byte value, int index) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[index] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[index] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -122,8 +127,8 @@ public class Command {
     public void setThrottleFWD(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[5] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[5] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
          }
@@ -132,8 +137,8 @@ public class Command {
     public void setThrottleREV(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[6] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[6] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -142,11 +147,11 @@ public class Command {
     public void setDriveWheelFWD(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
+            m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00000001);
+                m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00000001);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -155,7 +160,7 @@ public class Command {
     public boolean getDriveWheelFWD() {
         m_LockCommand.lock();
         try {
-            return (m_byteCommandDataRec[1] & 0b00000001) > 0 ? true : false;
+            return (m_byteData[1] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -164,11 +169,11 @@ public class Command {
     public void setDriveWheelREV(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11111100);
+            m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00000010);
+                m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00000010);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -178,7 +183,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[1] & 0b00000010) > 0 ? true : false;
+            return (m_byteData[1] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -187,8 +192,8 @@ public class Command {
     public void setSteeringLEFT(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[7] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[7] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -197,8 +202,8 @@ public class Command {
     public void setSteeringRIGHT(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[8] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[8] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -207,11 +212,11 @@ public class Command {
     public void setDriveWheelLEFT(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11001111);
+            m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11001111);
             if(value == true) {
-                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00010000);
+                m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00010000);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -221,7 +226,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[1] & 0b00010000) > 0 ? true : false;
+            return (m_byteData[1] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -231,11 +236,11 @@ public class Command {
     public void setDriveWheelRIGHT(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] & 0b11001111);
+            m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11001111);
             if(value == true) {
-                m_byteCommandAction[1] = (byte)(m_byteCommandAction[1] | 0b00100000);
+                m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00100000);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -245,7 +250,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[1] & 0b00100000) > 0 ? true : false;
+            return (m_byteData[1] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -255,11 +260,11 @@ public class Command {
     public void setDriveForkUp(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11111100);
+            m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000001);
+                m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00000001);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -268,7 +273,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b00000001) > 0 ? true : false;
+            return (m_byteData[2] & 0b00000001) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -277,7 +282,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b00000100) > 0 ? true : false;
+            return (m_byteData[2] & 0b00000100) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -286,11 +291,11 @@ public class Command {
     public void setDriveForkDown(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11111100);
+            m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11111100);
             if(value == true) {
-                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00000010);
+                m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00000010);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -299,7 +304,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b00000010) > 0 ? true : false;
+            return (m_byteData[2] & 0b00000010) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -308,7 +313,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b00001000) > 0 ? true : false;
+            return (m_byteData[2] & 0b00001000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -317,8 +322,8 @@ public class Command {
     public void setDriveSpeedForkUP(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[9] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[9] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -326,8 +331,8 @@ public class Command {
     public void setDriveSpeedForkDOWN(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[10] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[10] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -336,11 +341,11 @@ public class Command {
     public void setDriveForkOpen(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11001111);
+            m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11001111);
             if(value == true) {
-                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00010000);
+                m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00010000);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -348,7 +353,7 @@ public class Command {
     public boolean getDriveForkOpen() {
         m_LockCommand.lock();
         try {
-            return (m_byteCommandDataRec[2] & 0b00010000) > 0 ? true : false;
+            return (m_byteData[2] & 0b00010000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -357,7 +362,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b01000000) > 0 ? true : false;
+            return (m_byteData[2] & 0b01000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -366,11 +371,11 @@ public class Command {
     public void setDriveForkClose(boolean value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] & 0b11001111);
+            m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11001111);
             if(value == true) {
-                m_byteCommandAction[2] = (byte)(m_byteCommandAction[2] | 0b00100000);
+                m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00100000);
             }
-            m_bCommandActionChanged = true;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -379,7 +384,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b00100000) > 0 ? true : false;
+            return (m_byteData[2] & 0b00100000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -388,7 +393,7 @@ public class Command {
         m_LockCommand.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
-            return (m_byteCommandDataRec[2] & 0b10000000) > 0 ? true : false;
+            return (m_byteData[2] & 0b10000000) > 0 ? true : false;
         } finally {
             m_LockCommand.unlock();
         }
@@ -397,8 +402,8 @@ public class Command {
     public void setDriveSpeedForkOPEN(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[11] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[11] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -406,8 +411,8 @@ public class Command {
     public void setDriveSpeedForkCLOSE(byte value) {
         m_LockCommand.lock();
         try {
-            m_byteCommandAction[12] = value;
-            m_bCommandActionChanged = true;
+            m_byteCommand[12] = value;
+            m_bCommandAction = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -416,7 +421,7 @@ public class Command {
     public boolean isCommandActionChanged() {
         m_LockCommand.lock();
         try {
-            return m_bCommandActionChanged;
+            return m_bCommandAction;
         } finally {
             m_LockCommand.unlock();
         }

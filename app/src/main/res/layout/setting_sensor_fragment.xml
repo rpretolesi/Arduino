@@ -20,12 +20,12 @@
         android:layout_height="wrap_content"
         android:text="@string/settings_text_tv_sensor_feedback_ampl_k" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_sensor_feedback_ampl_k"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_id_tv_sensor_feedback_ampl_k"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:hint="@string/settings_hint_et_sensor_feedback_ampl_k"
         android:inputType="number|none" />
 
@@ -36,7 +36,7 @@
         android:layout_below="@id/settings_id_et_sensor_feedback_ampl_k"
         android:text="@string/settings_text_tv_sensor_low_pass_filter_k" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_sensor_low_pass_filter_k"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
         android:layout_below="@id/settings_id_et_sensor_low_pass_filter_k"
         android:text="@string/settings_text_tv_sensor_max_output_value" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_sensor_max_output_value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
         android:layout_below="@id/settings_id_et_sensor_max_output_value"
         android:text="@string/settings_text_tv_sensor_min_value_start_output" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_sensor_min_value_start_output"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

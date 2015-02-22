@@ -38,7 +38,7 @@ public class ArduinoClientSocket
         m_context = context;
     }
 
-    public boolean connectToArduino(String strHost, int iPort, int iTimeout, Command cmd)
+    public boolean connectToArduino(String strHost, int iPort, int iTimeout)
     {
         boolean bRes = false;
         try
@@ -84,29 +84,26 @@ public class ArduinoClientSocket
         return bRes;
     }
 
-    public boolean sendData(Command cmd)
+    public boolean sendData(Message msg)
     {
         boolean bRes = false;
-        if (m_dataOutputStream != null)
-        {
+        if (m_dataOutputStream != null)       {
             try
             {
                 byte[] byteCmd = null;
                 try {
-                    byteCmd = Arrays.copyOf(cmd.getCommandAction(), cmd.getCommandAction().length);
+                    byteCmd = msg.getCommand();
                 }
-                catch (Exception ex) {
+                catch (Exception ignored) {
                 }
-                if(byteCmd != null)
-                {
+                if(byteCmd != null) {
                     m_dataOutputStream.write(byteCmd, 0, byteCmd.length);
                 }
 
                 m_strLastError = "";
                 bRes = true;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 m_strLastError = ex.getMessage();
                 closeConnection();
             }
@@ -117,7 +114,7 @@ public class ArduinoClientSocket
         return bRes;
     }
 
-    public boolean getData(Command cmd)
+    public boolean getData(Message msg)
     {
         boolean bRes = false;
         if (m_dataInputStream != null)
@@ -136,8 +133,8 @@ public class ArduinoClientSocket
                         m_NrOfByteInInputStreamBuf = 0;
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
-                            cmd.setCommandData(m_byteInputStreamBuf);
-                            Arrays.fill(m_byteInputStreamBuf, (byte)0);
+                            msg.setData(m_byteInputStreamBuf);
+                            Arrays.fill(m_byteInputStreamBuf, (byte) 0);
                         }
                     }
                 }

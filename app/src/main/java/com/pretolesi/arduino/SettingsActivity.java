@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.Locale;
@@ -123,9 +125,9 @@ public class SettingsActivity extends ActionBarActivity
     {
 
         private EditText m_settings_id_et_server_ip_address;
-        private EditText m_settings_id_et_server_port;
-        private EditText m_settings_id_et_timeout;
-        private EditText m_settings_id_et_comm_frame_delay;
+        private PretolesiEditText m_settings_id_et_server_port;
+        private PretolesiEditText m_settings_id_et_timeout;
+        private PretolesiEditText m_settings_id_et_comm_frame_delay;
         private Button m_settings_id_btn_save_server;
 
         /**
@@ -162,12 +164,12 @@ public class SettingsActivity extends ActionBarActivity
             super.onActivityCreated(savedInstanceState);
 
             m_settings_id_et_server_ip_address = (EditText) getActivity().findViewById(R.id.settings_id_et_server_ip_address);
-            m_settings_id_et_server_port = (EditText) getActivity().findViewById(R.id.settings_id_et_server_port);
-            m_settings_id_et_server_port.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_server_port.getContext(),1, 65535)});
-            m_settings_id_et_timeout = (EditText) getActivity().findViewById(R.id.settings_id_et_timeout);
-            m_settings_id_et_timeout.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_timeout.getContext(),1, 65535)});
-            m_settings_id_et_comm_frame_delay = (EditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
-            m_settings_id_et_comm_frame_delay.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_comm_frame_delay.getContext(),50, 65535)});
+            m_settings_id_et_server_port = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_server_port);
+            m_settings_id_et_server_port.setInputLimit(1, 65535);
+            m_settings_id_et_timeout = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_timeout);
+            m_settings_id_et_timeout.setInputLimit(1, 65535);
+            m_settings_id_et_comm_frame_delay = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
+            m_settings_id_et_comm_frame_delay.setInputLimit(50, 65535);
 
             m_settings_id_btn_save_server = (Button) getActivity().findViewById(R.id.settings_id_btn_save_server);
 
@@ -183,25 +185,29 @@ public class SettingsActivity extends ActionBarActivity
                     String strPort = m_settings_id_et_server_port.getText().toString();
                     String strTimeout = m_settings_id_et_timeout.getText().toString();
                     String strCommFrameDelay = m_settings_id_et_comm_frame_delay.getText().toString();
+
                     // set a Parameter
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)) == false)
+                    if(!validateInputData(getView()))
+                        return;
+
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)))
                     {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort)) == false)
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort)))
                     {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, String.valueOf(strTimeout)) == false)
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, String.valueOf(strTimeout)))
                     {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, String.valueOf(strCommFrameDelay)) == false)
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, String.valueOf(strCommFrameDelay)))
                     {
                         bSaveStatus = false;
                     }
 
-                    if(bSaveStatus == true)
+                    if(bSaveStatus)
                     {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
                     }
@@ -251,10 +257,10 @@ public class SettingsActivity extends ActionBarActivity
     public static class SettingSensorFragment extends Fragment
     {
 
-        private EditText m_settings_id_et_sensor_feedback_ampl_k;
-        private EditText m_settings_id_et_sensor_low_pass_filter_k;
-        private EditText m_settings_id_et_sensor_max_output_value;
-        private EditText m_settings_id_et_sensor_min_value_start_output;
+        private PretolesiEditText m_settings_id_et_sensor_feedback_ampl_k;
+        private PretolesiEditText m_settings_id_et_sensor_low_pass_filter_k;
+        private PretolesiEditText m_settings_id_et_sensor_max_output_value;
+        private PretolesiEditText m_settings_id_et_sensor_min_value_start_output;
 
         private Button m_settings_id_btn_save_sensor;
 
@@ -291,14 +297,14 @@ public class SettingsActivity extends ActionBarActivity
         {
             super.onActivityCreated(savedInstanceState);
 
-            m_settings_id_et_sensor_feedback_ampl_k = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_feedback_ampl_k);
-            m_settings_id_et_sensor_feedback_ampl_k.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_sensor_feedback_ampl_k.getContext(),1.0f, 1000.0f)});
-            m_settings_id_et_sensor_low_pass_filter_k = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_low_pass_filter_k);
-            m_settings_id_et_sensor_low_pass_filter_k.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_sensor_low_pass_filter_k.getContext(),0.10f, 0.9f)});
-            m_settings_id_et_sensor_max_output_value = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_max_output_value);
-            m_settings_id_et_sensor_max_output_value.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_sensor_max_output_value.getContext(),0, 255)});
-            m_settings_id_et_sensor_min_value_start_output = (EditText) getActivity().findViewById(R.id.settings_id_et_sensor_min_value_start_output);
-            m_settings_id_et_sensor_min_value_start_output.setFilters(new InputFilter[]{ new InputFilterMinMax(m_settings_id_et_sensor_min_value_start_output.getContext(),0, 255)});
+            m_settings_id_et_sensor_feedback_ampl_k = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_feedback_ampl_k);
+            m_settings_id_et_sensor_feedback_ampl_k.setInputLimit(1.0f, 1000.0f);
+            m_settings_id_et_sensor_low_pass_filter_k = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_low_pass_filter_k);
+            m_settings_id_et_sensor_low_pass_filter_k.setInputLimit(0.10f, 0.9f);
+            m_settings_id_et_sensor_max_output_value = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_max_output_value);
+            m_settings_id_et_sensor_max_output_value.setInputLimit(0, 255);
+            m_settings_id_et_sensor_min_value_start_output = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_min_value_start_output);
+            m_settings_id_et_sensor_min_value_start_output.setInputLimit(0, 255);
 
             m_settings_id_btn_save_sensor = (Button) getActivity().findViewById(R.id.settings_id_btn_save_sensor);
 
@@ -315,6 +321,8 @@ public class SettingsActivity extends ActionBarActivity
                     String strSensorMaxOutputValue = m_settings_id_et_sensor_max_output_value.getText().toString();
                     String strSensorMinValueStartOutput = m_settings_id_et_sensor_min_value_start_output.getText().toString();
 
+                    if(!validateInputData(getView()))
+                        return;
 
                     // set a Parameter
                     if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K, String.valueOf(strSensorFeedbackAmplK)) == false)
@@ -375,6 +383,43 @@ public class SettingsActivity extends ActionBarActivity
         {
             super.onPause();
         }
+
+
+    }
+
+    private static boolean validateInputData(View v){
+        View v_1 = v;
+        if (v_1 != null) {
+            if (v_1 instanceof ViewGroup) {
+                for (int i_1 = 0, count_1 = ((ViewGroup) v_1).getChildCount(); i_1 < count_1; ++i_1) {
+                    View v_2 = ((ViewGroup) v_1).getChildAt(i_1);
+                    if (v_2 != null) {
+                        if (v_2 instanceof ViewGroup) {
+                            for (int i_2 = 0, count_2 = ((ViewGroup) v_2).getChildCount(); i_2 < count_2; ++i_2) {
+                                View v_3 = ((ViewGroup) v_2).getChildAt(i_2);
+                                if (v_3 != null) {
+                                    if (v_3 instanceof ViewGroup) {
+
+                                    }else if (v_3 instanceof PretolesiEditText) {
+                                        if(!((PretolesiEditText)v_3).validateInputLimit())
+                                            return false;
+                                    }
+
+                                }
+                            }
+                        } else if (v_2 instanceof PretolesiEditText) {
+                            if(!((PretolesiEditText)v_2).validateInputLimit())
+                                return false;
+                        }
+                    }
+                }
+            }else if (v_1 instanceof PretolesiEditText) {
+                if(!((PretolesiEditText)v_1).validateInputLimit())
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     public static Intent makeSettingsActivity(Context context)
@@ -382,5 +427,6 @@ public class SettingsActivity extends ActionBarActivity
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
         return intent;
-    }}
+    }
+}
 

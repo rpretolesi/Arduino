@@ -47,9 +47,10 @@ public class AlarmListAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+/*
         if (convertView == null)
         {
-            convertView = LayoutInflater.from(context).inflate(R.layout.alarm_list_fragment, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.cb_drive_fragment, parent, false);
         }
 
         TextView tvTextView = ViewHolder.get(convertView, R.id.alarmlist_id_tv_alarm_text);
@@ -60,7 +61,7 @@ public class AlarmListAdapter extends BaseAdapter
         {
             tvTextView.setText(str);
         }
-
+*/
         return convertView;
 
     }

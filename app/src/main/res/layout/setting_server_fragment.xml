@@ -35,7 +35,7 @@
         android:layout_below="@id/settings_id_et_server_ip_address"
         android:text="@string/settings_text_tv_server_port" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_server_port"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
         android:layout_below="@id/settings_id_et_server_port"
         android:text="@string/settings_text_tv_timeout" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_timeout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         android:layout_below="@id/settings_id_et_timeout"
         android:text="@string/settings_text_tv_comm_frame_delay" />
 
-    <EditText
+    <com.pretolesi.arduino.PretolesiEditText
         android:id="@+id/settings_id_et_comm_frame_delay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
