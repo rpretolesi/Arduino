@@ -11,7 +11,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,7 +23,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import SQL.SQLContract;
 
@@ -143,11 +144,8 @@ public class MainActivity extends ActionBarActivity
         String str = "";
         // Avvio il Task di comunicazione
         m_CommunicationTask = new CommunicationTask();
-        if(m_CommunicationTask != null)
-        {
-            m_CommunicationTask.execute(m_acs, m_Message);
-        }
-   }
+        m_CommunicationTask.execute(m_acs, m_Message);
+    }
 
     @Override
     public void onPause()
@@ -209,7 +207,7 @@ public class MainActivity extends ActionBarActivity
             }
             if (position == 1)
             {
-                fragment = AlarmListFragment.newInstance(position + 1);
+                fragment = CBFragment.newInstance(position + 1);
             }
             return fragment;
         }
@@ -438,23 +436,23 @@ public class MainActivity extends ActionBarActivity
 
             try{
                 m_settings_id_et_comm_frame_delay = Integer.parseInt(strCommFrameDelay);
-            } catch (Exception Ex) {
+            } catch (Exception ignored) {
             }
             try{
                 m_fSensorFeedbackAmplK = Float.valueOf(strSettSensorFeedbackAmplK);
-            } catch (Exception Ex) {
+            } catch (Exception ignored) {
             }
             try{
                 m_fSensorLowPassFilterK = Float.valueOf(strSettSensorLowPassFilterK);
-            } catch (Exception Ex) {
+            } catch (Exception ignored) {
             }
             try{
                 m_fSensorMaxOutputValue = Float.valueOf(strSettSensorMaxOutputValue);
-            } catch (Exception Ex) {
+            } catch (Exception ignored) {
             }
             try{
                 m_fSensorMinValueStartOutput = Float.valueOf(strSensorMinValueStartOutput);
-            } catch (Exception Ex) {
+            } catch (Exception ignored) {
             }
 
 
@@ -857,7 +855,51 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class AlarmListFragment extends Fragment {
+    public static class CBFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+
+        private ToggleButton m_toggleButton_byte_1_1;
+        private ToggleButton m_toggleButton_byte_1_2;
+        private ToggleButton m_toggleButton_byte_1_3;
+        private ToggleButton m_toggleButton_byte_1_4;
+        private ToggleButton m_toggleButton_byte_1_5;
+        private ToggleButton m_toggleButton_byte_1_6;
+        private ToggleButton m_toggleButton_byte_1_7;
+        private ToggleButton m_toggleButton_byte_1_8;
+
+        private ToggleButton m_toggleButton_byte_2_1;
+        private ToggleButton m_toggleButton_byte_2_2;
+        private ToggleButton m_toggleButton_byte_2_3;
+        private ToggleButton m_toggleButton_byte_2_4;
+        private ToggleButton m_toggleButton_byte_2_5;
+        private ToggleButton m_toggleButton_byte_2_6;
+        private ToggleButton m_toggleButton_byte_2_7;
+        private ToggleButton m_toggleButton_byte_2_8;
+
+        private SeekBar m_seekBar_byte_3;
+        private SeekBar m_seekBar_byte_4;
+        private SeekBar m_seekBar_byte_5;
+        private SeekBar m_seekBar_byte_6;
+        private SeekBar m_seekBar_byte_7;
+        private SeekBar m_seekBar_byte_8;
+        private SeekBar m_seekBar_byte_9;
+        private SeekBar m_seekBar_byte_10;
+        private SeekBar m_seekBar_byte_11;
+        private SeekBar m_seekBar_byte_12;
+        private SeekBar m_seekBar_byte_13;
+        private SeekBar m_seekBar_byte_14;
+
+        private TextView m_drive_id_tv_byte_3;
+        private TextView m_drive_id_tv_byte_4;
+        private TextView m_drive_id_tv_byte_5;
+        private TextView m_drive_id_tv_byte_6;
+        private TextView m_drive_id_tv_byte_7;
+        private TextView m_drive_id_tv_byte_8;
+        private TextView m_drive_id_tv_byte_9;
+        private TextView m_drive_id_tv_byte_10;
+        private TextView m_drive_id_tv_byte_11;
+        private TextView m_drive_id_tv_byte_12;
+        private TextView m_drive_id_tv_byte_13;
+        private TextView m_drive_id_tv_byte_14;
 
         /**
          * The fragment argument representing the section number for this
@@ -869,20 +911,86 @@ public class MainActivity extends ActionBarActivity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static AlarmListFragment newInstance(int sectionNumber) {
-            AlarmListFragment fragment = new AlarmListFragment();
+        public static CBFragment newInstance(int sectionNumber) {
+            CBFragment fragment = new CBFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public AlarmListFragment() {
+        public CBFragment() {
         }
 
         @Override
         public void onActivityCreated (Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+
+            m_toggleButton_byte_1_1 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_1);
+            m_toggleButton_byte_1_2 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_2);
+            m_toggleButton_byte_1_3 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_3);
+            m_toggleButton_byte_1_4 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_4);
+            m_toggleButton_byte_1_5 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_5);
+            m_toggleButton_byte_1_6 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_6);
+            m_toggleButton_byte_1_7 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_7);
+            m_toggleButton_byte_1_8 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_1_8);
+
+            m_toggleButton_byte_2_1 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_1);
+            m_toggleButton_byte_2_2 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_2);
+            m_toggleButton_byte_2_3 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_3);
+            m_toggleButton_byte_2_4 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_4);
+            m_toggleButton_byte_2_5 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_5);
+            m_toggleButton_byte_2_6 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_6);
+            m_toggleButton_byte_2_7 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_7);
+            m_toggleButton_byte_2_8 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_8);
+
+            m_seekBar_byte_3 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_3);
+            m_seekBar_byte_4 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_4);
+            m_seekBar_byte_5 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_5);
+            m_seekBar_byte_6 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_6);
+            m_seekBar_byte_7 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_7);
+            m_seekBar_byte_8 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_8);
+            m_seekBar_byte_9 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_9);
+            m_seekBar_byte_10 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_10);
+            m_seekBar_byte_11 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_11);
+            m_seekBar_byte_12 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_12);
+            m_seekBar_byte_13 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_13);
+            m_seekBar_byte_14 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_14);
+
+            m_drive_id_tv_byte_3 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_3);
+            m_drive_id_tv_byte_4 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_4);
+            m_drive_id_tv_byte_5 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_5);
+            m_drive_id_tv_byte_6 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_6);
+            m_drive_id_tv_byte_7 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_7);
+            m_drive_id_tv_byte_8 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_8);
+            m_drive_id_tv_byte_9 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_9);
+            m_drive_id_tv_byte_10 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_10);
+            m_drive_id_tv_byte_11 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_11);
+            m_drive_id_tv_byte_12 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_12);
+            m_drive_id_tv_byte_13 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_13);
+            m_drive_id_tv_byte_14 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_14);
+
+            // Prelevo i dati dei sensori
+            String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
+            int iSetSensorMaxOutputValue = 0;
+            try{
+                iSetSensorMaxOutputValue = Integer.parseInt(strSetSensorMaxOutputValue);
+            } catch (Exception ignored) {
+            }
+
+            m_seekBar_byte_3.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_3.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_4.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_5.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_6.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_7.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_8.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_9.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_10.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_11.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_12.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_13.setMax(iSetSensorMaxOutputValue);
+            m_seekBar_byte_14.setMax(iSetSensorMaxOutputValue);
         }
 
         @Override
@@ -914,6 +1022,72 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onDestroyView() {
             super.onDestroyView();
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            switch (seekBar.getId())
+            {
+                case R.id.seekBar_byte_3 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_4 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_5 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_6 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_7 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_8 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_9 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_10 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_11 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_12 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_13 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+                case R.id.seekBar_byte_14 :
+                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_Message.setActionByte((byte)progress,3);
+                    break;
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
         }
     }
 

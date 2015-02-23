@@ -16,56 +16,48 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_1" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_2" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_3" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_4" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_5" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_6" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_7" />
 
         <ToggleButton
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="New ToggleButton"
             android:id="@+id/toggleButton_byte_1_8" />
 
     </LinearLayout>
@@ -287,7 +279,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_3" />
@@ -297,7 +289,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_4" />
@@ -307,7 +299,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_5" />
@@ -317,7 +309,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_6" />
@@ -327,7 +319,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_7" />
@@ -337,7 +329,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
            android:id="@+id/drive_id_tv_byte_8" />
@@ -347,7 +339,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_9" />
@@ -357,7 +349,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_10" />
@@ -367,7 +359,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_11" />
@@ -377,7 +369,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_12" />
@@ -387,7 +379,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_13" />
@@ -397,7 +389,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="New Text"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="6dp"
             android:id="@+id/drive_id_tv_byte_14" />

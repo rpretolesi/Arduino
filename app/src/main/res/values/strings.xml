@@ -63,6 +63,9 @@
     <string name="drive_text_tv_fork_open">Fork\nOPEN</string>
     <string name="drive_text_tv_fork_close">Fork\nCLOSE</string>
 
+    <!-- CB Command. -->
+
+
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
     <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
     <string name="comm_status_error">Error</string>
