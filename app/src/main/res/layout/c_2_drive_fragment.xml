@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linear_layout_3"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true" >
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_3"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_4"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_5"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_6"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_7"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_8"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_9"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_10"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_11"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_12"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_13"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+        <SeekBar
+            android:layout_width="200dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="New ToggleButton"
+            android:id="@+id/seekBar_byte_14"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="1dp" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/linear_layout_4"
+                  android:orientation="vertical"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="16dp"
+                  android:layout_marginStart="5dp"
+                  android:layout_below="@+id/drive_id_tv_byte_2"
+                  android:layout_toEndOf="@+id/linear_layout_3" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_3_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_4_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_5_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_6_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_7_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_8_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_9_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_10_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_11_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_12_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_13_out" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_14_out" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linear_layout_5"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="5dp"
+        android:layout_below="@+id/drive_id_tv_byte_2"
+        android:layout_toEndOf="@+id/linear_layout_4" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_3_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_4_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_5_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_6_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_7_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_8_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_9_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_10_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_11_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_12_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_13_in" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_weight="1"
+            android:text="@string/default_string_value"
+            android:id="@+id/c_id_tv_byte_14_in" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/c_id_tv_communication_status"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/linear_layout_5"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

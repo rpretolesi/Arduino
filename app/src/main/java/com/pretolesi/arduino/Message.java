@@ -51,6 +51,15 @@ public class Message {
         }
     }
 
+    public int getDataByte(int index) {
+        m_LockCommand.lock();
+        try {
+            return (m_byteData[index] & 0xFF);
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     // Invio Comandi
     public void setRequest() {
         m_LockCommand.lock();
@@ -161,6 +170,7 @@ public class Message {
     }
 
     public void setThrottleFWD(byte value) {
+
         m_LockCommand.lock();
         try {
             m_byteCommand[5] = value;

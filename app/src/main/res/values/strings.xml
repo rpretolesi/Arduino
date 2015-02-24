@@ -63,9 +63,6 @@
     <string name="drive_text_tv_fork_open">Fork\nOPEN</string>
     <string name="drive_text_tv_fork_close">Fork\nCLOSE</string>
 
-    <!-- CB Command. -->
-
-
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
     <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
     <string name="comm_status_error">Error</string>
@@ -81,5 +78,9 @@
     <!-- Dialogs. Input Limit-->
     <string name="dialog_ifmm_title">Verificare i limiti dei valori inseriti</string>
     <string name="dialog_ifmm_ok_button">Ok</string>
+
+    <!-- General Value-->
+    <string name="default_string_value">-[0]-0-</string>
+
 
 </resources>

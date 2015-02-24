@@ -207,15 +207,20 @@ public class MainActivity extends ActionBarActivity
             }
             if (position == 1)
             {
-                fragment = CBFragment.newInstance(position + 1);
+                fragment = C_1_Fragment.newInstance(position + 1);
             }
+            if (position == 2)
+            {
+                fragment = C_2_Fragment.newInstance(position + 1);
+            }
+
             return fragment;
         }
 
         @Override
         public int getCount() {
             // Show xx total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -226,8 +231,8 @@ public class MainActivity extends ActionBarActivity
                     return getString(R.string.drive_title_section_drive).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-//                case 2:
-//                    return getString(R.string.title_section3).toUpperCase(l);
+                case 2:
+                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
@@ -853,9 +858,9 @@ public class MainActivity extends ActionBarActivity
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A fragment with buttons.
      */
-    public static class CBFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+    public static class C_1_Fragment extends Fragment {
 
         private ToggleButton m_toggleButton_byte_1_1;
         private ToggleButton m_toggleButton_byte_1_2;
@@ -875,31 +880,7 @@ public class MainActivity extends ActionBarActivity
         private ToggleButton m_toggleButton_byte_2_7;
         private ToggleButton m_toggleButton_byte_2_8;
 
-        private SeekBar m_seekBar_byte_3;
-        private SeekBar m_seekBar_byte_4;
-        private SeekBar m_seekBar_byte_5;
-        private SeekBar m_seekBar_byte_6;
-        private SeekBar m_seekBar_byte_7;
-        private SeekBar m_seekBar_byte_8;
-        private SeekBar m_seekBar_byte_9;
-        private SeekBar m_seekBar_byte_10;
-        private SeekBar m_seekBar_byte_11;
-        private SeekBar m_seekBar_byte_12;
-        private SeekBar m_seekBar_byte_13;
-        private SeekBar m_seekBar_byte_14;
-
-        private TextView m_drive_id_tv_byte_3;
-        private TextView m_drive_id_tv_byte_4;
-        private TextView m_drive_id_tv_byte_5;
-        private TextView m_drive_id_tv_byte_6;
-        private TextView m_drive_id_tv_byte_7;
-        private TextView m_drive_id_tv_byte_8;
-        private TextView m_drive_id_tv_byte_9;
-        private TextView m_drive_id_tv_byte_10;
-        private TextView m_drive_id_tv_byte_11;
-        private TextView m_drive_id_tv_byte_12;
-        private TextView m_drive_id_tv_byte_13;
-        private TextView m_drive_id_tv_byte_14;
+        private TextView m_c_id_tv_communication_status;
 
         /**
          * The fragment argument representing the section number for this
@@ -911,15 +892,15 @@ public class MainActivity extends ActionBarActivity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static CBFragment newInstance(int sectionNumber) {
-            CBFragment fragment = new CBFragment();
+        public static C_1_Fragment newInstance(int sectionNumber) {
+            C_1_Fragment fragment = new C_1_Fragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public CBFragment() {
+        public C_1_Fragment() {
         }
 
         @Override
@@ -944,6 +925,134 @@ public class MainActivity extends ActionBarActivity
             m_toggleButton_byte_2_7 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_7);
             m_toggleButton_byte_2_8 = (ToggleButton) getActivity().findViewById(R.id.toggleButton_byte_2_8);
 
+            m_c_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
+
+            // Prelevo i dati dei sensori
+            String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
+            int iSetSensorMaxOutputValue = 0;
+            try{
+                iSetSensorMaxOutputValue = Integer.parseInt(strSetSensorMaxOutputValue);
+            } catch (Exception ignored) {
+            }
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.c_1_drive_fragment, container, false);
+            return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Registro Listeners
+
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
+                    @Override
+                    public void onNewCommunicationStatus(String[] strStatus) {
+                        // Aggiorno lo stato
+                        if(m_c_id_tv_communication_status != null) {
+                            m_c_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+                        }
+/*
+                        if(m_c_id_tv_byte_3_in != null)
+                            m_c_id_tv_byte_3_in.setText("- " + Integer.toString(m_Message.getDataByte(3)) + " -");
+*/
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.setCommunicationStatusListener(null);
+            }
+
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+        }
+
+    }
+
+    /**
+     * A Fragment with seek bar
+     */
+    public static class C_2_Fragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+
+        private SeekBar m_seekBar_byte_3;
+        private SeekBar m_seekBar_byte_4;
+        private SeekBar m_seekBar_byte_5;
+        private SeekBar m_seekBar_byte_6;
+        private SeekBar m_seekBar_byte_7;
+        private SeekBar m_seekBar_byte_8;
+        private SeekBar m_seekBar_byte_9;
+        private SeekBar m_seekBar_byte_10;
+        private SeekBar m_seekBar_byte_11;
+        private SeekBar m_seekBar_byte_12;
+        private SeekBar m_seekBar_byte_13;
+        private SeekBar m_seekBar_byte_14;
+
+        private TextView m_c_id_tv_byte_3_out;
+        private TextView m_c_id_tv_byte_4_out;
+        private TextView m_c_id_tv_byte_5_out;
+        private TextView m_c_id_tv_byte_6_out;
+        private TextView m_c_id_tv_byte_7_out;
+        private TextView m_c_id_tv_byte_8_out;
+        private TextView m_c_id_tv_byte_9_out;
+        private TextView m_c_id_tv_byte_10_out;
+        private TextView m_c_id_tv_byte_11_out;
+        private TextView m_c_id_tv_byte_12_out;
+        private TextView m_c_id_tv_byte_13_out;
+        private TextView m_c_id_tv_byte_14_out;
+
+        private TextView m_c_id_tv_byte_3_in;
+        private TextView m_c_id_tv_byte_4_in;
+        private TextView m_c_id_tv_byte_5_in;
+        private TextView m_c_id_tv_byte_6_in;
+        private TextView m_c_id_tv_byte_7_in;
+        private TextView m_c_id_tv_byte_8_in;
+        private TextView m_c_id_tv_byte_9_in;
+        private TextView m_c_id_tv_byte_10_in;
+        private TextView m_c_id_tv_byte_11_in;
+        private TextView m_c_id_tv_byte_12_in;
+        private TextView m_c_id_tv_byte_13_in;
+        private TextView m_c_id_tv_byte_14_in;
+
+        private TextView m_c_id_tv_communication_status;
+
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static C_2_Fragment newInstance(int sectionNumber) {
+            C_2_Fragment fragment = new C_2_Fragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public C_2_Fragment() {
+        }
+
+        @Override
+        public void onActivityCreated (Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
             m_seekBar_byte_3 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_3);
             m_seekBar_byte_4 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_4);
             m_seekBar_byte_5 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_5);
@@ -957,18 +1066,33 @@ public class MainActivity extends ActionBarActivity
             m_seekBar_byte_13 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_13);
             m_seekBar_byte_14 = (SeekBar) getActivity().findViewById(R.id.seekBar_byte_14);
 
-            m_drive_id_tv_byte_3 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_3);
-            m_drive_id_tv_byte_4 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_4);
-            m_drive_id_tv_byte_5 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_5);
-            m_drive_id_tv_byte_6 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_6);
-            m_drive_id_tv_byte_7 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_7);
-            m_drive_id_tv_byte_8 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_8);
-            m_drive_id_tv_byte_9 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_9);
-            m_drive_id_tv_byte_10 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_10);
-            m_drive_id_tv_byte_11 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_11);
-            m_drive_id_tv_byte_12 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_12);
-            m_drive_id_tv_byte_13 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_13);
-            m_drive_id_tv_byte_14 = (TextView) getActivity().findViewById(R.id.drive_id_tv_byte_14);
+            m_c_id_tv_byte_3_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_3_out);
+            m_c_id_tv_byte_4_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_4_out);
+            m_c_id_tv_byte_5_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_5_out);
+            m_c_id_tv_byte_6_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_6_out);
+            m_c_id_tv_byte_7_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_7_out);
+            m_c_id_tv_byte_8_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_8_out);
+            m_c_id_tv_byte_9_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_9_out);
+            m_c_id_tv_byte_10_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_10_out);
+            m_c_id_tv_byte_11_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_11_out);
+            m_c_id_tv_byte_12_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_12_out);
+            m_c_id_tv_byte_13_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_13_out);
+            m_c_id_tv_byte_14_out = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_14_out);
+
+            m_c_id_tv_byte_3_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_3_in);
+            m_c_id_tv_byte_4_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_4_in);
+            m_c_id_tv_byte_5_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_5_in);
+            m_c_id_tv_byte_6_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_6_in);
+            m_c_id_tv_byte_7_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_7_in);
+            m_c_id_tv_byte_8_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_8_in);
+            m_c_id_tv_byte_9_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_9_in);
+            m_c_id_tv_byte_10_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_10_in);
+            m_c_id_tv_byte_11_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_11_in);
+            m_c_id_tv_byte_12_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_12_in);
+            m_c_id_tv_byte_13_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_13_in);
+            m_c_id_tv_byte_14_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_14_in);
+
+            m_c_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c_id_tv_communication_status);
 
             // Prelevo i dati dei sensori
             String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
@@ -979,7 +1103,6 @@ public class MainActivity extends ActionBarActivity
             }
 
             m_seekBar_byte_3.setMax(iSetSensorMaxOutputValue);
-            m_seekBar_byte_3.setOnSeekBarChangeListener(this);
             m_seekBar_byte_4.setMax(iSetSensorMaxOutputValue);
             m_seekBar_byte_5.setMax(iSetSensorMaxOutputValue);
             m_seekBar_byte_6.setMax(iSetSensorMaxOutputValue);
@@ -995,28 +1118,86 @@ public class MainActivity extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.cb_drive_fragment, container, false);
+            View rootView = inflater.inflate(R.layout.c_2_drive_fragment, container, false);
             return rootView;
         }
 
         @Override
         public void onResume() {
             super.onResume();
-/*
             // Registro Listeners
-            if (m_acs != null) {
-                m_acs.setOnNewAlarmListener(new NewAlarm()
-                {
+            m_seekBar_byte_3.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_4.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_5.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_6.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_7.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_8.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_9.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_10.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_11.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_12.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_13.setOnSeekBarChangeListener(this);
+            m_seekBar_byte_14.setOnSeekBarChangeListener(this);
+
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
                     @Override
-                    public void onNewAlarm(ArrayList<String> alAlarm)
-                    {
-                        if(alAlarm != null)
-                        {
+                    public void onNewCommunicationStatus(String[] strStatus) {
+                        // Aggiorno lo stato
+                        if(m_c_id_tv_communication_status != null) {
+                            m_c_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
                         }
+
+                        if(m_c_id_tv_byte_3_in != null)
+                            m_c_id_tv_byte_3_in.setText("-[3]- " + Integer.toString(m_Message.getDataByte(3)) + " -");
+                        if(m_c_id_tv_byte_4_in != null)
+                            m_c_id_tv_byte_4_in.setText("-[4]- " + Integer.toString(m_Message.getDataByte(4)) + " -");
+                        if(m_c_id_tv_byte_5_in != null)
+                            m_c_id_tv_byte_5_in.setText("-[5]- " + Integer.toString(m_Message.getDataByte(5)) + " -");
+                        if(m_c_id_tv_byte_6_in != null)
+                            m_c_id_tv_byte_6_in.setText("-[6]- " + Integer.toString(m_Message.getDataByte(6)) + " -");
+                        if(m_c_id_tv_byte_7_in != null)
+                            m_c_id_tv_byte_7_in.setText("-[7]- " + Integer.toString(m_Message.getDataByte(7)) + " -");
+                        if(m_c_id_tv_byte_8_in != null)
+                            m_c_id_tv_byte_8_in.setText("-[8]- " + Integer.toString(m_Message.getDataByte(8)) + " -");
+                        if(m_c_id_tv_byte_9_in != null)
+                            m_c_id_tv_byte_9_in.setText("-[9]- " + Integer.toString(m_Message.getDataByte(9)) + " -");
+                        if(m_c_id_tv_byte_10_in != null)
+                            m_c_id_tv_byte_10_in.setText("-[10]- " + Integer.toString(m_Message.getDataByte(10)) + " -");
+                        if(m_c_id_tv_byte_11_in != null)
+                            m_c_id_tv_byte_11_in.setText("-[11]- " + Integer.toString(m_Message.getDataByte(11)) + " -");
+                        if(m_c_id_tv_byte_12_in != null)
+                            m_c_id_tv_byte_12_in.setText("-[12]- " + Integer.toString(m_Message.getDataByte(12)) + " -");
+                        if(m_c_id_tv_byte_13_in != null)
+                            m_c_id_tv_byte_13_in.setText("-[13]- " + Integer.toString(m_Message.getDataByte(13)) + " -");
+                        if(m_c_id_tv_byte_14_in != null)
+                            m_c_id_tv_byte_14_in.setText("-[14]- " + Integer.toString(m_Message.getDataByte(14)) + " -");
                     }
                 });
             }
-            */
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            m_seekBar_byte_3.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_4.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_5.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_6.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_7.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_8.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_9.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_10.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_11.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_12.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_13.setOnSeekBarChangeListener(null);
+            m_seekBar_byte_14.setOnSeekBarChangeListener(null);
+
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.setCommunicationStatusListener(null);
+            }
+
         }
 
         @Override
@@ -1024,59 +1205,65 @@ public class MainActivity extends ActionBarActivity
             super.onDestroyView();
         }
 
+
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
             switch (seekBar.getId())
             {
                 case R.id.seekBar_byte_3 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
+                    m_c_id_tv_byte_3_out.setText("-[3]-" + Integer.toString(progress) + "-");
                     m_Message.setActionByte((byte)progress,3);
                     break;
                 case R.id.seekBar_byte_4 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_4_out.setText("-[4]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,4);
                     break;
                 case R.id.seekBar_byte_5 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_5_out.setText("-[5]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,5);
                     break;
                 case R.id.seekBar_byte_6 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_6_out.setText("-[6]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,6);
                     break;
                 case R.id.seekBar_byte_7 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_7_out.setText("-[7]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,7);
                     break;
                 case R.id.seekBar_byte_8 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_8_out.setText("-[8]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,8);
                     break;
                 case R.id.seekBar_byte_9 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_9_out.setText("-[9]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,9);
                     break;
                 case R.id.seekBar_byte_10 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_10_out.setText("-[10]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,10);
                     break;
                 case R.id.seekBar_byte_11 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_11_out.setText("-[11]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,11);
                     break;
                 case R.id.seekBar_byte_12 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_12_out.setText("-[12]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,12);
                     break;
                 case R.id.seekBar_byte_13 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_13_out.setText("-[13]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,13);
                     break;
                 case R.id.seekBar_byte_14 :
-                    m_drive_id_tv_byte_3.setText("- " + Integer.toString(progress) + " -");
-                    m_Message.setActionByte((byte)progress,3);
+                    m_c_id_tv_byte_14_out.setText("-[14]-" + Integer.toString(progress) + "-");
+                    m_Message.setActionByte((byte)progress,14);
                     break;
+            }
+
+            if(m_Message.isCommandActionChanged()) {
+                m_Message.setRequest();
+                m_Message.setCommandAsToSend();
             }
         }
 
