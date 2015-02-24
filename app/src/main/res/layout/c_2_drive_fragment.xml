@@ -316,13 +316,10 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/c_id_tv_communication_status"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_below="@+id/linear_layout_5"
-        android:layout_centerVertical="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
 
 </RelativeLayout>

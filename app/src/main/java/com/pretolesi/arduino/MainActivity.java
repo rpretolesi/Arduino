@@ -296,7 +296,6 @@ public class MainActivity extends ActionBarActivity
         private boolean m_bDriveForkStartStopStatus;
         private boolean m_bDriveForkStartStopStatus_FP_Stop;
 
-        private TextView m_drive_id_tv_command_queue;
         private TextView m_drive_text_tv_value_up;
         private TextView m_drive_text_tv_value_down;
         private TextView m_drive_text_tv_value_left;
@@ -343,7 +342,6 @@ public class MainActivity extends ActionBarActivity
 
             m_drive_id_btn_drive_wheel_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_start_stop);
             m_drive_id_btn_drive_fork_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_fork_start_stop);
-            m_drive_id_tv_command_queue = (TextView) getActivity().findViewById(R.id.drive_id_tv_command_queue);
             m_drive_text_tv_value_up = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_up);
             m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
             m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
@@ -469,9 +467,6 @@ public class MainActivity extends ActionBarActivity
                         // Aggiorno lo stato
                         if(m_drive_id_tv_communication_status != null) {
                             m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
-                        }
-                        if(m_drive_id_tv_command_queue != null) {
-                            m_drive_id_tv_command_queue.setText(getText(R.string.comm_status_queue) + strStatus[2]);
                         }
                         if(m_Message != null) {
                             if(m_bDriveWheelStartStopStatus) {
