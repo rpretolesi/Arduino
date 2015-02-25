@@ -297,8 +297,10 @@ public class MainActivity extends ActionBarActivity
         private boolean m_bDriveForkStartStopStatus_FP_Stop;
 
         private TextView m_drive_text_tv_value_up;
-        private TextView m_id_tv_byte_1;
+        private TextView m_id_tv_byte_1_1;
+        private TextView m_id_tv_byte_1_2;
         private TextView m_id_tv_byte_5;
+        private TextView m_id_tv_byte_6;
 
         private TextView m_drive_text_tv_value_down;
         private TextView m_drive_text_tv_value_left;
@@ -346,8 +348,10 @@ public class MainActivity extends ActionBarActivity
             m_drive_id_btn_drive_wheel_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_start_stop);
             m_drive_id_btn_drive_fork_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_fork_start_stop);
             m_drive_text_tv_value_up = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_up);
-            m_id_tv_byte_1 = (TextView) getActivity().findViewById(R.id.id_tv_byte_1);
+            m_id_tv_byte_1_1 = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_1);
+            m_id_tv_byte_1_2 = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_2);
             m_id_tv_byte_5 = (TextView) getActivity().findViewById(R.id.id_tv_byte_5);
+            m_id_tv_byte_6 = (TextView) getActivity().findViewById(R.id.id_tv_byte_6);
             m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
             m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
             m_drive_text_tv_value_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_right);
@@ -723,10 +727,12 @@ public class MainActivity extends ActionBarActivity
                     m_Message.setCommandAsToSend();
                 }
 
-                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
-                m_id_tv_byte_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
+                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
+                m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
                 m_id_tv_byte_5.setText(formatDataToArrayString(m_Message.getActionByte(5),5));
                 m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
+                m_id_tv_byte_1_2.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
+                m_id_tv_byte_6.setText(formatDataToArrayString(m_Message.getActionByte(6),6));
                 m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
                 m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
 
@@ -745,8 +751,12 @@ public class MainActivity extends ActionBarActivity
                         m_Message.setCommandAsToSend();
                     }
 
-                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd) + "-" + String.valueOf(floatToshort(fThrottleFWD)));
+                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
+                    m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
+                    m_id_tv_byte_5.setText(formatDataToArrayString(m_Message.getActionByte(5),5));
                     m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
+                    m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
+                    m_id_tv_byte_6.setText(formatDataToArrayString(m_Message.getActionByte(6),6));
                     m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
                     m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
                 }
@@ -1467,7 +1477,8 @@ public class MainActivity extends ActionBarActivity
         return "-[" + Integer.toString(iIndex) + "]- " + Integer.toString(iData) + " -";
     }
     static String formatDataToArrayBinaryString(int iData, int iIndex) {
-        return "-[" + Integer.toString(iIndex) + "]- " + Integer.toBinaryString(iData & 0xFF).replace(' ','0') + " -";
+        String str = String.format("%8s", Integer.toBinaryString(iData & 0xFF)).replace(' ', '0');
+        return "-[" + Integer.toString(iIndex) + "]- " + str + " -";
     }
     static short floatToshort(float f) {
         byte byte_1 = floatTobyte(f);

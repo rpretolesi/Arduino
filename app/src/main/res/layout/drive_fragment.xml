@@ -19,8 +19,8 @@
         android:layout_centerHorizontal="true"/>
 
     <TextView
-        android:id="@+id/id_tv_byte_1"
-        android:text="@string/default_string_value_array"
+        android:id="@+id/id_tv_byte_1_1"
+        android:text="@string/default_string_value_bit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/drive_id_tv_value_up"
@@ -31,7 +31,7 @@
         android:text="@string/default_string_value_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_1"
+        android:layout_below="@+id/id_tv_byte_1_1"
         android:layout_centerHorizontal="true"/>
 
 
@@ -59,6 +59,22 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/id_tv_byte_1_2"
+        android:text="@string/default_string_value_bit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/id_tv_byte_6"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/id_tv_byte_6"
+        android:text="@string/default_string_value_array"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/drive_id_tv_value_down"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/drive_id_tv_value_down"

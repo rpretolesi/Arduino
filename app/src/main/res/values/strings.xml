@@ -43,25 +43,25 @@
 
 
 
-    <!-- Drive Wheel. -->
+    <!-- Drive. -->
     <string name="drive_title_section_drive">Drive</string>
     <!-- Drive Wheel. -->
     <string name="drive_text_btn_drive_wheel_start_stop">Start/Stop\nDrive Wheel</string>
     <string name="drive_text_btn_drive_wheel_start">Start\nDrive Wheel</string>
     <string name="drive_text_btn_drive_wheel_stop">Stop\nDrive Wheel</string>
-    <string name="drive_text_tv_throttle_fwd">Throttle\nFWD</string>
-    <string name="drive_text_tv_throttle_rev">Throttle\nREV</string>
-    <string name="drive_text_tv_steering_left">Steering\nLEFT</string>
-    <string name="drive_text_tv_steering_right">Steering\nRIGHT</string>
+    <string name="drive_text_tv_throttle_fwd">Throttle FWD</string>
+    <string name="drive_text_tv_throttle_rev">Throttle REV</string>
+    <string name="drive_text_tv_steering_left">Steering LEFT</string>
+    <string name="drive_text_tv_steering_right">Steering RIGHT</string>
 
     <!-- Drive Fork. -->
     <string name="drive_text_btn_drive_fork_start_stop">Start/Stop\nDrive Fork</string>
     <string name="drive_text_btn_drive_fork_start">Start\nDrive Fork</string>
     <string name="drive_text_btn_drive_fork_stop">Stop\nDrive Fork</string>
-    <string name="drive_text_tv_fork_up">Fork\nUP</string>
-    <string name="drive_text_tv_fork_down">Fork\nDOWN</string>
-    <string name="drive_text_tv_fork_open">Fork\nOPEN</string>
-    <string name="drive_text_tv_fork_close">Fork\nCLOSE</string>
+    <string name="drive_text_tv_fork_up">Fork UP</string>
+    <string name="drive_text_tv_fork_down">Fork DOWN</string>
+    <string name="drive_text_tv_fork_open">Fork OPEN</string>
+    <string name="drive_text_tv_fork_close">Fork CLOSE</string>
 
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
     <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
@@ -80,6 +80,7 @@
     <string name="dialog_ifmm_ok_button">Ok</string>
 
     <!-- General Value-->
+    <string name="default_string_value_bit">-[0]-00000000-</string>
     <string name="default_string_value_array">-[0]-0-</string>
     <string name="default_string_value_char">---</string>
 
