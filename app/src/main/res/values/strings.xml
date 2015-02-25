@@ -80,7 +80,8 @@
     <string name="dialog_ifmm_ok_button">Ok</string>
 
     <!-- General Value-->
-    <string name="default_string_value">-[0]-0-</string>
+    <string name="default_string_value_array">-[0]-0-</string>
+    <string name="default_string_value_char">---</string>
 
 
 </resources>

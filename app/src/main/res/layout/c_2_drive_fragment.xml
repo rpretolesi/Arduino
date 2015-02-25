@@ -137,84 +137,84 @@
             android:layout_height="33dp"
             android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_3_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_4_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_5_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_6_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_7_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_8_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_9_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_10_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_11_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_12_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_13_out" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_14_out" />
 
     </LinearLayout>
@@ -234,84 +234,84 @@
             android:layout_height="33dp"
             android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_3_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_4_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_5_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_6_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_7_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_8_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_9_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_10_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_11_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_12_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_13_in" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="33dp"
             android:layout_weight="1"
-            android:text="@string/default_string_value"
+            android:text="@string/default_string_value_array"
             android:id="@+id/c_id_tv_byte_14_in" />
     </LinearLayout>
 

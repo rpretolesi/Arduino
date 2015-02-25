@@ -110,8 +110,8 @@ public class SettingsActivity extends ActionBarActivity
                     return getString(R.string.settings_title_setting_server).toUpperCase(l);
                 case 1:
                     return getString(R.string.settings_title_setting_sensor).toUpperCase(l);
-//                case 2:
-//                    return getString(R.string.title_section3).toUpperCase(l);
+                case 2:
+                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
@@ -121,8 +121,7 @@ public class SettingsActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class SettingServerFragment extends Fragment
-    {
+    public static class SettingServerFragment extends Fragment {
 
         private EditText m_settings_id_et_server_ip_address;
         private PretolesiEditText m_settings_id_et_server_port;
@@ -175,11 +174,9 @@ public class SettingsActivity extends ActionBarActivity
 
 
             // Set an OnClickListener
-            m_settings_id_btn_save_server.setOnClickListener(new View.OnClickListener()
-            {
+            m_settings_id_btn_save_server.setOnClickListener(new View.OnClickListener(){
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     boolean bSaveStatus = true;
                     String strIpAddress = m_settings_id_et_server_ip_address.getText().toString();
                     String strPort = m_settings_id_et_server_port.getText().toString();
@@ -190,29 +187,22 @@ public class SettingsActivity extends ActionBarActivity
                     if(!validateInputData(getView()))
                         return;
 
-                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress)))
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS, String.valueOf(strIpAddress))) {
                         bSaveStatus = false;
                     }
-                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort)))
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT, String.valueOf(strPort))) {
                         bSaveStatus = false;
                     }
-                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, String.valueOf(strTimeout)))
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT, String.valueOf(strTimeout))) {
                         bSaveStatus = false;
                     }
-                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, String.valueOf(strCommFrameDelay)))
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY, String.valueOf(strCommFrameDelay))) {
                         bSaveStatus = false;
                     }
 
-                    if(bSaveStatus)
-                    {
+                    if(bSaveStatus) {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
+                    } else {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_error, Toast.LENGTH_LONG).show();
                     }
                 }
@@ -220,28 +210,22 @@ public class SettingsActivity extends ActionBarActivity
         }
 
         @Override
-        public void onResume()
-        {
+        public void onResume() {
             super.onResume();
 
             // Load the data from Database
-            if(m_settings_id_et_server_ip_address != null)
-            {
+            if(m_settings_id_et_server_ip_address != null) {
                 m_settings_id_et_server_ip_address.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.IP_ADDRESS));
             }
-            if(m_settings_id_et_server_port != null)
-            {
+            if(m_settings_id_et_server_port != null) {
                 m_settings_id_et_server_port.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.PORT));
             }
-            if(m_settings_id_et_timeout != null)
-            {
+            if(m_settings_id_et_timeout != null) {
                 m_settings_id_et_timeout.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.TIMEOUT));
             }
-            if(m_settings_id_et_comm_frame_delay != null)
-            {
+            if(m_settings_id_et_comm_frame_delay != null) {
                 m_settings_id_et_comm_frame_delay.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY));
             }
-
         }
 
         @Override
@@ -254,8 +238,7 @@ public class SettingsActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class SettingSensorFragment extends Fragment
-    {
+    public static class SettingSensorFragment extends Fragment {
 
         private PretolesiEditText m_settings_id_et_sensor_feedback_ampl_k;
         private PretolesiEditText m_settings_id_et_sensor_low_pass_filter_k;
@@ -293,8 +276,7 @@ public class SettingsActivity extends ActionBarActivity
         }
 
         @Override
-        public void onActivityCreated(Bundle savedInstanceState)
-        {
+        public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
             m_settings_id_et_sensor_feedback_ampl_k = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_feedback_ampl_k);
@@ -384,7 +366,6 @@ public class SettingsActivity extends ActionBarActivity
             super.onPause();
         }
 
-
     }
 
     private static boolean validateInputData(View v){
@@ -399,12 +380,10 @@ public class SettingsActivity extends ActionBarActivity
                                 View v_3 = ((ViewGroup) v_2).getChildAt(i_2);
                                 if (v_3 != null) {
                                     if (v_3 instanceof ViewGroup) {
-
-                                    }else if (v_3 instanceof PretolesiEditText) {
+                                    } else if (v_3 instanceof PretolesiEditText) {
                                         if(!((PretolesiEditText)v_3).validateInputLimit())
                                             return false;
                                     }
-
                                 }
                             }
                         } else if (v_2 instanceof PretolesiEditText) {

@@ -133,6 +133,14 @@ public class Message {
         }
     }
 
+    public int getActionByte(int index) {
+        m_LockCommand.lock();
+        try {
+            return (m_byteCommand[index] & 0xFF);
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
     public void setActionBit(int index, int bit, boolean value) {
         m_LockCommand.lock();
         int iMask;
