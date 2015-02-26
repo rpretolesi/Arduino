@@ -297,10 +297,22 @@ public class MainActivity extends ActionBarActivity
         private boolean m_bDriveForkStartStopStatus_FP_Stop;
 
         private TextView m_drive_text_tv_value_up;
-        private TextView m_id_tv_byte_1_1;
-        private TextView m_id_tv_byte_1_2;
-        private TextView m_id_tv_byte_5;
-        private TextView m_id_tv_byte_6;
+        private TextView m_id_tv_byte_1_1_out;
+        private TextView m_id_tv_byte_1_1_in;
+        private TextView m_id_tv_byte_1_2_out;
+        private TextView m_id_tv_byte_1_2_in;
+        private TextView m_id_tv_byte_1_3_out;
+        private TextView m_id_tv_byte_1_3_in;
+        private TextView m_id_tv_byte_1_4_out;
+        private TextView m_id_tv_byte_1_4_in;
+        private TextView m_id_tv_byte_5_out;
+        private TextView m_id_tv_byte_5_in;
+        private TextView m_id_tv_byte_6_out;
+        private TextView m_id_tv_byte_6_in;
+        private TextView m_id_tv_byte_7_out;
+        private TextView m_id_tv_byte_7_in;
+        private TextView m_id_tv_byte_8_out;
+        private TextView m_id_tv_byte_8_in;
 
         private TextView m_drive_text_tv_value_down;
         private TextView m_drive_text_tv_value_left;
@@ -348,10 +360,22 @@ public class MainActivity extends ActionBarActivity
             m_drive_id_btn_drive_wheel_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_start_stop);
             m_drive_id_btn_drive_fork_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_fork_start_stop);
             m_drive_text_tv_value_up = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_up);
-            m_id_tv_byte_1_1 = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_1);
-            m_id_tv_byte_1_2 = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_2);
-            m_id_tv_byte_5 = (TextView) getActivity().findViewById(R.id.id_tv_byte_5);
-            m_id_tv_byte_6 = (TextView) getActivity().findViewById(R.id.id_tv_byte_6);
+            m_id_tv_byte_1_1_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_1_out);
+            m_id_tv_byte_1_1_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_1_in);
+            m_id_tv_byte_1_2_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_2_out);
+            m_id_tv_byte_1_2_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_2_in);
+            m_id_tv_byte_1_3_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_3_out);
+            m_id_tv_byte_1_3_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_3_in);
+            m_id_tv_byte_1_4_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_4_out);
+            m_id_tv_byte_1_4_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1_4_in);
+            m_id_tv_byte_5_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_5_out);
+            m_id_tv_byte_5_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_5_in);
+            m_id_tv_byte_6_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_6_out);
+            m_id_tv_byte_6_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_6_in);
+            m_id_tv_byte_7_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_7_out);
+            m_id_tv_byte_7_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_7_in);
+            m_id_tv_byte_8_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_8_out);
+            m_id_tv_byte_8_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_8_in);
             m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
             m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
             m_drive_text_tv_value_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_right);
@@ -439,6 +463,12 @@ public class MainActivity extends ActionBarActivity
         @Override
         public void onResume() {
             super.onResume();
+
+            // Wheel
+            m_bDriveWheelStartStopStatus = false;
+            // Fork
+            m_bDriveForkStartStopStatus = false;
+
             // Prelevo i dati dei sensori
             String strCommFrameDelay = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY);
             String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K);
@@ -478,6 +508,24 @@ public class MainActivity extends ActionBarActivity
                             m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
                         }
                         if(m_Message != null) {
+
+                            if(m_id_tv_byte_1_1_in != null)
+                                m_id_tv_byte_1_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                            if(m_id_tv_byte_1_2_in != null)
+                                m_id_tv_byte_1_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                            if(m_id_tv_byte_1_3_in != null)
+                                m_id_tv_byte_1_3_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                            if(m_id_tv_byte_1_4_in != null)
+                                m_id_tv_byte_1_4_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                            if(m_id_tv_byte_5_in != null)
+                                m_id_tv_byte_5_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(5),5));
+                            if(m_id_tv_byte_6_in != null)
+                                m_id_tv_byte_6_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(6),6));
+                            if(m_id_tv_byte_7_in != null)
+                                m_id_tv_byte_7_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(7),7));
+                            if(m_id_tv_byte_8_in != null)
+                                m_id_tv_byte_8_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(8),8));
+
                             if(m_bDriveWheelStartStopStatus) {
                                 // Aggiorno lo stato dei colori
                                 if(m_Message.getDriveWheelFWD()) {
@@ -727,23 +775,20 @@ public class MainActivity extends ActionBarActivity
                     m_Message.setCommandAsToSend();
                 }
 
-                m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
-                m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
-                m_id_tv_byte_5.setText(formatDataToArrayString(m_Message.getActionByte(5),5));
-                m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
-                m_id_tv_byte_1_2.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
-                m_id_tv_byte_6.setText(formatDataToArrayString(m_Message.getActionByte(6),6));
-                m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
-                m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
+                setTextDriveWheel();
 
             } else {
                 if(!m_bDriveWheelStartStopStatus_FP_Stop) {
                     m_bDriveWheelStartStopStatus_FP_Stop = true;
 
                     m_Message.setDriveWheelFWD(false);
+                    m_Message.setThrottleFWD(floatTobyte(0.0f));
                     m_Message.setDriveWheelREV(false);
+                    m_Message.setThrottleREV(floatTobyte(0.0f));
                     m_Message.setDriveWheelLEFT(false);
+                    m_Message.setSteeringLEFT(floatTobyte(0.0f));
                     m_Message.setDriveWheelRIGHT(false);
+                    m_Message.setSteeringRIGHT(floatTobyte(0.0f));
 
                     // Send Command
                     if(m_Message.isCommandActionChanged()) {
@@ -751,16 +796,24 @@ public class MainActivity extends ActionBarActivity
                         m_Message.setCommandAsToSend();
                     }
 
-                    m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
-                    m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
-                    m_id_tv_byte_5.setText(formatDataToArrayString(m_Message.getActionByte(5),5));
-                    m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev) + "-" + String.valueOf(floatToshort(fThrottleREV)));
-                    m_id_tv_byte_1_1.setText(formatDataToArrayBinaryString(m_Message.getActionByte(1),1));
-                    m_id_tv_byte_6.setText(formatDataToArrayString(m_Message.getActionByte(6),6));
-                    m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left) + "-" + String.valueOf(floatToshort(fSteeringLEFT)));
-                    m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right) + "-" + String.valueOf(floatToshort(fSteeringRIGHT)));
+                    setTextDriveWheel();
                 }
             }
+        }
+
+        private void setTextDriveWheel() {
+            m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
+            m_id_tv_byte_1_1_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
+            m_id_tv_byte_5_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(5), 5));
+            m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev));
+            m_id_tv_byte_1_2_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
+            m_id_tv_byte_6_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(6), 6));
+            m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left));
+            m_id_tv_byte_1_3_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
+            m_id_tv_byte_7_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(7), 7));
+            m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right));
+            m_id_tv_byte_1_4_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
+            m_id_tv_byte_8_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(8), 8));
         }
         private void DriveFork(float fAzim, float fPitch) {
             // Aggiorno i miei dati
@@ -849,9 +902,13 @@ public class MainActivity extends ActionBarActivity
                     m_bDriveForkStartStopStatus_FP_Stop = true;
 
                     m_Message.setDriveForkUp(false);
+                    m_Message.setDriveSpeedForkUP(floatTobyte(0.0f));
                     m_Message.setDriveForkDown(false);
+                    m_Message.setDriveSpeedForkDOWN(floatTobyte(0.0f));
                     m_Message.setDriveForkOpen(false);
+                    m_Message.setDriveSpeedForkOPEN(floatTobyte(0.0f));
                     m_Message.setDriveForkClose(false);
+                    m_Message.setDriveSpeedForkCLOSE(floatTobyte(0.0f));
 
                     // Send Command
                     if(m_Message.isCommandActionChanged()) {
@@ -1224,51 +1281,51 @@ public class MainActivity extends ActionBarActivity
             switch (seekBar.getId())
             {
                 case R.id.seekBar_byte_3 :
-                    m_c_id_tv_byte_3_out.setText(formatDataToArrayString(progress, 3));
+                    m_c_id_tv_byte_3_out.setText(formatDataToArrayStringOut(progress, 3));
                     m_Message.setActionByte((byte)progress,3);
                     break;
                 case R.id.seekBar_byte_4 :
-                    m_c_id_tv_byte_4_out.setText(formatDataToArrayString(progress, 4));
+                    m_c_id_tv_byte_4_out.setText(formatDataToArrayStringOut(progress, 4));
                     m_Message.setActionByte((byte)progress,4);
                     break;
                 case R.id.seekBar_byte_5 :
-                    m_c_id_tv_byte_5_out.setText(formatDataToArrayString(progress, 5));
+                    m_c_id_tv_byte_5_out.setText(formatDataToArrayStringOut(progress, 5));
                     m_Message.setActionByte((byte)progress,5);
                     break;
                 case R.id.seekBar_byte_6 :
-                    m_c_id_tv_byte_6_out.setText(formatDataToArrayString(progress, 6));
+                    m_c_id_tv_byte_6_out.setText(formatDataToArrayStringOut(progress, 6));
                     m_Message.setActionByte((byte)progress,6);
                     break;
                 case R.id.seekBar_byte_7 :
-                    m_c_id_tv_byte_7_out.setText(formatDataToArrayString(progress, 7));
+                    m_c_id_tv_byte_7_out.setText(formatDataToArrayStringOut(progress, 7));
                     m_Message.setActionByte((byte)progress,7);
                     break;
                 case R.id.seekBar_byte_8 :
-                    m_c_id_tv_byte_8_out.setText(formatDataToArrayString(progress, 8));
+                    m_c_id_tv_byte_8_out.setText(formatDataToArrayStringOut(progress, 8));
                     m_Message.setActionByte((byte)progress,8);
                     break;
                 case R.id.seekBar_byte_9 :
-                    m_c_id_tv_byte_9_out.setText(formatDataToArrayString(progress, 9));
+                    m_c_id_tv_byte_9_out.setText(formatDataToArrayStringOut(progress, 9));
                     m_Message.setActionByte((byte)progress,9);
                     break;
                 case R.id.seekBar_byte_10 :
-                    m_c_id_tv_byte_10_out.setText(formatDataToArrayString(progress, 10));
+                    m_c_id_tv_byte_10_out.setText(formatDataToArrayStringOut(progress, 10));
                     m_Message.setActionByte((byte)progress,10);
                     break;
                 case R.id.seekBar_byte_11 :
-                    m_c_id_tv_byte_11_out.setText(formatDataToArrayString(progress, 11));
+                    m_c_id_tv_byte_11_out.setText(formatDataToArrayStringOut(progress, 11));
                     m_Message.setActionByte((byte)progress,11);
                     break;
                 case R.id.seekBar_byte_12 :
-                    m_c_id_tv_byte_12_out.setText(formatDataToArrayString(progress, 12));
+                    m_c_id_tv_byte_12_out.setText(formatDataToArrayStringOut(progress, 12));
                     m_Message.setActionByte((byte)progress,12);
                     break;
                 case R.id.seekBar_byte_13 :
-                    m_c_id_tv_byte_13_out.setText(formatDataToArrayString(progress, 13));
+                    m_c_id_tv_byte_13_out.setText(formatDataToArrayStringOut(progress, 13));
                     m_Message.setActionByte((byte)progress,13);
                     break;
                 case R.id.seekBar_byte_14 :
-                    m_c_id_tv_byte_14_out.setText(formatDataToArrayString(progress, 14));
+                    m_c_id_tv_byte_14_out.setText(formatDataToArrayStringOut(progress, 14));
                     m_Message.setActionByte((byte)progress,14);
                     break;
             }
@@ -1473,12 +1530,19 @@ public class MainActivity extends ActionBarActivity
         return byteRes;
     }
 
-    static String formatDataToArrayString(int iData, int iIndex) {
-        return "-[" + Integer.toString(iIndex) + "]- " + Integer.toString(iData) + " -";
+    static String formatDataToArrayStringOut(int iData, int iIndex) {
+        return "-[" + Integer.toString(iIndex) + "]-" + Integer.toString(iData) + "->";
     }
-    static String formatDataToArrayBinaryString(int iData, int iIndex) {
+    static String formatDataToArrayStringIn(int iData, int iIndex) {
+        return "<-[" + Integer.toString(iIndex) + "]-" + Integer.toString(iData) + "-";
+    }
+    static String formatDataToArrayBinaryStringOut(int iData, int iIndex) {
         String str = String.format("%8s", Integer.toBinaryString(iData & 0xFF)).replace(' ', '0');
-        return "-[" + Integer.toString(iIndex) + "]- " + str + " -";
+        return "-[" + Integer.toString(iIndex) + "]-" + str + "->";
+    }
+    static String formatDataToArrayBinaryStringIn(int iData, int iIndex) {
+        String str = String.format("%8s", Integer.toBinaryString(iData & 0xFF)).replace(' ', '0');
+        return "<-[" + Integer.toString(iIndex) + "]-" + str + "-";
     }
     static short floatToshort(float f) {
         byte byte_1 = floatTobyte(f);
