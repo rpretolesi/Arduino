@@ -16,9 +16,7 @@ public class Message {
 
     // Dati da inviare
     private byte[] m_byteCommand = null;
-    private byte[] m_byteENQ = null;
-    private boolean m_bCommandAction = false;
-    private boolean m_bCommandENQ = false;
+    private boolean m_bCommandActionSet = false;
     private boolean m_bCommandSetAsToSend = false;
 
     // Dati Ricevuti
@@ -29,12 +27,11 @@ public class Message {
         m_LockCommand = new ReentrantLock();
 
         m_byteCommand = new byte[16];
-        m_byteENQ = new byte[1];
 
+        m_byteCommand[0] = SOH;
         m_byteCommand[15] = EOT;
-        m_byteENQ[0] = ENQ;
-        m_bCommandAction = false;
-        m_bCommandENQ = false;
+
+        m_bCommandActionSet = false;
         m_bCommandSetAsToSend = false;
 
         m_byteData = new byte[16];
@@ -60,16 +57,6 @@ public class Message {
         }
     }
 
-    // Invio Comandi
-    public void setRequest() {
-        m_LockCommand.lock();
-        try {
-            m_bCommandENQ = true;
-        } finally {
-            m_LockCommand.unlock();
-        }
-    }
-
     public void setCommandAsToSend() {
         m_LockCommand.lock();
         try {
@@ -87,25 +74,19 @@ public class Message {
         try {
             byte[] byteRes = null;
 
-            if (m_bCommandSetAsToSend) {
-                if(m_bCommandAction && m_bCommandENQ) {
-                    m_byteCommand[0] = ENQ;
-                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
-                }
-                if(m_bCommandAction && !m_bCommandENQ){
-                    m_byteCommand[0] = SOH;
-                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
-                }
-                if(!m_bCommandAction && m_bCommandENQ){
-                    byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
-                }
+            if(m_bCommandSetAsToSend) {
+                m_byteCommand[0] = SOH;
+                byteRes = Arrays.copyOf(m_byteCommand, m_byteCommand.length); ;
 
-                m_bCommandENQ = false;
-                m_bCommandAction = false;
+                m_bCommandActionSet = false;
                 m_bCommandSetAsToSend = false;
-
-                return byteRes;
+            } else {
+                byteRes = new byte[1];
+                byteRes[0] = ENQ;
             }
+
+            return byteRes;
+
         } catch (Exception ignored) {
         } finally {
             m_LockCommand.unlock();
@@ -127,7 +108,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[index] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -168,10 +149,10 @@ public class Message {
             if(value) {
                 m_byteCommand[index] = (byte)(m_byteCommand[index] | iMask);
             } else {
-                m_byteCommand[index] = (byte)(m_byteCommand[index] & iMask);
+                m_byteCommand[index] = (byte)(m_byteCommand[index] & ~iMask);
             }
 
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -182,7 +163,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[5] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
          }
@@ -192,7 +173,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[6] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -205,7 +186,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00000001);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -227,7 +208,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00000010);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -247,7 +228,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[7] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -257,7 +238,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[8] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -270,7 +251,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00010000);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -294,7 +275,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[1] = (byte)(m_byteCommand[1] | 0b00100000);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -318,7 +299,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00000001);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -349,7 +330,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00000010);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -377,7 +358,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[9] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -386,7 +367,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[10] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -399,7 +380,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00010000);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -429,7 +410,7 @@ public class Message {
             if(value == true) {
                 m_byteCommand[2] = (byte)(m_byteCommand[2] | 0b00100000);
             }
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -457,7 +438,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[11] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -466,7 +447,7 @@ public class Message {
         m_LockCommand.lock();
         try {
             m_byteCommand[12] = value;
-            m_bCommandAction = true;
+            m_bCommandActionSet = true;
         } finally {
             m_LockCommand.unlock();
         }
@@ -475,7 +456,7 @@ public class Message {
     public boolean isCommandActionChanged() {
         m_LockCommand.lock();
         try {
-            return m_bCommandAction;
+            return m_bCommandActionSet;
         } finally {
             m_LockCommand.unlock();
         }
