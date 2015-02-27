@@ -24,7 +24,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/drive_id_tv_value_up"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:id="@+id/id_tv_byte_1a2_1_in"
+        android:text="@string/default_string_value_bit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drive_id_tv_value_up"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/id_tv_byte_5a9_out"
@@ -32,15 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_1_out"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/id_tv_byte_1a2_1_in"
-        android:text="@string/default_string_value_bit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_5a9_out"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:id="@+id/id_tv_byte_5a9_in"
@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_1_in"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentEnd="true"/>
 
     <Button
         android:id="@+id/drive_id_btn_drive_wheel_start_stop"
@@ -78,8 +78,8 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/id_tv_byte_7a11_out"
-        android:text="@string/default_string_value_array"
+        android:id="@+id/id_tv_byte_1a2_3_in"
+        android:text="@string/default_string_value_bit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_3_out"
@@ -87,11 +87,11 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/id_tv_byte_1a2_3_in"
-        android:text="@string/default_string_value_bit"
+        android:id="@+id/id_tv_byte_7a11_out"
+        android:text="@string/default_string_value_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_7a11_out"
+        android:layout_below="@+id/id_tv_byte_1a2_3_in"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"/>
 
@@ -100,7 +100,7 @@
         android:text="@string/default_string_value_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_1a2_3_in"
+        android:layout_below="@+id/id_tv_byte_7a11_out"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"/>
 
@@ -123,8 +123,8 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/id_tv_byte_8a12_out"
-        android:text="@string/default_string_value_array"
+        android:id="@+id/id_tv_byte_1a2_4_in"
+        android:text="@string/default_string_value_bit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_4_out"
@@ -132,11 +132,11 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/id_tv_byte_1a2_4_in"
-        android:text="@string/default_string_value_bit"
+        android:id="@+id/id_tv_byte_8a12_out"
+        android:text="@string/default_string_value_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_8a12_out"
+        android:layout_below="@+id/id_tv_byte_1a2_4_in"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"/>
 
@@ -145,7 +145,7 @@
         android:text="@string/default_string_value_array"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_1a2_4_in"
+        android:layout_below="@+id/id_tv_byte_8a12_out"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"/>
 
@@ -165,7 +165,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/drive_id_btn_drive_wheel_fork_start_stop"
         android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:id="@+id/id_tv_byte_1a2_2_in"
+        android:text="@string/default_string_value_bit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/drive_id_btn_drive_wheel_fork_start_stop"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/id_tv_byte_6a10_out"
@@ -173,15 +181,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_2_out"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:id="@+id/id_tv_byte_1a2_2_in"
-        android:text="@string/default_string_value_bit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/id_tv_byte_6a10_out"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:id="@+id/id_tv_byte_6a10_in"
@@ -189,7 +189,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/id_tv_byte_1a2_2_in"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/drive_id_tv_value_down"

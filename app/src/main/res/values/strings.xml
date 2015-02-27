@@ -44,27 +44,29 @@
 
 
     <!-- Drive. -->
-    <string name="drive_title_section_drive">Drive</string>
+    <string name="drive_title_section_sensor_drive">Sensor Drive</string>
+    <string name="drive_title_section_digital_drive">Digital Drive</string>
+    <string name="drive_title_section_analog_drive">Analog Drive</string>
+
     <!-- Drive Wheel. -->
-    <string name="drive_text_btn_drive_wheel_start_stop">Start/Stop\nDrive Wheel</string>
-    <string name="drive_text_btn_drive_wheel_start">Start\nDrive Wheel</string>
-    <string name="drive_text_btn_drive_wheel_stop">Stop\nDrive Wheel</string>
-    <string name="drive_text_tv_throttle_fwd">Throttle FWD</string>
-    <string name="drive_text_tv_throttle_rev">Throttle REV</string>
-    <string name="drive_text_tv_steering_left">Steering LEFT</string>
-    <string name="drive_text_tv_steering_right">Steering RIGHT</string>
+    <string name="drive_text_btn_drive_wheel_start_stop">Start/Stop\nDrive Set 1</string>
+    <string name="drive_text_btn_drive_wheel_start">Start\nDrive Set 1</string>
+    <string name="drive_text_btn_drive_wheel_stop">Stop\nDrive Set 1</string>
+    <string name="drive_text_tv_throttle_fwd">FWD</string>
+    <string name="drive_text_tv_throttle_rev">REV</string>
+    <string name="drive_text_tv_steering_left">LEFT</string>
+    <string name="drive_text_tv_steering_right">RIGHT</string>
 
     <!-- Drive Fork. -->
-    <string name="drive_text_btn_drive_fork_start_stop">Start/Stop\nDrive Fork</string>
-    <string name="drive_text_btn_drive_fork_start">Start\nDrive Fork</string>
-    <string name="drive_text_btn_drive_fork_stop">Stop\nDrive Fork</string>
-    <string name="drive_text_tv_fork_up">Fork UP</string>
-    <string name="drive_text_tv_fork_down">Fork DOWN</string>
-    <string name="drive_text_tv_fork_open">Fork OPEN</string>
-    <string name="drive_text_tv_fork_close">Fork CLOSE</string>
+    <string name="drive_text_btn_drive_fork_start_stop">Start/Stop\nDrive Set 2</string>
+    <string name="drive_text_btn_drive_fork_start">Start\nDrive Set 2</string>
+    <string name="drive_text_btn_drive_fork_stop">Stop\nDrive Set 2</string>
+    <string name="drive_text_tv_fork_up">UP</string>
+    <string name="drive_text_tv_fork_down">DOWN</string>
+    <string name="drive_text_tv_fork_open">OPEN</string>
+    <string name="drive_text_tv_fork_close">CLOSE</string>
 
     <!-- Notifiche di operazioni su Comunicazione con Robot. -->
-    <string name="comm_status_queue_full">Coda comandi piena.\nComando non inviato</string>
     <string name="comm_status_error">Error</string>
     <string name="comm_status_online">Online</string>
     <string name="comm_status_offline">Offline</string>

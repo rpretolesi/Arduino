@@ -11,6 +11,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,7 +32,7 @@ import android.widget.ToggleButton;
 
 import SQL.SQLContract;
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener
 {
 
     /**
@@ -89,10 +91,10 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         // Set up the action bar.
-/*
+
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-*/
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -100,7 +102,7 @@ public class MainActivity extends ActionBarActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-/*
+
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
         // a reference to the Tab.
@@ -124,7 +126,7 @@ public class MainActivity extends ActionBarActivity
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-*/
+
         // Inizializzo i comandi da inviare
         // Inizializzo il client di comunicazione
         if(m_acs == null)
@@ -186,6 +188,53 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        // When the given tab is selected, switch to the corresponding page in
+        // the ViewPager.
+        mViewPager.setCurrentItem(tab.getPosition());
+
+        String strTAG = mSectionsPagerAdapter.getFragmentTag(mViewPager.getId(), tab.getPosition());
+
+        // Update data in single fragment
+        if(tab.getPosition() == 0)
+        {
+/*
+            PatientCancerTherapyFragment pctf = (PatientCancerTherapyFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
+            if(pctf != null)
+            {
+                if(pctf.isResumed() == true)
+                {
+                    pctf.UpdateFragment();
+                }
+            }
+*/
+        }
+        if(tab.getPosition() == 1)
+        {
+/*
+            PatientPainTherapyFragment pptf = (PatientPainTherapyFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
+            if(pptf != null)
+            {
+                if(pptf.isResumed() == true)
+                {
+                    pptf.UpdateFragment();
+                }
+            }
+*/
+        }
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -229,15 +278,19 @@ public class MainActivity extends ActionBarActivity
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.drive_title_section_drive).toUpperCase(l);
+                    return getString(R.string.drive_title_section_sensor_drive).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.drive_title_section_digital_drive).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+                    return getString(R.string.drive_title_section_analog_drive).toUpperCase(l);
             }
             return null;
         }
 
+        private String getFragmentTag(int viewPagerId, int fragmentPosition)
+        {
+            return "android:switcher:" + viewPagerId + ":" + fragmentPosition;
+        }
     }
 
     /**
