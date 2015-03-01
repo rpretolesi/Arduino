@@ -199,7 +199,7 @@
         android:layout_alignParentEnd="true"/>
 
     <TextView
-        android:id="@+id/drive_id_tv_communication_status"
+        android:id="@+id/c1_id_tv_communication_status"
         android:text="@string/default_string_value_char"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

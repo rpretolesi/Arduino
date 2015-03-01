@@ -1,8 +1,10 @@
 package com.pretolesi.arduino;
 
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Locale;
 import java.lang.Math;
+import java.util.Vector;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -121,11 +123,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
+            actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+         }
 
         // Inizializzo i comandi da inviare
         // Inizializzo il client di comunicazione
@@ -196,23 +195,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         String strTAG = mSectionsPagerAdapter.getFragmentTag(mViewPager.getId(), tab.getPosition());
 
-        // Update data in single fragment
-        if(tab.getPosition() == 0)
+        BaseFragment bf = (BaseFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
+        if(bf != null)
         {
-/*
-            PatientCancerTherapyFragment pctf = (PatientCancerTherapyFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
-            if(pctf != null)
-            {
-                if(pctf.isResumed() == true)
-                {
-                    pctf.UpdateFragment();
-                }
-            }
-*/
+            bf.onTabSelected(tab, fragmentTransaction);
         }
+/*
         if(tab.getPosition() == 1)
         {
-/*
+
             PatientPainTherapyFragment pptf = (PatientPainTherapyFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
             if(pptf != null)
             {
@@ -221,18 +212,30 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     pptf.UpdateFragment();
                 }
             }
-*/
         }
+*/
     }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        String strTAG = mSectionsPagerAdapter.getFragmentTag(mViewPager.getId(), tab.getPosition());
 
+        BaseFragment bf = (BaseFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
+        if(bf != null)
+        {
+            bf.onTabUnselected(tab, fragmentTransaction);
+        }
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        String strTAG = mSectionsPagerAdapter.getFragmentTag(mViewPager.getId(), tab.getPosition());
 
+        BaseFragment bf = (BaseFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
+        if(bf != null)
+        {
+            bf.onTabReselected(tab, fragmentTransaction);
+        }
     }
 
 
@@ -296,7 +299,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends BaseFragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -329,7 +332,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DriveFragment extends Fragment implements SensorEventListener
+    public static class DriveFragment extends BaseFragment implements SensorEventListener
     {
         // Sensori
         private SensorManager m_SensorManager;
@@ -345,10 +348,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         private Button m_drive_id_btn_drive_wheel_start_stop;
         private boolean m_bDriveWheelStartStopStatus;
-        private boolean m_bDriveWheelStartStopStatus_FP_Stop;
         private Button m_drive_id_btn_drive_fork_start_stop;
         private boolean m_bDriveForkStartStopStatus;
-        private boolean m_bDriveForkStartStopStatus_FP_Stop;
 
         private TextView m_drive_text_tv_value_up;
         private TextView m_id_tv_byte_1a2_1_out;
@@ -360,7 +361,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_id_tv_byte_1a2_4_out;
         private TextView m_id_tv_byte_1a2_4_in;
         private TextView m_id_tv_byte_5a9_out;
-        private TextView m_id_tv_byte_5a19_in;
+        private TextView m_id_tv_byte_5a9_in;
         private TextView m_id_tv_byte_6a10_out;
         private TextView m_id_tv_byte_6a10_in;
         private TextView m_id_tv_byte_7a11_out;
@@ -407,6 +408,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Resumed();
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Paused();
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
         public void onActivityCreated (Bundle savedInstanceState)
         {
             super.onActivityCreated(savedInstanceState);
@@ -414,6 +430,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_drive_id_btn_drive_wheel_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_start_stop);
             m_drive_id_btn_drive_fork_start_stop = (Button) getActivity().findViewById(R.id.drive_id_btn_drive_wheel_fork_start_stop);
             m_drive_text_tv_value_up = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_up);
+            m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
+            m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
+            m_drive_text_tv_value_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_right);
             m_id_tv_byte_1a2_1_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1a2_1_out);
             m_id_tv_byte_1a2_1_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1a2_1_in);
             m_id_tv_byte_1a2_2_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1a2_2_out);
@@ -423,16 +442,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_1a2_4_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_1a2_4_out);
             m_id_tv_byte_1a2_4_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_1a2_4_in);
             m_id_tv_byte_5a9_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_5a9_out);
-            m_id_tv_byte_5a19_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_5a9_in);
+            m_id_tv_byte_5a9_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_5a9_in);
             m_id_tv_byte_6a10_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_6a10_out);
             m_id_tv_byte_6a10_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_6a10_in);
             m_id_tv_byte_7a11_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_7a11_out);
             m_id_tv_byte_7a11_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_7a11_in);
             m_id_tv_byte_8a12_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_8a12_out);
             m_id_tv_byte_8a12_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_8a12_in);
-            m_drive_text_tv_value_down = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_down);
-            m_drive_text_tv_value_left = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_left);
-            m_drive_text_tv_value_right = (TextView) getActivity().findViewById(R.id.drive_id_tv_value_right);
             m_drive_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
 
             // Set an OnClickListener
@@ -441,6 +457,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 public void onClick(View v) {
                     if (m_Message != null) {
                         if (!m_bDriveWheelStartStopStatus) {
+
+                            // Inizializo
+                            m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
+                            m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev));
+                            m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left));
+                            m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right));
+
                             m_bDriveWheelStartStopStatus = true;
                             m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_stop);
 
@@ -456,6 +479,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                         } else {
                             m_bDriveWheelStartStopStatus = false;
                             m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_start);
+
+                            initializeData();
                         }
                     }
                 }
@@ -466,6 +491,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 public void onClick(View v) {
                     if (m_Message != null) {
                         if (!m_bDriveForkStartStopStatus) {
+
+                            // Inizializo
+                            m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up));
+                            m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down));
+                            m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open));
+                            m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close));
+
                             m_bDriveForkStartStopStatus = true;
                             m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_stop);
 
@@ -481,6 +513,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                         } else {
                             m_bDriveForkStartStopStatus = false;
                             m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_start);
+
+                            initializeData();
                         }
                     }
                 }
@@ -517,11 +551,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onResume() {
             super.onResume();
+            Resumed();
 
-            // Wheel
-            m_bDriveWheelStartStopStatus = false;
-            // Fork
-            m_bDriveForkStartStopStatus = false;
+        }
+
+        private void Resumed(){
+
+            initializeData();
+
+            // Registro Listeners
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.registerListener(this);
+            }
 
             // Prelevo i dati dei sensori
             String strCommFrameDelay = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY);
@@ -551,103 +592,116 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             } catch (Exception ignored) {
             }
 
-
-            // Registro Listeners
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
-                    @Override
-                    public void onNewCommunicationStatus(String[] strStatus) {
-                        // Aggiorno lo stato
-                        if(m_drive_id_tv_communication_status != null) {
-                            m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
-                        }
-                        if(m_Message != null) {
-
-                            if(m_bDriveWheelStartStopStatus) {
-                                if(m_id_tv_byte_1a2_1_in != null)
-                                    m_id_tv_byte_1a2_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
-                                if(m_id_tv_byte_1a2_2_in != null)
-                                    m_id_tv_byte_1a2_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
-                                if(m_id_tv_byte_1a2_3_in != null)
-                                    m_id_tv_byte_1a2_3_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
-                                if(m_id_tv_byte_1a2_4_in != null)
-                                    m_id_tv_byte_1a2_4_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
-                                if(m_id_tv_byte_5a19_in != null)
-                                    m_id_tv_byte_5a19_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(5),5));
-                                if(m_id_tv_byte_6a10_in != null)
-                                    m_id_tv_byte_6a10_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(6),6));
-                                if(m_id_tv_byte_7a11_in != null)
-                                    m_id_tv_byte_7a11_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(7),7));
-                                if(m_id_tv_byte_8a12_in != null)
-                                    m_id_tv_byte_8a12_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(8),8));
-
-                                // Aggiorno lo stato dei colori
-                                if(m_Message.getDriveWheelFWD()) {
-                                    m_drive_text_tv_value_up.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_up.setTextColor(Color.BLACK);
-                                }
-                                if(m_Message.getDriveWheelREV()) {
-                                    m_drive_text_tv_value_down.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_down.setTextColor(Color.BLACK);
-                                }
-                                if(m_Message.getDriveWheelLEFT()) {
-                                    m_drive_text_tv_value_left.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_left.setTextColor(Color.BLACK);
-                                }
-                                if(m_Message.getDriveWheelRIGHT()) {
-                                    m_drive_text_tv_value_right.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_right.setTextColor(Color.BLACK);
-                                }
-                            }
-                            if(m_bDriveForkStartStopStatus) {
-                                // Aggiorno lo stato dei colori
-                                if(m_Message.getDriveForkUp()) {
-                                    m_drive_text_tv_value_up.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_up.setTextColor(Color.BLACK);
-                                }
-
-                                if(m_Message.getDriveForkDown()) {
-                                    m_drive_text_tv_value_down.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_down.setTextColor(Color.BLACK);
-                                }
-
-                                if(m_Message.getDriveForkOpen()) {
-                                     m_drive_text_tv_value_left.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_left.setTextColor(Color.BLACK);
-                                }
-
-                                if(m_Message.getDriveForkClose()) {
-                                    m_drive_text_tv_value_right.setTextColor(Color.GREEN);
-                                } else {
-                                    m_drive_text_tv_value_right.setTextColor(Color.BLACK);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
             m_SensorManager.registerListener(this, m_Accelerometer, SensorManager.SENSOR_DELAY_UI);
             m_SensorManager.registerListener(this, m_Magnetometer, SensorManager.SENSOR_DELAY_UI);
-
         }
 
         @Override
         public void onPause() {
             super.onPause();
+            Paused();
+         }
 
+        private void Paused(){
             if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(null);
+                m_CommunicationTask.unregisterListener(this);
             }
 
             m_SensorManager.unregisterListener(this);
+        }
+
+        @Override
+        public void onNewCommunicationStatus(String[] strStatus) {
+            // Aggiorno lo stato
+            if(m_drive_id_tv_communication_status != null) {
+                m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+            }
+
+            if(m_Message != null) {
+                if(m_bDriveWheelStartStopStatus) {
+                    if(m_id_tv_byte_1a2_1_in != null)
+                        m_id_tv_byte_1a2_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                    if(m_id_tv_byte_1a2_2_in != null)
+                        m_id_tv_byte_1a2_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                    if(m_id_tv_byte_1a2_3_in != null)
+                        m_id_tv_byte_1a2_3_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                    if(m_id_tv_byte_1a2_4_in != null)
+                        m_id_tv_byte_1a2_4_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
+                    if(m_id_tv_byte_5a9_in != null)
+                        m_id_tv_byte_5a9_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(5),5));
+                    if(m_id_tv_byte_6a10_in != null)
+                        m_id_tv_byte_6a10_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(6),6));
+                    if(m_id_tv_byte_7a11_in != null)
+                        m_id_tv_byte_7a11_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(7),7));
+                    if(m_id_tv_byte_8a12_in != null)
+                        m_id_tv_byte_8a12_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(8),8));
+
+                    // Aggiorno lo stato dei colori
+                    if(m_Message.getDriveWheelFWD()) {
+                        m_drive_text_tv_value_up.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_up.setTextColor(Color.BLACK);
+                    }
+                    if(m_Message.getDriveWheelREV()) {
+                        m_drive_text_tv_value_down.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_down.setTextColor(Color.BLACK);
+                    }
+                    if(m_Message.getDriveWheelLEFT()) {
+                        m_drive_text_tv_value_left.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                    }
+                    if(m_Message.getDriveWheelRIGHT()) {
+                        m_drive_text_tv_value_right.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_right.setTextColor(Color.BLACK);
+                    }
+                }
+                if(m_bDriveForkStartStopStatus) {
+                    if(m_id_tv_byte_1a2_1_in != null)
+                        m_id_tv_byte_1a2_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2),2));
+                    if(m_id_tv_byte_1a2_2_in != null)
+                        m_id_tv_byte_1a2_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2),2));
+                    if(m_id_tv_byte_1a2_3_in != null)
+                        m_id_tv_byte_1a2_3_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2),2));
+                    if(m_id_tv_byte_1a2_4_in != null)
+                        m_id_tv_byte_1a2_4_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2),2));
+                    if(m_id_tv_byte_5a9_in != null)
+                        m_id_tv_byte_5a9_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(9),9));
+                    if(m_id_tv_byte_6a10_in != null)
+                        m_id_tv_byte_6a10_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(10),10));
+                    if(m_id_tv_byte_7a11_in != null)
+                        m_id_tv_byte_7a11_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(11),11));
+                    if(m_id_tv_byte_8a12_in != null)
+                        m_id_tv_byte_8a12_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(12),12));
+
+                    // Aggiorno lo stato dei colori
+                    if(m_Message.getDriveForkUp()) {
+                        m_drive_text_tv_value_up.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_up.setTextColor(Color.BLACK);
+                    }
+
+                    if(m_Message.getDriveForkDown()) {
+                        m_drive_text_tv_value_down.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_down.setTextColor(Color.BLACK);
+                    }
+
+                    if(m_Message.getDriveForkOpen()) {
+                        m_drive_text_tv_value_left.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+                    }
+
+                    if(m_Message.getDriveForkClose()) {
+                        m_drive_text_tv_value_right.setTextColor(Color.GREEN);
+                    } else {
+                        m_drive_text_tv_value_right.setTextColor(Color.BLACK);
+                    }
+                }
+            }
         }
 
         @Override
@@ -732,6 +786,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             if((fPitch - 10) <= -250) {
                                 fPitch = -250;
                             }
+
                             DriveWheel(fAzim, fPitch);
                             DriveFork(fAzim, fPitch);
                         }
@@ -750,7 +805,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             float fSteeringLEFT = 0;
             float fSteeringRIGHT = 0;
             if(m_bDriveWheelStartStopStatus) {
-                m_bDriveWheelStartStopStatus_FP_Stop = false;
 
                 // Throttle
                 fThrottle = Math.abs(fAzim);
@@ -824,28 +878,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     m_Message.setCommandAsToSend();
                 }
 
-                setTextDriveWheel();
+                setTextDataOutDriveWheel();
 
-            } else {
-                if(!m_bDriveWheelStartStopStatus_FP_Stop) {
-                    m_bDriveWheelStartStopStatus_FP_Stop = true;
-
-                    m_Message.setDriveWheelFWD(false);
-                    m_Message.setThrottleFWD(floatTobyte(0.0f));
-                    m_Message.setDriveWheelREV(false);
-                    m_Message.setThrottleREV(floatTobyte(0.0f));
-                    m_Message.setDriveWheelLEFT(false);
-                    m_Message.setSteeringLEFT(floatTobyte(0.0f));
-                    m_Message.setDriveWheelRIGHT(false);
-                    m_Message.setSteeringRIGHT(floatTobyte(0.0f));
-
-                    // Send Command
-                    if(m_Message.isCommandActionChanged()) {
-                        m_Message.setCommandAsToSend();
-                    }
-
-                    setTextDriveWheel();
-                }
             }
         }
 
@@ -859,7 +893,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             float fForkOPEN = 0;
             float fForkCLOSE = 0;
             if(m_bDriveForkStartStopStatus) {
-                m_bDriveForkStartStopStatus_FP_Stop = false;
 
                 // Fork Up and Down
                 fForkSpeedUpDown = Math.abs(fAzim);
@@ -933,66 +966,80 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     m_Message.setCommandAsToSend();
                 }
 
-                setTextDriveFork();
+                setTextDataOutDriveFork();
 
-            } else {
-                if(!m_bDriveForkStartStopStatus_FP_Stop) {
-                    m_bDriveForkStartStopStatus_FP_Stop = true;
-
-                    m_Message.setDriveForkUp(false);
-                    m_Message.setDriveSpeedForkUP(floatTobyte(0.0f));
-                    m_Message.setDriveForkDown(false);
-                    m_Message.setDriveSpeedForkDOWN(floatTobyte(0.0f));
-                    m_Message.setDriveForkOpen(false);
-                    m_Message.setDriveSpeedForkOPEN(floatTobyte(0.0f));
-                    m_Message.setDriveForkClose(false);
-                    m_Message.setDriveSpeedForkCLOSE(floatTobyte(0.0f));
-
-                    // Send Command
-                    if(m_Message.isCommandActionChanged()) {
-                        m_Message.setCommandAsToSend();
-                    }
-
-                    setTextDriveFork();
-                }
             }
 
         }
-        private void setTextDriveWheel() {
-            m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_throttle_fwd));
+        private void setTextDataOutDriveWheel() {
             m_id_tv_byte_1a2_1_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
             m_id_tv_byte_5a9_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(5), 5));
-            m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_throttle_rev));
             m_id_tv_byte_1a2_2_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
             m_id_tv_byte_6a10_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(6), 6));
-            m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_steering_left));
             m_id_tv_byte_1a2_3_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
             m_id_tv_byte_7a11_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(7), 7));
-            m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_steering_right));
             m_id_tv_byte_1a2_4_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
             m_id_tv_byte_8a12_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(8), 8));
         }
 
-        private void setTextDriveFork() {
-            m_drive_text_tv_value_up.setText(getString(R.string.drive_text_tv_fork_up));
-            m_id_tv_byte_1a2_1_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
-            m_id_tv_byte_5a9_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(5), 5));
-            m_drive_text_tv_value_down.setText(getString(R.string.drive_text_tv_fork_down));
-            m_id_tv_byte_1a2_2_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
-            m_id_tv_byte_6a10_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(6), 6));
-            m_drive_text_tv_value_left.setText(getString(R.string.drive_text_tv_fork_open));
-            m_id_tv_byte_1a2_3_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
-            m_id_tv_byte_7a11_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(7), 7));
-            m_drive_text_tv_value_right.setText(getString(R.string.drive_text_tv_fork_close));
-            m_id_tv_byte_1a2_4_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(1), 1));
-            m_id_tv_byte_8a12_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(8), 8));
+        private void setTextDataOutDriveFork() {
+            m_id_tv_byte_1a2_1_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(2), 2));
+            m_id_tv_byte_5a9_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(9), 9));
+            m_id_tv_byte_1a2_2_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(2), 2));
+            m_id_tv_byte_6a10_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(10), 10));
+            m_id_tv_byte_1a2_3_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(2), 2));
+            m_id_tv_byte_7a11_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(11), 11));
+            m_id_tv_byte_1a2_4_out.setText(formatDataToArrayBinaryStringOut(m_Message.getActionByte(2), 2));
+            m_id_tv_byte_8a12_out.setText(formatDataToArrayStringOut(m_Message.getActionByte(12), 12));
+        }
+
+        private void initializeData(){
+
+            // Wheel
+            m_bDriveWheelStartStopStatus = false;
+            m_drive_id_btn_drive_wheel_start_stop.setText(R.string.drive_text_btn_drive_wheel_start);
+            // Fork
+            m_bDriveForkStartStopStatus = false;
+            m_drive_id_btn_drive_fork_start_stop.setText(R.string.drive_text_btn_drive_fork_start);
+
+            m_drive_text_tv_value_up.setText(getString(R.string.default_string_value_char));
+            m_drive_text_tv_value_up.setTextColor(Color.BLACK);
+            m_drive_text_tv_value_down.setText(getString(R.string.default_string_value_char));
+            m_drive_text_tv_value_down.setTextColor(Color.BLACK);
+            m_drive_text_tv_value_left.setText(getString(R.string.default_string_value_char));
+            m_drive_text_tv_value_left.setTextColor(Color.BLACK);
+            m_drive_text_tv_value_right.setText(getString(R.string.default_string_value_char));
+            m_drive_text_tv_value_right.setTextColor(Color.BLACK);
+            m_id_tv_byte_1a2_1_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_1a2_1_in.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_5a9_out.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_5a9_in.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_1a2_2_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_1a2_2_in.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_6a10_out.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_6a10_in.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_1a2_3_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_1a2_3_in.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_7a11_out.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_7a11_in.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_1a2_4_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_1a2_4_in.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_8a12_out.setText(getString(R.string.default_string_value_array));
+            m_id_tv_byte_8a12_in.setText(getString(R.string.default_string_value_array));
+            m_drive_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+
+            m_Message.resetCommand();
+            // Send Command
+            if(m_Message.isCommandActionChanged()) {
+                m_Message.setCommandAsToSend();
+            }
         }
     }
 
     /**
      * A fragment with buttons.
      */
-    public static class C_1_Fragment extends Fragment  implements CompoundButton.OnCheckedChangeListener {
+    public static class C_1_Fragment extends BaseFragment  implements CompoundButton.OnCheckedChangeListener {
 
         private ToggleButton m_toggleButton_byte_1_1;
         private ToggleButton m_toggleButton_byte_1_2;
@@ -1016,7 +1063,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_id_tv_byte_2_out;
         private TextView m_id_tv_byte_2_in;
 
-        private TextView m_c_id_tv_communication_status;
+        private TextView m_c1_id_tv_communication_status;
 
         /**
          * The fragment argument representing the section number for this
@@ -1037,6 +1084,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         public C_1_Fragment() {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Resumed();
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Paused();
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
         }
 
         @Override
@@ -1065,16 +1127,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_2_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_2_out);
             m_id_tv_byte_2_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_2_in);
 
-            m_c_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
-
-            // Prelevo i dati dei sensori
-            String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
-            int iSetSensorMaxOutputValue = 0;
-            try{
-                iSetSensorMaxOutputValue = Integer.parseInt(strSetSensorMaxOutputValue);
-            } catch (Exception ignored) {
-            }
-
+            m_c1_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c1_id_tv_communication_status);
         }
 
         @Override
@@ -1086,6 +1139,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onResume() {
             super.onResume();
+            Resumed();
+        }
+
+        private void Resumed() {
+            initializeData();
+
+            // Registro Listeners
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.registerListener(this);
+            }
+
             // Registro Listeners
             m_toggleButton_byte_1_1.setOnCheckedChangeListener(this);
             m_toggleButton_byte_1_2.setOnCheckedChangeListener(this);
@@ -1104,30 +1168,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_toggleButton_byte_2_7.setOnCheckedChangeListener(this);
             m_toggleButton_byte_2_8.setOnCheckedChangeListener(this);
 
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
-                    @Override
-                    public void onNewCommunicationStatus(String[] strStatus) {
-                        // Aggiorno lo stato
-                        if(m_c_id_tv_communication_status != null) {
-                            m_c_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
-                        }
-
-                        if(m_id_tv_byte_1_in != null) {
-                            m_id_tv_byte_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1),1));
-                        }
-
-                        if(m_id_tv_byte_2_in != null) {
-                            m_id_tv_byte_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2), 2));
-                        }
-                    }
-                });
-            }
         }
 
         @Override
         public void onPause() {
             super.onPause();
+
+            Paused();
+        }
+
+        private void Paused() {
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.unregisterListener(this);
+            }
 
             m_toggleButton_byte_1_1.setOnCheckedChangeListener(null);
             m_toggleButton_byte_1_2.setOnCheckedChangeListener(null);
@@ -1145,16 +1198,27 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_toggleButton_byte_2_6.setOnCheckedChangeListener(null);
             m_toggleButton_byte_2_7.setOnCheckedChangeListener(null);
             m_toggleButton_byte_2_8.setOnCheckedChangeListener(null);
-
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(null);
-            }
-
         }
 
         @Override
         public void onDestroyView() {
             super.onDestroyView();
+        }
+
+        @Override
+        public void onNewCommunicationStatus(String[] strStatus) {
+            // Aggiorno lo stato
+            if(m_c1_id_tv_communication_status != null) {
+                m_c1_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+            }
+
+            if(m_id_tv_byte_1_in != null) {
+                m_id_tv_byte_1_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(1), 1));
+            }
+
+            if(m_id_tv_byte_2_in != null) {
+                m_id_tv_byte_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2), 2));
+            }
         }
 
         @Override
@@ -1220,12 +1284,46 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 }
             }
         }
+
+        private void initializeData(){
+
+            m_toggleButton_byte_1_1.setChecked(false);
+            m_toggleButton_byte_1_2.setChecked(false);
+            m_toggleButton_byte_1_3.setChecked(false);
+            m_toggleButton_byte_1_4.setChecked(false);
+            m_toggleButton_byte_1_5.setChecked(false);
+            m_toggleButton_byte_1_6.setChecked(false);
+            m_toggleButton_byte_1_7.setChecked(false);
+            m_toggleButton_byte_1_8.setChecked(false);
+            m_toggleButton_byte_2_1.setChecked(false);
+            m_toggleButton_byte_2_2.setChecked(false);
+            m_toggleButton_byte_2_3.setChecked(false);
+            m_toggleButton_byte_2_4.setChecked(false);
+            m_toggleButton_byte_2_5.setChecked(false);
+            m_toggleButton_byte_2_6.setChecked(false);
+            m_toggleButton_byte_2_7.setChecked(false);
+            m_toggleButton_byte_2_8.setChecked(false);
+
+            m_id_tv_byte_1_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_1_in.setText(getString(R.string.default_string_value_bit));
+
+            m_id_tv_byte_2_out.setText(getString(R.string.default_string_value_bit));
+            m_id_tv_byte_2_in.setText(getString(R.string.default_string_value_bit));
+
+            m_c1_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+
+            m_Message.resetCommand();
+            // Send Command
+            if(m_Message.isCommandActionChanged()) {
+                m_Message.setCommandAsToSend();
+            }
+        }
     }
 
     /**
      * A Fragment with seek bar
      */
-    public static class C_2_Fragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
+    public static class C_2_Fragment extends BaseFragment implements SeekBar.OnSeekBarChangeListener {
 
         private SeekBar m_seekBar_byte_3;
         private SeekBar m_seekBar_byte_4;
@@ -1266,7 +1364,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_c_id_tv_byte_13_in;
         private TextView m_c_id_tv_byte_14_in;
 
-        private TextView m_c_id_tv_communication_status;
+        private TextView m_c2_id_tv_communication_status;
 
         /**
          * The fragment argument representing the section number for this
@@ -1287,6 +1385,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         public C_2_Fragment() {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Resumed();
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            Paused();
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
         }
 
         @Override
@@ -1332,7 +1445,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_c_id_tv_byte_13_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_13_in);
             m_c_id_tv_byte_14_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_14_in);
 
-            m_c_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c_id_tv_communication_status);
+            m_c2_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c2_id_tv_communication_status);
 
             // Prelevo i dati dei sensori
             String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
@@ -1365,7 +1478,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onResume() {
             super.onResume();
+            Resumed();
+        }
+
+        private void Resumed() {
+
+            initializeData();
+
             // Registro Listeners
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.registerListener(this);
+            }
+
             m_seekBar_byte_3.setOnSeekBarChangeListener(this);
             m_seekBar_byte_4.setOnSeekBarChangeListener(this);
             m_seekBar_byte_5.setOnSeekBarChangeListener(this);
@@ -1378,48 +1502,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_seekBar_byte_12.setOnSeekBarChangeListener(this);
             m_seekBar_byte_13.setOnSeekBarChangeListener(this);
             m_seekBar_byte_14.setOnSeekBarChangeListener(this);
-
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(new CommunicationStatus() {
-                    @Override
-                    public void onNewCommunicationStatus(String[] strStatus) {
-                        // Aggiorno lo stato
-                        if(m_c_id_tv_communication_status != null) {
-                            m_c_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
-                        }
-
-                        if(m_c_id_tv_byte_3_in != null)
-                            m_c_id_tv_byte_3_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(3),3));
-                        if(m_c_id_tv_byte_4_in != null)
-                            m_c_id_tv_byte_4_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(4),4));
-                        if(m_c_id_tv_byte_5_in != null)
-                            m_c_id_tv_byte_5_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(5),5));
-                        if(m_c_id_tv_byte_6_in != null)
-                            m_c_id_tv_byte_6_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(6),6));
-                        if(m_c_id_tv_byte_7_in != null)
-                            m_c_id_tv_byte_7_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(7),7));
-                        if(m_c_id_tv_byte_8_in != null)
-                            m_c_id_tv_byte_8_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(8),8));
-                        if(m_c_id_tv_byte_9_in != null)
-                            m_c_id_tv_byte_9_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(9),9));
-                        if(m_c_id_tv_byte_10_in != null)
-                            m_c_id_tv_byte_10_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(10),10));
-                        if(m_c_id_tv_byte_11_in != null)
-                            m_c_id_tv_byte_11_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(11),11));
-                        if(m_c_id_tv_byte_12_in != null)
-                            m_c_id_tv_byte_12_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(12),12));
-                        if(m_c_id_tv_byte_13_in != null)
-                            m_c_id_tv_byte_13_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(13),13));
-                        if(m_c_id_tv_byte_14_in != null)
-                            m_c_id_tv_byte_14_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(14),14));
-                    }
-                });
-            }
         }
 
         @Override
         public void onPause() {
             super.onPause();
+            Paused();
+        }
+        private void Paused() {
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.unregisterListener(this);
+            }
 
             m_seekBar_byte_3.setOnSeekBarChangeListener(null);
             m_seekBar_byte_4.setOnSeekBarChangeListener(null);
@@ -1433,11 +1526,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_seekBar_byte_12.setOnSeekBarChangeListener(null);
             m_seekBar_byte_13.setOnSeekBarChangeListener(null);
             m_seekBar_byte_14.setOnSeekBarChangeListener(null);
-
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.setCommunicationStatusListener(null);
-            }
-
         }
 
         @Override
@@ -1445,6 +1533,39 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             super.onDestroyView();
         }
 
+        @Override
+        public void onNewCommunicationStatus(String[] strStatus) {
+            // Aggiorno lo stato
+            if(m_c2_id_tv_communication_status != null) {
+                m_c2_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+            }
+
+            if(m_c_id_tv_byte_3_in != null)
+                m_c_id_tv_byte_3_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(3),3));
+            if(m_c_id_tv_byte_4_in != null)
+                m_c_id_tv_byte_4_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(4),4));
+            if(m_c_id_tv_byte_5_in != null)
+                m_c_id_tv_byte_5_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(5),5));
+            if(m_c_id_tv_byte_6_in != null)
+                m_c_id_tv_byte_6_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(6),6));
+            if(m_c_id_tv_byte_7_in != null)
+                m_c_id_tv_byte_7_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(7),7));
+            if(m_c_id_tv_byte_8_in != null)
+                m_c_id_tv_byte_8_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(8),8));
+            if(m_c_id_tv_byte_9_in != null)
+                m_c_id_tv_byte_9_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(9),9));
+            if(m_c_id_tv_byte_10_in != null)
+                m_c_id_tv_byte_10_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(10),10));
+            if(m_c_id_tv_byte_11_in != null)
+                m_c_id_tv_byte_11_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(11),11));
+            if(m_c_id_tv_byte_12_in != null)
+                m_c_id_tv_byte_12_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(12),12));
+            if(m_c_id_tv_byte_13_in != null)
+                m_c_id_tv_byte_13_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(13),13));
+            if(m_c_id_tv_byte_14_in != null)
+                m_c_id_tv_byte_14_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(14),14));
+
+        }
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -1515,22 +1636,76 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         public void onStopTrackingTouch(SeekBar seekBar) {
 
         }
+        private void initializeData(){
+
+            m_seekBar_byte_3.setProgress(0);
+            m_seekBar_byte_4.setProgress(0);
+            m_seekBar_byte_5.setProgress(0);
+            m_seekBar_byte_6.setProgress(0);
+            m_seekBar_byte_7.setProgress(0);
+            m_seekBar_byte_8.setProgress(0);
+            m_seekBar_byte_9.setProgress(0);
+            m_seekBar_byte_10.setProgress(0);
+            m_seekBar_byte_11.setProgress(0);
+            m_seekBar_byte_12.setProgress(0);
+            m_seekBar_byte_13.setProgress(0);
+            m_seekBar_byte_14.setProgress(0);
+
+            m_c_id_tv_byte_3_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_4_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_5_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_6_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_7_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_8_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_9_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_10_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_11_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_12_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_13_out.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_14_out.setText(R.string.default_string_value_array);
+
+            m_c_id_tv_byte_3_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_4_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_5_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_6_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_7_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_8_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_9_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_10_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_11_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_12_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_13_in.setText(R.string.default_string_value_array);
+            m_c_id_tv_byte_14_in.setText(R.string.default_string_value_array);
+
+             m_c2_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+
+            m_Message.resetCommand();
+            // Send Command
+            if(m_Message.isCommandActionChanged()) {
+                m_Message.setCommandAsToSend();
+            }
+        }
+
     }
 
     private class CommunicationTask extends AsyncTask<Object, String, Void> {
-        private CommunicationStatus onNewCommunicationStatusListener = null;
+        private List<CommunicationStatus> lCSListener = new Vector<CommunicationStatus>();
 
         // Imposto il listener
-        public synchronized void setCommunicationStatusListener(CommunicationStatus listener) {
-            onNewCommunicationStatusListener = listener;
+        public synchronized void registerListener(CommunicationStatus listener) {
+            lCSListener.add(listener);
+        }
+        public synchronized void unregisterListener(CommunicationStatus listener) {
+            lCSListener.remove(listener);
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
         private void onUpdate(String[] strStatus) {
             // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
-            if(onNewCommunicationStatusListener!=null) {
-                // Only trigger the event, when we have a username
-                onNewCommunicationStatusListener.onNewCommunicationStatus(strStatus);
+            if(lCSListener != null) {
+                for (CommunicationStatus cs : lCSListener) {
+                    cs.onNewCommunicationStatus(strStatus);
+                }
             }
         }
 

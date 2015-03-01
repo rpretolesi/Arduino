@@ -136,6 +136,11 @@ public class ArduinoClientSocket
                             msg.setData(m_byteInputStreamBuf);
                             Arrays.fill(m_byteInputStreamBuf, (byte) 0);
                         }
+                        else
+                        {
+                            // Error
+                            Arrays.fill(m_byteInputStreamBuf, (byte) 0);
+                        }
                     }
                 }
 

@@ -95,6 +95,35 @@ public class Message {
         return null;
     }
 
+    public void resetCommand() {
+
+        m_LockCommand.lock();
+        try {
+                m_byteCommand[0] = SOH;
+                m_byteCommand[1] = 0;
+                m_byteCommand[2] = 0;
+                m_byteCommand[3] = 0;
+                m_byteCommand[4] = 0;
+                m_byteCommand[5] = 0;
+                m_byteCommand[6] = 0;
+                m_byteCommand[7] = 0;
+                m_byteCommand[8] = 0;
+                m_byteCommand[9] = 0;
+                m_byteCommand[10] = 0;
+                m_byteCommand[11] = 0;
+                m_byteCommand[12] = 0;
+                m_byteCommand[13] = 0;
+                m_byteCommand[14] = 0;
+                m_byteCommand[15] = EOT;
+
+                m_bCommandActionSet = true;
+
+        } catch (Exception ignored) {
+        } finally {
+            m_LockCommand.unlock();
+        }
+    }
+
     public int getActionLength() {
         m_LockCommand.lock();
         try {
