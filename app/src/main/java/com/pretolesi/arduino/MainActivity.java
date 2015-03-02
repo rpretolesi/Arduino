@@ -552,7 +552,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         public void onResume() {
             super.onResume();
             Resumed();
-
         }
 
         private void Resumed(){
