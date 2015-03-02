@@ -2,9 +2,6 @@
 <resources>
 
     <string name="app_name">Arduino</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
     <!-- Notifiche di operazioni su Database -->
@@ -47,6 +44,7 @@
     <string name="drive_title_section_sensor_drive">Sensor Drive</string>
     <string name="drive_title_section_digital_drive">Digital Drive</string>
     <string name="drive_title_section_analog_drive">Analog Drive</string>
+    <string name="drive_title_section_sample_code">Sample Code</string>
 
     <!-- Drive Wheel. -->
     <string name="drive_text_btn_drive_wheel_start_stop">Start/Stop\nDrive Set 1</string>
@@ -85,7 +83,7 @@
     <string name="default_string_value_bit">-[0]-00000000-</string>
     <string name="default_string_value_array">-[0]-0-</string>
     <string name="default_string_value_char">---</string>
+    <string name="sac_id_tv_sample_code"> </string>
 
-    <!-- C1. -->
-
+    <!-- SAC. -->
 </resources>

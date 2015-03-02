@@ -110,8 +110,6 @@ public class SettingsActivity extends ActionBarActivity
                     return getString(R.string.settings_title_setting_server).toUpperCase(l);
                 case 1:
                     return getString(R.string.settings_title_setting_sensor).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }

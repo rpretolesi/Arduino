@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -266,6 +267,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             {
                 fragment = C_2_Fragment.newInstance(position + 1);
             }
+            if (position == 3)
+            {
+                fragment = SAC_Fragment.newInstance(position + 1);
+            }
 
             return fragment;
         }
@@ -273,7 +278,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public int getCount() {
             // Show xx total pages.
-            return 3;
+            return 4;
         }
 
         @Override
@@ -286,6 +291,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     return getString(R.string.drive_title_section_digital_drive).toUpperCase(l);
                 case 2:
                     return getString(R.string.drive_title_section_analog_drive).toUpperCase(l);
+                case 3:
+                    return getString(R.string.drive_title_section_sample_code).toUpperCase(l);
             }
             return null;
         }
@@ -1677,6 +1684,422 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_c_id_tv_byte_14_in.setText(R.string.default_string_value_array);
 
              m_c2_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+
+            m_Message.resetCommand();
+            // Send Command
+            if(m_Message.isCommandActionChanged()) {
+                m_Message.setCommandAsToSend();
+            }
+        }
+
+    }
+    /**
+     * A Fragment with sample arduino code
+     */
+    public static class SAC_Fragment extends BaseFragment {
+
+        private EditText m_sac_id_tv_sample_code;
+        private TextView m_sac_id_tv_communication_status;
+
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static SAC_Fragment newInstance(int sectionNumber) {
+            SAC_Fragment fragment = new SAC_Fragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public SAC_Fragment() {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+        }
+
+        @Override
+        public void onActivityCreated (Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            m_sac_id_tv_sample_code = (EditText) getActivity().findViewById(R.id.sac_id_tv_sample_code);
+            m_sac_id_tv_sample_code.setKeyListener(null);
+            m_sac_id_tv_sample_code.setSelectable(true);
+            m_sac_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.sac_id_tv_communication_status);
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.sac_fragment, container, false);
+            return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            Resumed();
+        }
+
+        private void Resumed() {
+            initializeData();
+
+            // Registro Listeners
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.registerListener(this);
+            }
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            Paused();
+        }
+
+        private void Paused() {
+            if(m_CommunicationTask != null) {
+                m_CommunicationTask.unregisterListener(this);
+            }
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+        }
+
+        @Override
+        public void onNewCommunicationStatus(String[] strStatus) {
+            // Aggiorno lo stato
+            if(m_sac_id_tv_communication_status != null) {
+                m_sac_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+            }
+        }
+        private void initializeData(){
+
+            m_sac_id_tv_sample_code.setText("/*\n" +
+                    " TCP IP Server\n" +
+                    "\n" +
+                    "  Circuit:\n" +
+                    "  * WiFi shield attached\n" +
+                    "\n" +
+                    "  created 03 Feb 2015\n" +
+                    "  by Riccardo Pretolesi\n" +
+                    "\n" +
+                    "\n" +
+                    "*/\n" +
+                    "\n" +
+                    "#include <SPI.h>\n" +
+                    "#include <WiFi.h>\n" +
+                    "\n" +
+                    "char ssid[] = \"PretolesiWiFi\";          //  your network SSID (name)\n" +
+                    "char pass[] = \"01234567\";   // your network password\n" +
+                    "\n" +
+                    "int status = WL_IDLE_STATUS;\n" +
+                    "int m_ServerTCPPort = 502;\n" +
+                    "WiFiServer m_server(m_ServerTCPPort);\n" +
+                    "\n" +
+                    "boolean m_bOneShotClientConnected = false;\n" +
+                    "boolean m_bOneShotClientDisconnected = false;\n" +
+                    "\n" +
+                    "// Dati di comunicazione\n" +
+                    "byte SOH = 0x01;\n" +
+                    "byte EOT = 0x04;\n" +
+                    "byte ENQ = 0x05;\n" +
+                    "byte ACK = 0x06;\n" +
+                    "\n" +
+                    "\n" +
+                    "int m_iNrByteToRead = 0;\n" +
+                    "int m_iNrByteRead = 0;\n" +
+                    "byte m_byteRead[16] = {0};\n" +
+                    "boolean m_bENQInProgress = false;\n" +
+                    "boolean m_bSOHInProgress = false;\n" +
+                    "byte m_byteFirstByteRead = 0;\n" +
+                    "byte m_byteToWrite[16] = {0};\n" +
+                    "unsigned long  m_ulTimeoutRefMillisecs = 0;\n" +
+                    "void setup()\n" +
+                    "{\n" +
+                    "  // initialize serial:\n" +
+                    "  Serial.begin(9600);\n" +
+                    "\n" +
+                    "  // Deselect SD Card\n" +
+                    "  pinMode(4, OUTPUT);\n" +
+                    "  digitalWrite(4, 1);\n" +
+                    "\n" +
+                    "  // check for the presence of the shield:\n" +
+                    "  if (WiFi.status() == WL_NO_SHIELD)\n" +
+                    "  {\n" +
+                    "    Serial.println(\"WiFi shield not present\");\n" +
+                    "    // don't continue:\n" +
+                    "    while(true);\n" +
+                    "  }\n" +
+                    "\n" +
+                    "   Serial.println(\"Attempting to connect to WPA network...\");\n" +
+                    "   Serial.print(\"SSID: \");\n" +
+                    "   Serial.println(ssid);\n" +
+                    "\n" +
+                    "   status = WiFi.begin(ssid, pass);\n" +
+                    "   if ( status != WL_CONNECTED) {\n" +
+                    "     Serial.println(\"Couldn't get a wifi connection\");\n" +
+                    "     while(true);\n" +
+                    "   }\n" +
+                    "   else {\n" +
+                    "     m_server.begin();\n" +
+                    "     Serial.print(\"Connected to wifi.\");\n" +
+                    "\n" +
+                    "     // Print WiFi Status\n" +
+                    "     printWifiServerStatus();\n" +
+                    "   }\n" +
+                    "}\n" +
+                    "\n" +
+                    "\n" +
+                    "void loop()\n" +
+                    "{\n" +
+                    "\n" +
+                    "  // WiFi Communication\n" +
+                    "  Communication();\n" +
+                    "}\n" +
+                    "\n" +
+                    "void Communication()\n" +
+                    "{\n" +
+                    "   // wait for a new client:\n" +
+                    "  WiFiClient m_client = m_server.available();\n" +
+                    "  // when the client sends the first byte, say hello:\n" +
+                    "  if(m_client != NULL)\n" +
+                    "  {\n" +
+                    "    if(m_client.connected())\n" +
+                    "    {\n" +
+                    "      m_bOneShotClientDisconnected = false;\n" +
+                    "      if(m_bOneShotClientConnected == false)\n" +
+                    "      {\n" +
+                    "        m_bOneShotClientConnected = true;\n" +
+                    "\n" +
+                    "         // clear input buffer:\n" +
+                    "        m_client.flush();\n" +
+                    "\n" +
+                    "        // Init buffer data\n" +
+                    "        m_iNrByteRead = 0;\n" +
+                    "        for(int indice_1 = 0; indice_1 < 16; indice_1++)\n" +
+                    "        {\n" +
+                    "          m_byteRead[indice_1] = 0;\n" +
+                    "        }\n" +
+                    "        m_byteToWrite[0] = ACK;\n" +
+                    "        m_byteToWrite[15] = EOT;\n" +
+                    "\n" +
+                    "        // Reference for timeout\n" +
+                    "        m_ulTimeoutRefMillisecs = millis();\n" +
+                    "\n" +
+                    "        Serial.println(\"Client Connected.\");\n" +
+                    "      }\n" +
+                    "\n" +
+                    "      // Read and write operation....\n" +
+                    "      // Checking the first byte....\n" +
+                    "      // Devono essere 16\n" +
+                    "      m_iNrByteToRead = m_client.available();\n" +
+                    "      if (m_iNrByteToRead >= 1)\n" +
+                    "      {\n" +
+                    "        // Reference for timeout\n" +
+                    "        m_ulTimeoutRefMillisecs = millis();\n" +
+                    "\n" +
+                    "        if(m_bENQInProgress == false && m_bSOHInProgress == false)\n" +
+                    "        {\n" +
+                    "          // Check the message\n" +
+                    "          // Read the first byte\n" +
+                    "          m_byteFirstByteRead = m_client.read();\n" +
+                    "          m_iNrByteRead = m_iNrByteRead + 1;\n" +
+                    "          // Just a enquiry....\n" +
+                    "          if(m_byteFirstByteRead == ENQ)\n" +
+                    "          {\n" +
+                    "            m_bENQInProgress = true;\n" +
+                    "          }\n" +
+                    "          // Data to read....\n" +
+                    "          if(m_byteFirstByteRead == SOH)\n" +
+                    "          {\n" +
+                    "            m_bSOHInProgress = true;\n" +
+                    "          }\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        // Just a enquiry....\n" +
+                    "        if(m_bENQInProgress == true)\n" +
+                    "        {\n" +
+                    "//          Serial.println(\"ENQ byte read.\");\n" +
+                    "\n" +
+                    "          for(int index_1 = 0; index_1 < 16; index_1++)\n" +
+                    "          {\n" +
+                    "            m_client.write(m_byteToWrite[index_1]);\n" +
+                    "//            Serial.print(\"ENQ byte write: \");\n" +
+                    "//            Serial.print(m_byteToWrite[index_1]);\n" +
+                    "//            Serial.print(\" index: \");\n" +
+                    "//            Serial.println(index_1);\n" +
+                    "          }\n" +
+                    "          m_iNrByteRead = 0;\n" +
+                    "          m_bENQInProgress = false;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        // Data to read....\n" +
+                    "        if(m_bSOHInProgress == true)\n" +
+                    "        {\n" +
+                    "          for(int index_0 = m_iNrByteRead; index_0 < m_iNrByteToRead; index_0++)\n" +
+                    "          {\n" +
+                    "            m_byteRead[m_iNrByteRead] = m_client.read();\n" +
+                    "//            Serial.print(\"SOH byte read: \");\n" +
+                    "//            Serial.print(m_byteRead[m_iNrByteRead]);\n" +
+                    "//            Serial.print(\" index: \");\n" +
+                    "//            Serial.println(m_iNrByteRead);\n" +
+                    "            m_iNrByteRead = m_iNrByteRead + 1;\n" +
+                    "            if(m_iNrByteRead >= 16)\n" +
+                    "            {\n" +
+                    "              m_iNrByteRead = 0;\n" +
+                    "              m_bSOHInProgress = false;\n" +
+                    "\n" +
+                    "              // Check the last char...\n" +
+                    "              if(m_byteRead[15] == EOT)\n" +
+                    "              {\n" +
+                    "                // Store the result and write back....\n" +
+                    "                // Here i can use the data received....\n" +
+                    "                // Digital\n" +
+                    "                boolean b_1_1 = ((m_byteRead[1] & 0b00000001) == 1);\n" +
+                    "                boolean b_1_2 = ((m_byteRead[1] & 0b00000010) == 2);\n" +
+                    "                boolean b_1_3 = ((m_byteRead[1] & 0b00000100) == 4);\n" +
+                    "                boolean b_1_4 = ((m_byteRead[1] & 0b00001000) == 8);\n" +
+                    "                boolean b_1_5 = ((m_byteRead[1] & 0b00010000) == 16);\n" +
+                    "                boolean b_1_6 = ((m_byteRead[1] & 0b00100000) == 32);\n" +
+                    "                boolean b_1_7 = ((m_byteRead[1] & 0b01000000) == 64);\n" +
+                    "                boolean b_1_8 = ((m_byteRead[1] & 0b10000000) == 128);\n" +
+                    "                // ...\n" +
+                    "\n" +
+                    "                // Analogic\n" +
+                    "                byte byte_3 = m_byteRead[3];\n" +
+                    "                byte byte_4 = m_byteRead[4];\n" +
+                    "                byte byte_5 = m_byteRead[5];\n" +
+                    "                // ...\n" +
+                    "                byte byte_14 = m_byteRead[14];\n" +
+                    "\n" +
+                    "\n" +
+                    "                // Write back ....\n" +
+                    "                // Digital\n" +
+                    "                m_byteToWrite[1] = 1;\n" +
+                    "                // ...\n" +
+                    "\n" +
+                    "                // Analogic\n" +
+                    "                m_byteToWrite[3] = 1;\n" +
+                    "                m_byteToWrite[4] = 100;\n" +
+                    "                m_byteToWrite[5] = 200;\n" +
+                    "                // ...\n" +
+                    "                m_byteToWrite[14] = 250;\n" +
+                    "\n" +
+                    "\n" +
+                    "                /*\n" +
+                    "                 * Test\n" +
+                    "                 *\n" +
+                    "                for(int index_2 = 1; index_2 < 15; index_2++)\n" +
+                    "                {\n" +
+                    "                   m_byteToWrite[index_2] = m_byteRead[index_2];\n" +
+                    "                }\n" +
+                    "                */\n" +
+                    "\n" +
+                    "                for(int index_3 = 0; index_3 < 16; index_3++)\n" +
+                    "                {\n" +
+                    "                   m_client.write(m_byteToWrite[index_3]);\n" +
+                    "//                   Serial.print(\"SOH byte write: \");\n" +
+                    "//                   Serial.print(m_byteToWrite[index_3]);\n" +
+                    "//                   Serial.print(\" index: \");\n" +
+                    "//                   Serial.println(index_3);\n" +
+                    "                }\n" +
+                    "              }\n" +
+                    "              else\n" +
+                    "              {\n" +
+                    "                Serial.println(\"EOT Error. \");\n" +
+                    "                m_client.stop();\n" +
+                    "              }\n" +
+                    "              break;\n" +
+                    "            }\n" +
+                    "          }\n" +
+                    "        }\n" +
+                    "      }\n" +
+                    "\n" +
+                    "      // Timeout\n" +
+                    "      if(millis() < m_ulTimeoutRefMillisecs)\n" +
+                    "      {\n" +
+                    "        m_ulTimeoutRefMillisecs = millis();\n" +
+                    "\n" +
+                    "        Serial.println(\"Reset millis().\");\n" +
+                    "      }\n" +
+                    "      if((millis() - m_ulTimeoutRefMillisecs) > 5000)\n" +
+                    "      {\n" +
+                    "        m_client.stop();\n" +
+                    "\n" +
+                    "        m_bOneShotClientConnected = false;\n" +
+                    "\n" +
+                    "        Serial.println(\"Stop for Timeout.\");\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "    else\n" +
+                    "    {\n" +
+                    "      m_bOneShotClientConnected = false;\n" +
+                    "\n" +
+                    "      if(m_bOneShotClientDisconnected == false)\n" +
+                    "      {\n" +
+                    "        m_bOneShotClientDisconnected = true;\n" +
+                    "\n" +
+                    "        m_client.stop();\n" +
+                    "\n" +
+                    "        Serial.println(\"Client Disconnected.\");\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "  else\n" +
+                    "  {\n" +
+                    "    m_bOneShotClientConnected = false;\n" +
+                    "\n" +
+                    "    if(m_bOneShotClientDisconnected == false)\n" +
+                    "    {\n" +
+                    "      m_bOneShotClientDisconnected = true;\n" +
+                    "\n" +
+                    "      Serial.println(\"Client Null.\");\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}\n" +
+                    "\n" +
+                    "void printWifiServerStatus()\n" +
+                    "{\n" +
+                    "  // print the SSID of the network you're attached to:\n" +
+                    "  Serial.print(\"SSID: \");\n" +
+                    "  Serial.println(WiFi.SSID());\n" +
+                    "\n" +
+                    "  // print your WiFi shield's IP address:\n" +
+                    "  IPAddress ip = WiFi.localIP();\n" +
+                    "  Serial.print(\"PCP/IP Address: \");\n" +
+                    "  Serial.println(ip);\n" +
+                    "  Serial.print(\"TCP/IP Port: \");\n" +
+                    "  Serial.println(m_ServerTCPPort);\n" +
+                    "\n" +
+                    "  // print the received signal strength:\n" +
+                    "  long rssi = WiFi.RSSI();\n" +
+                    "  Serial.print(\"signal strength (RSSI):\");\n" +
+                    "  Serial.print(rssi);\n" +
+                    "  Serial.println(\" dBm\");\n" +
+                    "}");
+
+            m_sac_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
 
             m_Message.resetCommand();
             // Send Command
