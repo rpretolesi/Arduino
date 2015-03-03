@@ -24,6 +24,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -1696,10 +1698,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     /**
      * A Fragment with sample arduino code
      */
-    public static class SAC_Fragment extends BaseFragment {
+    public static class SAC_Fragment extends BaseFragment implements OnTouchEventListener {
 
         private EditText m_sac_id_tv_sample_code;
         private TextView m_sac_id_tv_communication_status;
+
+        private ScaleGestureDetector m_ScaleDetector;
 
         /**
          * The fragment argument representing the section number for this
@@ -1723,6 +1727,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
+        public boolean onTouchEvent(MotionEvent ev) {
+            // Let the ScaleGestureDetector inspect all events.
+            //mScaleDetector.onTouchEvent(ev);
+            return true;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return false;
+        }
+        @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
         }
@@ -1742,8 +1757,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             super.onActivityCreated(savedInstanceState);
 
             m_sac_id_tv_sample_code = (EditText) getActivity().findViewById(R.id.sac_id_tv_sample_code);
-            m_sac_id_tv_sample_code.setKeyListener(null);
-            m_sac_id_tv_sample_code.setSelectable(true);
             m_sac_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.sac_id_tv_communication_status);
 
         }
@@ -1795,6 +1808,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
         private void initializeData(){
 
+            m_sac_id_tv_sample_code.setEnabled(false);
+            m_sac_id_tv_sample_code.setTextIsSelectable(true);
+            m_sac_id_tv_sample_code.setTextSize(5);
+//            m_sac_id_tv_sample_code.setTextScaleX();
             m_sac_id_tv_sample_code.setText("/*\n" +
                     " TCP IP Server\n" +
                     "\n" +
