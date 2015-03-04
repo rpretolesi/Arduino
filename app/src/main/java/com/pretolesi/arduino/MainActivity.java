@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -1698,13 +1699,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     /**
      * A Fragment with sample arduino code
      */
-    public static class SAC_Fragment extends BaseFragment implements OnTouchEventListener {
+    public static class SAC_Fragment extends BaseFragment {
 
         private EditText m_sac_id_tv_sample_code;
         private TextView m_sac_id_tv_communication_status;
 
         private ScaleGestureDetector m_ScaleDetector;
-
+        private GestureDetector m_Detector;
+        private float m_ScaleFactor = 1.0f;
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -1727,17 +1729,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
-        public boolean onTouchEvent(MotionEvent ev) {
-            // Let the ScaleGestureDetector inspect all events.
-            //mScaleDetector.onTouchEvent(ev);
-            return true;
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return false;
-        }
-        @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
         }
@@ -1755,10 +1746,70 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onActivityCreated (Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+            View myView = getActivity().findViewById(R.id.sac_id_rl_sample_code);
+            myView.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    // ... Respond to touch events
+//                    m_ScaleDetector.onTouchEvent(event);
+//                    m_Detector.onTouchEvent(event);
 
+                    return m_Detector.onTouchEvent(event);
+                }
+            });
             m_sac_id_tv_sample_code = (EditText) getActivity().findViewById(R.id.sac_id_tv_sample_code);
+            m_sac_id_tv_sample_code.setKeyListener(null);
             m_sac_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.sac_id_tv_communication_status);
+/*
+            m_ScaleDetector = new ScaleGestureDetector(getActivity().getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    m_ScaleFactor *= detector.getScaleFactor();
 
+                    // Don't let the object get too small or too large.
+                    m_ScaleFactor = Math.max(0.5f, Math.min(m_ScaleFactor, 5.0f));
+
+                    if(m_sac_id_tv_sample_code != null)
+                    {
+                        m_sac_id_tv_sample_code.setTextSize(5*m_ScaleFactor);
+                    }
+                    return false;
+
+               }
+           });
+*/
+            m_Detector = new GestureDetector(getActivity().getApplicationContext(), new GestureDetector.OnGestureListener(){
+
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    m_sac_id_tv_sample_code.setSelection(0);
+                    return true;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    m_sac_id_tv_sample_code.selectAll();
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -1808,10 +1859,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
         private void initializeData(){
 
-            m_sac_id_tv_sample_code.setEnabled(false);
-            m_sac_id_tv_sample_code.setTextIsSelectable(true);
-            m_sac_id_tv_sample_code.setTextSize(5);
-//            m_sac_id_tv_sample_code.setTextScaleX();
             m_sac_id_tv_sample_code.setText("/*\n" +
                     " TCP IP Server\n" +
                     "\n" +
