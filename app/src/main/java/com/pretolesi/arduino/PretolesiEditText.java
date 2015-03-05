@@ -1,15 +1,26 @@
 package com.pretolesi.arduino;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.TypedValue;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.widget.EditText;
 import android.util.AttributeSet;
+import android.widget.Toast;
 
 /**
  *  Custom EditText
  */
 public class PretolesiEditText extends EditText {
+
+    private ScaleGestureDetector m_ScaleGestureDetector;
+    private GestureDetector m_GestureDetector;
 
     private float m_fmin, m_fmax;
 
@@ -77,6 +88,75 @@ public class PretolesiEditText extends EditText {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if(m_ScaleGestureDetector != null){
+            m_ScaleGestureDetector.onTouchEvent(event);
+        }
+        if(m_GestureDetector != null){
+            m_GestureDetector.onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public void setAsReadOnly() {
+        setKeyListener(null);
+        if(m_ScaleGestureDetector == null){
+            m_ScaleGestureDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    float size = getTextSize();
+                    float factor = detector.getScaleFactor();
+                    float product = size*factor;
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, product);
+
+                    return true;
+                }
+            });
+        }
+
+        if(m_GestureDetector == null){
+            m_GestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener(){
+
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    return false;
+                }
+
+                @Override
+                public void onShowPress(MotionEvent e) {
+
+                }
+
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    setSelection(0);
+                    return true;
+                }
+
+                @Override
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                    return false;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    selectAll();
+                    ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(getContext().getString(R.string.drive_title_section_sample_code).toUpperCase(), getText());
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(getContext(), getContext().getString(R.string.drive_title_section_sample_code).toUpperCase() + " " + "Copied and Ready to Paste", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                    return false;
+                }
+            });
+        }
     }
 
     private boolean isInRange(float a, float b, float c) {

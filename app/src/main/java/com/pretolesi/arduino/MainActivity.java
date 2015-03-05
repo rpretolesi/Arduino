@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.lang.Math;
 import java.util.Vector;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -21,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +37,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import SQL.SQLContract;
@@ -1701,12 +1705,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      */
     public static class SAC_Fragment extends BaseFragment {
 
-        private EditText m_sac_id_tv_sample_code;
-        private TextView m_sac_id_tv_communication_status;
+        private PretolesiEditText m_sac_id_tv_sample_code;
 
-        private ScaleGestureDetector m_ScaleDetector;
-        private GestureDetector m_Detector;
-        private float m_ScaleFactor = 1.0f;
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -1746,70 +1746,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         @Override
         public void onActivityCreated (Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-            View myView = getActivity().findViewById(R.id.sac_id_rl_sample_code);
-            myView.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    // ... Respond to touch events
-//                    m_ScaleDetector.onTouchEvent(event);
-//                    m_Detector.onTouchEvent(event);
 
-                    return m_Detector.onTouchEvent(event);
-                }
-            });
-            m_sac_id_tv_sample_code = (EditText) getActivity().findViewById(R.id.sac_id_tv_sample_code);
-            m_sac_id_tv_sample_code.setKeyListener(null);
-            m_sac_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.sac_id_tv_communication_status);
-/*
-            m_ScaleDetector = new ScaleGestureDetector(getActivity().getApplicationContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener(){
-                @Override
-                public boolean onScale(ScaleGestureDetector detector) {
-                    m_ScaleFactor *= detector.getScaleFactor();
-
-                    // Don't let the object get too small or too large.
-                    m_ScaleFactor = Math.max(0.5f, Math.min(m_ScaleFactor, 5.0f));
-
-                    if(m_sac_id_tv_sample_code != null)
-                    {
-                        m_sac_id_tv_sample_code.setTextSize(5*m_ScaleFactor);
-                    }
-                    return false;
-
-               }
-           });
-*/
-            m_Detector = new GestureDetector(getActivity().getApplicationContext(), new GestureDetector.OnGestureListener(){
-
-                @Override
-                public boolean onDown(MotionEvent e) {
-                    return true;
-                }
-
-                @Override
-                public void onShowPress(MotionEvent e) {
-
-                }
-
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    m_sac_id_tv_sample_code.setSelection(0);
-                    return true;
-                }
-
-                @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    m_sac_id_tv_sample_code.selectAll();
-                }
-
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                    return true;
-                }
-            });
+            m_sac_id_tv_sample_code = (PretolesiEditText) getActivity().findViewById(R.id.sac_id_tv_sample_code);
+            m_sac_id_tv_sample_code.setAsReadOnly();
         }
 
         @Override
@@ -1826,11 +1765,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         private void Resumed() {
             initializeData();
-
-            // Registro Listeners
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.registerListener(this);
-            }
         }
 
         @Override
@@ -1840,9 +1774,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         private void Paused() {
-            if(m_CommunicationTask != null) {
-                m_CommunicationTask.unregisterListener(this);
-            }
         }
 
         @Override
@@ -1852,11 +1783,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         @Override
         public void onNewCommunicationStatus(String[] strStatus) {
-            // Aggiorno lo stato
-            if(m_sac_id_tv_communication_status != null) {
-                m_sac_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
-            }
         }
+
         private void initializeData(){
 
             m_sac_id_tv_sample_code.setText("/*\n" +
@@ -2162,8 +2090,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "  Serial.print(rssi);\n" +
                     "  Serial.println(\" dBm\");\n" +
                     "}");
-
-            m_sac_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
 
             m_Message.resetCommand();
             // Send Command
