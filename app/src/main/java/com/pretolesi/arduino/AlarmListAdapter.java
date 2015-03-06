@@ -14,6 +14,8 @@ import java.util.ArrayList;
  */
 public class AlarmListAdapter extends BaseAdapter
 {
+    private static final String TAG = "AlarmListAdapter";
+
     private ArrayList<String> m_alstr = new ArrayList<>();
 
     private final Context context;

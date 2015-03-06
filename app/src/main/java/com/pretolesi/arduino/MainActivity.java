@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.lang.Math;
 import java.util.Vector;
-
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -23,27 +20,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import SQL.SQLContract;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener
-{
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+
+    private static final String TAG = "MainActivity";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -208,20 +200,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         {
             bf.onTabSelected(tab, fragmentTransaction);
         }
-/*
-        if(tab.getPosition() == 1)
-        {
-
-            PatientPainTherapyFragment pptf = (PatientPainTherapyFragment)getSupportFragmentManager().findFragmentByTag(strTAG);
-            if(pptf != null)
-            {
-                if(pptf.isResumed() == true)
-                {
-                    pptf.UpdateFragment();
-                }
-            }
-        }
-*/
     }
 
     @Override
@@ -2101,7 +2079,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     private class CommunicationTask extends AsyncTask<Object, String, Void> {
-        private List<CommunicationStatus> lCSListener = new Vector<CommunicationStatus>();
+        private List<CommunicationStatus> lCSListener = new Vector<>();
 
         // Imposto il listener
         public synchronized void registerListener(CommunicationStatus listener) {
@@ -2136,12 +2114,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             int iTimeout = 0;
             int iCommFrameDelay = 0;
 
-            byte[] byteToRead = new byte[64];
-
             try {
                 while (!isCancelled() && acs != null && msg != null) {
 
-                    if (acs.isConnected() == false) {
+                    if (!acs.isConnected()) {
                         // Pubblico i dati
                         strStatus = getString(R.string.comm_status_connecting);
                         strError = "";
@@ -2153,10 +2129,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             iTimeout = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.TIMEOUT));
                             iCommFrameDelay = Integer.parseInt(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY));
                         }
-                        catch (Exception ex) {
+                        catch (Exception ignored) {
                         }
-                        if(strIpAddress.equals("") == false && iPort > 0 && iTimeout > 0) {
-                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout) == true) {
+                        if(!strIpAddress.equals("") && iPort > 0 && iTimeout > 0) {
+                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout)) {
                                 strStatus = getString(R.string.comm_status_connected);
                                 strError = "";
                                 this.publishProgress(strStatus, strError, "");
@@ -2168,7 +2144,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                 // attendo per non sovraccaricare CPU
                                 try {
                                     Thread.sleep(3000, 0);
-                                } catch (InterruptedException e) {
+                                } catch (InterruptedException ignored) {
                                 }
                             }
                         }
@@ -2180,7 +2156,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
-                            } catch (InterruptedException e) {
+                            } catch (InterruptedException ignored) {
                             }
                         }
                     } else {
@@ -2220,7 +2196,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                         iCommFrameDelay = 10;
                                     }
                                     Thread.sleep((iCommFrameDelay * 2), 0);
-                                } catch (InterruptedException e) {
+                                } catch (InterruptedException ignored) {
                                 }
                             } else {
                                  strStatus = getString(R.string.comm_status_error);
@@ -2229,7 +2205,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  // attendo per non sovraccaricare CPU
                                  try {
                                      Thread.sleep(3000, 0);
-                                 } catch (InterruptedException e) {
+                                 } catch (InterruptedException ignored) {
                                  }
                             }
                         } else {
@@ -2239,7 +2215,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
-                            } catch (InterruptedException e) {
+                            } catch (InterruptedException ignored) {
                             }
                         }
                     }
@@ -2303,8 +2279,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
     static short floatToshort(float f) {
         byte byte_1 = floatTobyte(f);
-        short sh_1 = (short)(byte_1 & 0xff);
-        return sh_1;
+        return (short)(byte_1 & 0xff);
     }
     // Deemphasize transient forces
     static float lowPass(float current, float gravity, float alpha) {

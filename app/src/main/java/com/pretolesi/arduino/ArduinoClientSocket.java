@@ -18,6 +18,8 @@ import java.util.Arrays;
  */
 public class ArduinoClientSocket
 {
+    private static final String TAG = "ArduinoClientSocket";
+
     private static byte SOH = 0x01;
     private static byte EOT = 0x04;
     private static byte ENQ = 0x05;

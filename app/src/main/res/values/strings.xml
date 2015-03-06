@@ -5,37 +5,37 @@
     <string name="action_settings">Settings</string>
 
     <!-- Notifiche di operazioni su Database -->
-    <string name="db_save_data_ok">Dati Memorizzati.</string>
-    <string name="db_save_data_error">Errore Memorizzazione Dati.</string>
-    <string name="db_data_server_error">Errore nei Dati Server.</string>
+    <string name="db_save_data_ok">Data Stored.</string>
+    <string name="db_save_data_error">Error Storing Data.</string>
+    <string name="db_data_server_error">Error on the Data Server. Please check the Server configuration.</string>
 
 
     <!-- Settings. Server-->
     <string name="settings_title_setting_server">Server Settings</string>
-    <string name="settings_text_tv_title">Opzioni di connessione al Server</string>
-    <string name="settings_text_tv_server_ip_address">Indirizzo TCP/IP Server</string>
+    <string name="settings_text_tv_title">Server Settings</string>
+    <string name="settings_text_tv_server_ip_address">Server TCP/IP Address</string>
     <string name="settings_hint_et_server_ip_address">xxx.xxx.xxx.xxx</string>
-    <string name="settings_text_tv_server_port">Porta Server</string>
-    <string name="settings_hint_et_server_port">0 - 65535</string>
+    <string name="settings_text_tv_server_port">Server Port</string>
+    <string name="settings_hint_et_server_port">1 - 65535</string>
     <string name="settings_text_btn_start_comm">Start\nCom.</string>
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
-    <string name="settings_text_tv_timeout">Timeout comunicazione(ms)</string>
-    <string name="settings_hint_et_timeout">1 - 65535(ms)</string>
-    <string name="settings_text_tv_comm_frame_delay">Ritardo Invio Frame Di Com(ms)</string>
-    <string name="settings_hint_et_comm_frame_delay">50 - 65535</string>
-    <string name="settings_text_btn_save_server">Salva\nParametri</string>
+    <string name="settings_text_tv_timeout">Timeout Receiving Data Packet.(ms)</string>
+    <string name="settings_hint_et_timeout">1 - 100(ms)</string>
+    <string name="settings_text_tv_comm_frame_delay">Receive/Send Packet Delay Time(ms)</string>
+    <string name="settings_hint_et_comm_frame_delay">50 - 5000</string>
+    <string name="settings_text_btn_save_server">Save\nParameter</string>
     <!-- Settings. Sensor-->
     <string name="settings_title_setting_sensor">Sensor Settings</string>
-    <string name="settings_text_tv_title_setting_sensor">Opzioni di Set Sensori</string>
-    <string name="settings_text_tv_sensor_feedback_ampl_k">Amplificazione</string>
+    <string name="settings_text_tv_title_setting_sensor">Sensor Settings</string>
+    <string name="settings_text_tv_sensor_feedback_ampl_k">Gain</string>
     <string name="settings_hint_et_sensor_feedback_ampl_k">1 - 1000</string>
-    <string name="settings_text_tv_sensor_low_pass_filter_k">Filtro passa basso</string>
+    <string name="settings_text_tv_sensor_low_pass_filter_k">Low Pass Filter</string>
     <string name="settings_hint_et_sensor_low_pass_filter_k">0.1 - 0.9</string>
-    <string name="settings_text_tv_sensor_max_output_value">Max valore in uscita</string>
-    <string name="settings_hint_et_sensor_max_output_value">0 - 255</string>
-    <string name="settings_text_tv_sensor_min_value_start_output">Min valore attivazione sensore</string>
-    <string name="settings_hint_et_sensor_min_value_start_output">0 - 255</string>
-    <string name="settings_text_btn_save_sensor">Salva\nParametri</string>
+    <string name="settings_text_tv_sensor_max_output_value">Max output value</string>
+    <string name="settings_hint_et_sensor_max_output_value">5 - 255</string>
+    <string name="settings_text_tv_sensor_min_value_start_output">Min output value</string>
+    <string name="settings_hint_et_sensor_min_value_start_output">5 - 255</string>
+    <string name="settings_text_btn_save_sensor">Save\nParameter</string>
 
 
 

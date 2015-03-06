@@ -10,6 +10,7 @@ import android.text.Spanned;
  *
  */
 public class InputFilterMinMax implements InputFilter {
+    private static final String TAG = "InputFilterMinMax";
 
     private float m_min, m_max;
     private Context m_context;

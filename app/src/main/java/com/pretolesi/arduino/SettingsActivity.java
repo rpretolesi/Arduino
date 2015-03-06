@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
 import android.view.LayoutInflater;
@@ -25,8 +27,10 @@ import SQL.SQLContract;
 /**
  * Settings Activity
  */
-public class SettingsActivity extends ActionBarActivity
-{
+public class SettingsActivity extends ActionBarActivity implements ActionBar.TabListener {
+
+    private static final String TAG = "SettingsActivity";
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -47,6 +51,8 @@ public class SettingsActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        final ActionBar actionBar = getSupportActionBar();
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -55,6 +61,28 @@ public class SettingsActivity extends ActionBarActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // When swiping between different sections, select the corresponding
+        // tab. We can also use ActionBar.Tab#select() to do this if we have
+        // a reference to the Tab.
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
+
+        // For each of the sections in the app, add a tab to the action bar.
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+            // Create a tab with text corresponding to the page title defined by
+            // the adapter. Also specify this Activity object, which implements
+            // the TabListener interface, as the callback (listener) for when
+            // this tab is selected.
+            actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+        }
+
     }
 
     @Override
@@ -67,6 +95,21 @@ public class SettingsActivity extends ActionBarActivity
     public void onPause()
     {
         super.onPause();
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
     }
 
     /**
@@ -164,9 +207,9 @@ public class SettingsActivity extends ActionBarActivity
             m_settings_id_et_server_port = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_server_port);
             m_settings_id_et_server_port.setInputLimit(1, 65535);
             m_settings_id_et_timeout = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_timeout);
-            m_settings_id_et_timeout.setInputLimit(1, 65535);
+            m_settings_id_et_timeout.setInputLimit(1, 100);
             m_settings_id_et_comm_frame_delay = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
-            m_settings_id_et_comm_frame_delay.setInputLimit(50, 65535);
+            m_settings_id_et_comm_frame_delay.setInputLimit(50, 5000);
 
             m_settings_id_btn_save_server = (Button) getActivity().findViewById(R.id.settings_id_btn_save_server);
 
@@ -282,9 +325,9 @@ public class SettingsActivity extends ActionBarActivity
             m_settings_id_et_sensor_low_pass_filter_k = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_low_pass_filter_k);
             m_settings_id_et_sensor_low_pass_filter_k.setInputLimit(0.10f, 0.9f);
             m_settings_id_et_sensor_max_output_value = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_max_output_value);
-            m_settings_id_et_sensor_max_output_value.setInputLimit(0, 255);
+            m_settings_id_et_sensor_max_output_value.setInputLimit(5, 255);
             m_settings_id_et_sensor_min_value_start_output = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_min_value_start_output);
-            m_settings_id_et_sensor_min_value_start_output.setInputLimit(0, 255);
+            m_settings_id_et_sensor_min_value_start_output.setInputLimit(5, 255);
 
             m_settings_id_btn_save_sensor = (Button) getActivity().findViewById(R.id.settings_id_btn_save_sensor);
 

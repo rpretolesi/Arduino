@@ -7,7 +7,9 @@ import android.support.v7.app.ActionBar;
 /**
  *
  */
-public class BaseFragment extends Fragment implements CommunicationStatus{
+public class BaseFragment extends Fragment implements CommunicationStatus {
+
+    private static final String TAG = "BaseFragment";
 
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 

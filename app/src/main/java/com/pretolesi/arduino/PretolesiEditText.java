@@ -19,6 +19,9 @@ import android.widget.Toast;
  */
 public class PretolesiEditText extends EditText {
 
+    private static final String TAG = "PretolesiEditText";
+
+
     private ScaleGestureDetector m_ScaleGestureDetector;
     private GestureDetector m_GestureDetector;
 

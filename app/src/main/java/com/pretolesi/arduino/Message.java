@@ -7,7 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * Command class
  */
 public class Message {
-//    private static byte ACK = 0x06;
+    private static final String TAG = "Message";
+
+    //    private static byte ACK = 0x06;
     private static byte SOH = 0x01;
     private static byte EOT = 0x04;
     private static byte ENQ = 0x05;

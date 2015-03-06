@@ -6,8 +6,9 @@ import android.view.View;
 /**
  * Created by RPRETOLESI on 11/02/2015.
  */
-public class ViewHolder
-{
+public class ViewHolder {
+    private static final String TAG = "ViewHolder";
+
     // I added a generic return type to reduce the casting noise in client code
     @SuppressWarnings("unchecked")
     public static <T extends View> T get(View view, int id) {
