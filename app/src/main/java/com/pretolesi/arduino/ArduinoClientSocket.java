@@ -40,13 +40,13 @@ public class ArduinoClientSocket
         m_context = context;
     }
 
-    public boolean connectToArduino(String strHost, int iPort, int iTimeout)
+    public boolean connectToArduino(Message msg, String strHost, int iPort, int iTimeout)
     {
         boolean bRes = false;
         try
         {
             // Prima chiudo la connessione
-            closeConnection();
+            closeConnection(msg);
 
             m_socketAddress = new InetSocketAddress(strHost , iPort);
             if(m_clientSocket == null)
@@ -70,7 +70,7 @@ public class ArduinoClientSocket
         catch (Exception ex)
         {
             m_strLastError = ex.getMessage();
-            closeConnection();
+            closeConnection(msg);
         }
         finally
         {
@@ -107,7 +107,7 @@ public class ArduinoClientSocket
             }
             catch (Exception ex) {
                 m_strLastError = ex.getMessage();
-                closeConnection();
+                closeConnection(msg);
             }
         }
 
@@ -133,21 +133,35 @@ public class ArduinoClientSocket
                     if(m_NrOfByteInInputStreamBuf == 16)
                     {
                         m_NrOfByteInInputStreamBuf = 0;
+
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
                             msg.setData(m_byteInputStreamBuf);
                             Arrays.fill(m_byteInputStreamBuf, (byte) 0);
+                            m_strLastError = "";
+                            bRes = true;
                         }
                         else
                         {
                             // Error
                             Arrays.fill(m_byteInputStreamBuf, (byte) 0);
+                            m_strLastError = "Frame";
+                            closeConnection(msg);
+                            bRes = false;
                         }
+                    } else {
+                        m_strLastError = "";
+                        bRes = true;
                     }
+                } else if(iByteRead < 0) {
+                    m_strLastError = "Stream closed";
+                    bRes = false;
+                    closeConnection(msg);
+                } else {
+                    m_strLastError = "";
+                    bRes = true;
                 }
 
-                m_strLastError = "";
-                bRes = true;
             } catch (SocketTimeoutException ex) {
                 m_strLastError = "";
                 bRes = true;
@@ -155,10 +169,10 @@ public class ArduinoClientSocket
 //                closeConnection();
             } catch (EOFException eofx) {
                 m_strLastError = m_context.getString(R.string.comm_status_eof);
-                closeConnection();
+                closeConnection(msg);
             } catch (Exception ex) {
                 m_strLastError = ex.getMessage();
-                closeConnection();
+                closeConnection(msg);
             }
         }
 
@@ -240,8 +254,13 @@ public class ArduinoClientSocket
         return (m_timeMillisecondsSend - m_timeMillisecondsGet);
     }
 
-    public void closeConnection()
+    public void closeConnection(Message msg)
     {
+
+        if(msg != null) {
+            msg.resetData();
+        }
+
         m_socketAddress = null;
 
         // Chiudo il socket

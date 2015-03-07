@@ -76,7 +76,7 @@
     <string name="comm_status_eof">EOF-likely connection close by peer</string>
 
     <!-- Dialogs. Input Limit-->
-    <string name="dialog_ifmm_title">Verificare i limiti dei valori inseriti</string>
+    <string name="dialog_ifmm_title">Please check the input limit !</string>
     <string name="dialog_ifmm_ok_button">Ok</string>
 
     <!-- General Value-->

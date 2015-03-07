@@ -52,6 +52,7 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
         setContentView(R.layout.main_activity);
 
         final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 
         // Create the adapter that will return a fragment for each of the three

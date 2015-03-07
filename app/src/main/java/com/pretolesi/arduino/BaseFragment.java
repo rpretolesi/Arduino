@@ -7,7 +7,7 @@ import android.support.v7.app.ActionBar;
 /**
  *
  */
-public class BaseFragment extends Fragment implements CommunicationStatus {
+public class BaseFragment extends Fragment implements ProgressUpdate {
 
     private static final String TAG = "BaseFragment";
 
@@ -24,7 +24,12 @@ public class BaseFragment extends Fragment implements CommunicationStatus {
     }
 
     @Override
-    public void onNewCommunicationStatus(String[] strStatus) {
+    public void onProgressUpdate(ProgressUpdateData[] pud) {
+
+    }
+
+    @Override
+    public void onProgressUpdateConnectionChanged(ProgressUpdateData[] pud) {
 
     }
 }

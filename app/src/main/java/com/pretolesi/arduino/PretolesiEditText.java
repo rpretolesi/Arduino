@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -102,6 +103,7 @@ public class PretolesiEditText extends EditText {
         if(m_GestureDetector != null){
             m_GestureDetector.onTouchEvent(event);
         }
+
         return super.onTouchEvent(event);
     }
 

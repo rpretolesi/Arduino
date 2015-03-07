@@ -198,7 +198,7 @@
         android:layout_below="@+id/linear_layout_2"
         android:layout_alignParentEnd="true"/>
 
-    <TextView
+    <com.pretolesi.arduino.CommStatusTextView
         android:id="@+id/c1_id_tv_communication_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

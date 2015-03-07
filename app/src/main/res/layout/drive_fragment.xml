@@ -199,7 +199,7 @@
         android:layout_below="@+id/id_tv_byte_6a10_in"
         android:layout_centerHorizontal="true"/>
 
-    <TextView
+    <com.pretolesi.arduino.CommStatusTextView
         android:id="@+id/drive_id_tv_communication_status"
         android:text="@string/default_string_value_char"
         android:layout_width="match_parent"

@@ -364,7 +364,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_drive_text_tv_value_down;
         private TextView m_drive_text_tv_value_left;
         private TextView m_drive_text_tv_value_right;
-        private TextView m_drive_id_tv_communication_status;
+        private CommStatusTextView m_drive_id_tv_communication_status;
 
         // Dati
         private float m_settings_id_et_comm_frame_delay;
@@ -441,7 +441,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_7a11_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_7a11_in);
             m_id_tv_byte_8a12_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_8a12_out);
             m_id_tv_byte_8a12_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_8a12_in);
-            m_drive_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
+            m_drive_id_tv_communication_status = (CommStatusTextView) getActivity().findViewById(R.id.drive_id_tv_communication_status);
 
             // Set an OnClickListener
             m_drive_id_btn_drive_wheel_start_stop.setOnClickListener(new View.OnClickListener() {
@@ -602,10 +602,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
-        public void onNewCommunicationStatus(String[] strStatus) {
+        public void onProgressUpdate(ProgressUpdateData[] pud) {
             // Aggiorno lo stato
             if(m_drive_id_tv_communication_status != null) {
-                m_drive_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+                m_drive_id_tv_communication_status.setStatusAndError(pud[0].getStatus(), pud[0].getError());
             }
 
             if(m_Message != null) {
@@ -693,6 +693,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     }
                 }
             }
+        }
+
+        @Override
+        public void onProgressUpdateConnectionChanged(ProgressUpdateData[] pud) {
+            initializeData();
         }
 
         @Override
@@ -1054,7 +1059,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_id_tv_byte_2_out;
         private TextView m_id_tv_byte_2_in;
 
-        private TextView m_c1_id_tv_communication_status;
+        private CommStatusTextView m_c1_id_tv_communication_status;
 
         /**
          * The fragment argument representing the section number for this
@@ -1118,7 +1123,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_2_out = (TextView) getActivity().findViewById(R.id.id_tv_byte_2_out);
             m_id_tv_byte_2_in = (TextView) getActivity().findViewById(R.id.id_tv_byte_2_in);
 
-            m_c1_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c1_id_tv_communication_status);
+            m_c1_id_tv_communication_status = (CommStatusTextView) getActivity().findViewById(R.id.c1_id_tv_communication_status);
         }
 
         @Override
@@ -1197,10 +1202,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
-        public void onNewCommunicationStatus(String[] strStatus) {
+        public void onProgressUpdate(ProgressUpdateData[] pud) {
             // Aggiorno lo stato
             if(m_c1_id_tv_communication_status != null) {
-                m_c1_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+                m_c1_id_tv_communication_status.setStatusAndError(pud[0].getStatus(), pud[0].getError());
             }
 
             if(m_id_tv_byte_1_in != null) {
@@ -1210,6 +1215,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             if(m_id_tv_byte_2_in != null) {
                 m_id_tv_byte_2_in.setText(formatDataToArrayBinaryStringIn(m_Message.getDataByte(2), 2));
             }
+        }
+
+        @Override
+        public void onProgressUpdateConnectionChanged(ProgressUpdateData[] pud) {
+            initializeData();
         }
 
         @Override
@@ -1355,7 +1365,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         private TextView m_c_id_tv_byte_13_in;
         private TextView m_c_id_tv_byte_14_in;
 
-        private TextView m_c2_id_tv_communication_status;
+        private CommStatusTextView m_c2_id_tv_communication_status;
 
         /**
          * The fragment argument representing the section number for this
@@ -1436,7 +1446,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_c_id_tv_byte_13_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_13_in);
             m_c_id_tv_byte_14_in = (TextView) getActivity().findViewById(R.id.c_id_tv_byte_14_in);
 
-            m_c2_id_tv_communication_status = (TextView) getActivity().findViewById(R.id.c2_id_tv_communication_status);
+            m_c2_id_tv_communication_status = (CommStatusTextView) getActivity().findViewById(R.id.c2_id_tv_communication_status);
 
             // Prelevo i dati dei sensori
             String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
@@ -1525,12 +1535,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
-        public void onNewCommunicationStatus(String[] strStatus) {
+        public void onProgressUpdate(ProgressUpdateData[] pud) {
             // Aggiorno lo stato
             if(m_c2_id_tv_communication_status != null) {
-                m_c2_id_tv_communication_status.setText(strStatus[0] + " - " + strStatus[1]);
+                m_c2_id_tv_communication_status.setStatusAndError(pud[0].getStatus(), pud[0].getError());
             }
-
             if(m_c_id_tv_byte_3_in != null)
                 m_c_id_tv_byte_3_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(3),3));
             if(m_c_id_tv_byte_4_in != null)
@@ -1556,6 +1565,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             if(m_c_id_tv_byte_14_in != null)
                 m_c_id_tv_byte_14_in.setText(formatDataToArrayStringIn(m_Message.getDataByte(14),14));
 
+        }
+
+        @Override
+        public void onProgressUpdateConnectionChanged(ProgressUpdateData[] pud) {
+            initializeData();
         }
 
         @Override
@@ -1708,6 +1722,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if(m_sac_id_tv_sample_code != null){
+                m_sac_id_tv_sample_code.setTextSize(10);
+            }
 
         }
 
@@ -1760,7 +1777,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
 
         @Override
-        public void onNewCommunicationStatus(String[] strStatus) {
+        public void onProgressUpdate(ProgressUpdateData[] pud) {
+        }
+
+        @Override
+        public void onProgressUpdateConnectionChanged(ProgressUpdateData[] pud) {
         }
 
         private void initializeData(){
@@ -2078,25 +2099,35 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     }
 
-    private class CommunicationTask extends AsyncTask<Object, String, Void> {
-        private List<CommunicationStatus> lCSListener = new Vector<>();
+    private class CommunicationTask extends AsyncTask<Object, ProgressUpdateData, Void> {
+
+        private List<ProgressUpdate> m_lCSListener = new Vector<>();
+        private ProgressUpdateData m_pud = new ProgressUpdateData();
 
         // Imposto il listener
-        public synchronized void registerListener(CommunicationStatus listener) {
-            lCSListener.add(listener);
+        public synchronized void registerListener(ProgressUpdate listener) {
+            m_lCSListener.add(listener);
         }
-        public synchronized void unregisterListener(CommunicationStatus listener) {
-            lCSListener.remove(listener);
+        public synchronized void unregisterListener(ProgressUpdate listener) {
+            m_lCSListener.remove(listener);
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
-        private void onUpdate(String[] strStatus) {
+        private void onUpdate(ProgressUpdateData[] pud) {
+
             // Check if the Listener was set, otherwise we'll get an Exception when we try to call it
-            if(lCSListener != null) {
-                for (CommunicationStatus cs : lCSListener) {
-                    cs.onNewCommunicationStatus(strStatus);
+            if(m_lCSListener != null) {
+                for (ProgressUpdate cs : m_lCSListener) {
+                    cs.onProgressUpdate(pud);
+                    if(m_pud.isConnected() != pud[0].isConnected()){
+                        cs.onProgressUpdateConnectionChanged(pud);
+                    }
                 }
+                m_pud.setData(pud[0]);
+            } else {
+                m_pud.resetData();
             }
+
         }
 
         @Override
@@ -2107,6 +2138,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             String strStatus = "";
             String strError = "";
             int iCommFrame = 0;
+
+            ProgressUpdateData pud = new ProgressUpdateData();
 
             // Dati di set
             String strIpAddress = "";
@@ -2119,9 +2152,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                     if (!acs.isConnected()) {
                         // Pubblico i dati
-                        strStatus = getString(R.string.comm_status_connecting);
-                        strError = "";
-                        this.publishProgress(strStatus, strError,"");
+                        pud.setData(ProgressUpdateData.Status.CONNECTING,"", false);
+                        this.publishProgress(pud);
 
                         try {
                             strIpAddress = SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.IP_ADDRESS);
@@ -2132,14 +2164,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                         catch (Exception ignored) {
                         }
                         if(!strIpAddress.equals("") && iPort > 0 && iTimeout > 0) {
-                            if (acs.connectToArduino(strIpAddress, iPort, iTimeout)) {
-                                strStatus = getString(R.string.comm_status_connected);
-                                strError = "";
-                                this.publishProgress(strStatus, strError, "");
+                            if (acs.connectToArduino(msg, strIpAddress, iPort, iTimeout)) {
+                                pud.setData(ProgressUpdateData.Status.CONNECTED,"", true);
+                                this.publishProgress(pud);
                             } else {
-                                strStatus = getString(R.string.comm_status_error);
-                                strError = acs.getLastError();
-                                this.publishProgress(strStatus, strError,"");
+                                pud.setData(ProgressUpdateData.Status.ERROR,acs.getLastError(), false);
+                                this.publishProgress(pud);
 
                                 // attendo per non sovraccaricare CPU
                                 try {
@@ -2150,9 +2180,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                         }
                         else
                         {
-                            strStatus = getString(R.string.comm_status_error);
-                            strError = getString(R.string.db_data_server_error);
-                            this.publishProgress(strStatus, strError,"");
+                            pud.setData(ProgressUpdateData.Status.ERROR,getString(R.string.db_data_server_error), false);
+                            this.publishProgress(pud);
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
@@ -2169,7 +2198,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                 lTime_2 = acs.getSendGetAnswerTimeMilliseconds();
                                  // Tutto Ok, posso leggere i dati ricevuti
 
-
+/*
                                  // Faccio avanzare una barra ad ogni frame
                                  iCommFrame = iCommFrame + 1;
                                  if(iCommFrame > 16) {
@@ -2187,7 +2216,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                      }
                                  }
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
-                                 this.publishProgress(strStatus, strError, "");
+*/
+                                 pud.setData(ProgressUpdateData.Status.ONLINE,"", true);
+                                 this.publishProgress(pud);
 
                                 // attendo per non sovraccaricare CPU
                                 try {
@@ -2199,9 +2230,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                 } catch (InterruptedException ignored) {
                                 }
                             } else {
-                                 strStatus = getString(R.string.comm_status_error);
-                                 strError = acs.getLastError();
-                                 this.publishProgress(strStatus, strError, "");
+
+                                 pud.setData(ProgressUpdateData.Status.ERROR, acs.getLastError() , false);
+                                 this.publishProgress(pud);
                                  // attendo per non sovraccaricare CPU
                                  try {
                                      Thread.sleep(3000, 0);
@@ -2209,9 +2240,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  }
                             }
                         } else {
-                            strStatus = getString(R.string.comm_status_error);
-                            strError = acs.getLastError();
-                            this.publishProgress(strStatus, strError, "");
+                            pud.setData(ProgressUpdateData.Status.ERROR, acs.getLastError() , false);
+                            this.publishProgress(pud);
                             // attendo per non sovraccaricare CPU
                             try {
                                 Thread.sleep(3000, 0);
@@ -2226,19 +2256,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             }
 
             // Pubblico i dati
-            acs.closeConnection();
-            strStatus = getString(R.string.comm_status_closed);
-            this.publishProgress(strStatus,strError,"");
+            acs.closeConnection(msg);
+            pud.setData(ProgressUpdateData.Status.CLOSED, "" , false);
+            this.publishProgress(pud);
 
             return null;
         }
 
 
         @Override
-        protected void onProgressUpdate(String... strStatus) {
-            super.onProgressUpdate(strStatus);
+        protected void onProgressUpdate(ProgressUpdateData... pud) {
+            super.onProgressUpdate(pud);
             // Aggiorno i dati
-            onUpdate(strStatus);
+            onUpdate(pud);
         }
     }
 

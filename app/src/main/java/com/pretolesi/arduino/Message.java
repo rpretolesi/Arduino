@@ -14,7 +14,7 @@ public class Message {
     private static byte EOT = 0x04;
     private static byte ENQ = 0x05;
 
-    private ReentrantLock m_LockCommand = null;
+    private ReentrantLock m_Lock = null;
 
     // Dati da inviare
     private byte[] m_byteCommand = null;
@@ -26,7 +26,7 @@ public class Message {
 
     public Message(){
 
-        m_LockCommand = new ReentrantLock();
+        m_Lock = new ReentrantLock();
 
         m_byteCommand = new byte[16];
 
@@ -41,38 +41,38 @@ public class Message {
 
     // Richiesta dati
     public void setData(byte[] byteData) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteData = Arrays.copyOf(byteData, m_byteData.length);
         }
         finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public int getDataByte(int index) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return (m_byteData[index] & 0xFF);
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setCommandAsToSend() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_bCommandSetAsToSend = true;
         } catch (Exception ex) {
 
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public byte[] getCommand() {
 
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             byte[] byteRes = null;
 
@@ -91,7 +91,7 @@ public class Message {
 
         } catch (Exception ignored) {
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
 
         return null;
@@ -99,7 +99,7 @@ public class Message {
 
     public void resetCommand() {
 
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
                 m_byteCommand[0] = SOH;
                 m_byteCommand[1] = 0;
@@ -122,39 +122,66 @@ public class Message {
 
         } catch (Exception ignored) {
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
+        }
+    }
+
+    public void resetData() {
+
+        m_Lock.lock();
+        try {
+            m_byteData[0] = 0;
+            m_byteData[1] = 0;
+            m_byteData[2] = 0;
+            m_byteData[3] = 0;
+            m_byteData[4] = 0;
+            m_byteData[5] = 0;
+            m_byteData[6] = 0;
+            m_byteData[7] = 0;
+            m_byteData[8] = 0;
+            m_byteData[9] = 0;
+            m_byteData[10] = 0;
+            m_byteData[11] = 0;
+            m_byteData[12] = 0;
+            m_byteData[13] = 0;
+            m_byteData[14] = 0;
+            m_byteData[15] = 0;
+
+        } catch (Exception ignored) {
+        } finally {
+            m_Lock.unlock();
         }
     }
 
     public int getActionLength() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return m_byteCommand.length;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setActionByte(byte value, int index) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[index] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public int getActionByte(int index) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return (m_byteCommand[index] & 0xFF);
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public void setActionBit(int index, int bit, boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         int iMask;
         try {
             switch (bit) {
@@ -185,33 +212,33 @@ public class Message {
 
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setThrottleFWD(byte value) {
 
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[5] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
          }
     }
 
     public void setThrottleREV(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[6] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
      }
 
     public void setDriveWheelFWD(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11111100);
             if(value == true) {
@@ -219,21 +246,21 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public boolean getDriveWheelFWD() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return (m_byteData[1] & 0b00000001) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveWheelREV(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11111100);
             if(value == true) {
@@ -241,42 +268,42 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public boolean getDriveWheelREV() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[1] & 0b00000010) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setSteeringLEFT(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[7] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setSteeringRIGHT(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[8] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveWheelLEFT(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11001111);
             if(value == true) {
@@ -284,23 +311,23 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public boolean getDriveWheelLEFT() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[1] & 0b00010000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
 
     public void setDriveWheelRIGHT(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[1] = (byte)(m_byteCommand[1] & 0b11001111);
             if(value == true) {
@@ -308,23 +335,23 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public boolean getDriveWheelRIGHT() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[1] & 0b00100000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     // Fork
     public void setDriveForkUp(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11111100);
             if(value == true) {
@@ -332,30 +359,30 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkUp() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b00000001) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkUpStatus() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b00000100) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveForkDown(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11111100);
             if(value == true) {
@@ -363,49 +390,49 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkDown() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b00000010) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkDownStatus() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b00001000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveSpeedForkUP(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[9] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public void setDriveSpeedForkDOWN(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[10] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveForkOpen(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11001111);
             if(value == true) {
@@ -413,29 +440,29 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkOpen() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return (m_byteData[2] & 0b00010000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkOpenStatus() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b01000000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveForkClose(boolean value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[2] = (byte)(m_byteCommand[2] & 0b11001111);
             if(value == true) {
@@ -443,53 +470,53 @@ public class Message {
             }
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkClose() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b00100000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public boolean getDriveForkCloseStatus() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             //int iRes = m_byteCommandData[1] & 0b00000001;
             return (m_byteData[2] & 0b10000000) > 0 ? true : false;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public void setDriveSpeedForkOPEN(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[11] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
     public void setDriveSpeedForkCLOSE(byte value) {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             m_byteCommand[12] = value;
             m_bCommandActionSet = true;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
     public boolean isCommandActionChanged() {
-        m_LockCommand.lock();
+        m_Lock.lock();
         try {
             return m_bCommandActionSet;
         } finally {
-            m_LockCommand.unlock();
+            m_Lock.unlock();
         }
     }
 
