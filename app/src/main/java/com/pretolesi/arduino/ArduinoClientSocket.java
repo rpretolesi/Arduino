@@ -1,6 +1,7 @@
 package com.pretolesi.arduino;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -35,6 +36,7 @@ public class ArduinoClientSocket
     private String m_strLastError = "";
     private long m_timeMillisecondsSend = 0;
     private long m_timeMillisecondsGet = 0;
+    private boolean m_bWaitingForData = false;
 
     public ArduinoClientSocket(Context context){
         m_context = context;
@@ -54,21 +56,25 @@ public class ArduinoClientSocket
                 m_clientSocket = new Socket();
                 if(m_clientSocket != null)
                 {
-                    m_clientSocket.connect(m_socketAddress);
                     m_clientSocket.setSoTimeout(iTimeout);
+                    m_clientSocket.connect(m_socketAddress);
                     m_dataOutputStream = new DataOutputStream(m_clientSocket.getOutputStream());
                     m_dataInputStream = new DataInputStream(m_clientSocket.getInputStream());
                     bRes = true;
                     m_strLastError = "";
+                    Log.d(TAG,"connectToArduino->" + "Connected");
                 }
             }
-            m_timeMillisecondsSend = 0;
-            m_timeMillisecondsGet = 0;
+            m_timeMillisecondsSend = System.currentTimeMillis();
+            m_timeMillisecondsGet = System.currentTimeMillis();
+
             m_byteInputStreamBuf = new byte[16];
             m_NrOfByteInInputStreamBuf = 0;
+            m_bWaitingForData = false;
         }
         catch (Exception ex)
         {
+            Log.d(TAG,"connectToArduino->" + "Exception ex : " + ex.getMessage());
             m_strLastError = ex.getMessage();
             closeConnection(msg);
         }
@@ -92,21 +98,30 @@ public class ArduinoClientSocket
         if (m_dataOutputStream != null)       {
             try
             {
-                byte[] byteCmd = null;
-                try {
-                    byteCmd = msg.getCommand();
-                }
-                catch (Exception ignored) {
-                }
-                if(byteCmd != null) {
-                    m_dataOutputStream.write(byteCmd, 0, byteCmd.length);
+                if(!m_bWaitingForData)
+                {
+                    byte[] byteCmd = null;
+                    try {
+                        byteCmd = msg.getCommand();
+                    }
+                    catch (Exception ex_1) {
+                        Log.d(TAG,"sendData->" + "Exception ex_1 : " + ex_1.getMessage());
+                        m_strLastError = ex_1.getMessage();
+                        bRes = false;
+                        closeConnection(msg);
+                    }
+                    if(byteCmd != null) {
+                        m_dataOutputStream.write(byteCmd, 0, byteCmd.length);
+                        m_bWaitingForData = true;
+                    }
                 }
 
                 m_strLastError = "";
                 bRes = true;
             }
-            catch (Exception ex) {
-                m_strLastError = ex.getMessage();
+            catch (Exception ex_2) {
+                Log.d(TAG,"sendData->" + "Exception ex_2 : " + ex_2.getMessage());
+                m_strLastError = ex_2.getMessage();
                 closeConnection(msg);
             }
         }
@@ -130,9 +145,15 @@ public class ArduinoClientSocket
                 if(iByteRead > 0)
                 {
                     m_NrOfByteInInputStreamBuf = m_NrOfByteInInputStreamBuf + iByteRead;
+                    if(iByteRead != 16)
+                    {
+                        Log.d(TAG, "getData->" + "(iByteRead > 0), iByteRead : " + iByteRead + ", m_NrOfByteInInputStreamBuf = " + m_NrOfByteInInputStreamBuf);
+                    }
+
                     if(m_NrOfByteInInputStreamBuf == 16)
                     {
                         m_NrOfByteInInputStreamBuf = 0;
+                        m_bWaitingForData = false;
 
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
@@ -144,33 +165,44 @@ public class ArduinoClientSocket
                         else
                         {
                             // Error
+                            Log.d(TAG,"getData->" + "(m_byteInputStreamBuf[0] != ACK) || (m_byteInputStreamBuf[15] != EOT)");
+                            for(int i = 0; i < 16; i++)
+                            {
+                                Log.d(TAG,"getData->" + "m_byteInputStreamBuf["+ i + "] = " + m_byteInputStreamBuf[i]);
+                            }
+
                             Arrays.fill(m_byteInputStreamBuf, (byte) 0);
-                            m_strLastError = "Frame";
-                            closeConnection(msg);
-                            bRes = false;
+//                            m_strLastError = "Frame";
+//                            closeConnection(msg);
+//                            bRes = false;
+                            m_strLastError = "";
+                            bRes = true;
                         }
                     } else {
                         m_strLastError = "";
                         bRes = true;
                     }
                 } else if(iByteRead < 0) {
+                    Log.d(TAG,"getData->" + "(iByteRead < 0)");
                     m_strLastError = "Stream closed";
                     bRes = false;
                     closeConnection(msg);
                 } else {
+                    Log.d(TAG,"getData->" + "(iByteRead = 0)");
                     m_strLastError = "";
                     bRes = true;
                 }
 
-            } catch (SocketTimeoutException ex) {
-                m_strLastError = "";
-                bRes = true;
-//                m_strLastError = m_context.getString(R.string.comm_status_timeout);
-//                closeConnection();
-            } catch (EOFException eofx) {
+            } catch (SocketTimeoutException stex) {
+                Log.d(TAG,"getData->" + "SocketTimeoutException stex : " + stex.getMessage());
+                m_strLastError = m_context.getString(R.string.comm_status_timeout);
+                closeConnection(msg);
+            } catch (EOFException eofex) {
+                Log.d(TAG,"getData->" + "EOFException eofex : " + eofex.getMessage());
                 m_strLastError = m_context.getString(R.string.comm_status_eof);
                 closeConnection(msg);
             } catch (Exception ex) {
+                Log.d(TAG,"getData->" + "Exception ex : " + ex.getMessage());
                 m_strLastError = ex.getMessage();
                 closeConnection(msg);
             }
@@ -256,6 +288,7 @@ public class ArduinoClientSocket
 
     public void closeConnection(Message msg)
     {
+        Log.d(TAG,"closeConnection->" + "closeConnection");
 
         if(msg != null) {
             msg.resetData();

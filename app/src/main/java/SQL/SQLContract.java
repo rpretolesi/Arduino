@@ -33,7 +33,7 @@ public class SQLContract
         SCHEDULED_UPDATE_FREQUENCY(1, "0"),
         IP_ADDRESS(2, "192.168.1.1"),
         PORT(3, "502"),
-        TIMEOUT(4, "3"),
+        TIMEOUT(4, "1000"),
         COMM_FRAME_DELAY(5, "100"),
         SETT_SENSOR_FEEDBACK_AMPL_K(10, "500.0"),
         SETT_SENSOR_LOW_PASS_FILTER_K(11, "0.5"),

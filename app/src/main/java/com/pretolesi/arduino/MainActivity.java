@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -2217,6 +2218,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  }
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
 */
+//                                Log.i(TAG, "doInBackground->" + "Receive - Send Diff. Time (ms)" + lTime_1 + "Send - Receive Diff. Time (ms)" + lTime_2);
                                  pud.setData(ProgressUpdateData.Status.ONLINE,"", true);
                                  this.publishProgress(pud);
 
