@@ -15,7 +15,7 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 
 /**
- * Created by RPRETOLESI on 11/02/2015.
+ * Created by Riccardo Pretolesi on 11/02/2015.
  */
 public class ArduinoClientSocket
 {
@@ -60,8 +60,10 @@ public class ArduinoClientSocket
                     m_clientSocket.connect(m_socketAddress);
                     m_dataOutputStream = new DataOutputStream(m_clientSocket.getOutputStream());
                     m_dataInputStream = new DataInputStream(m_clientSocket.getInputStream());
-                    bRes = true;
+
                     m_strLastError = "";
+                    bRes = true;
+
                     Log.d(TAG,"connectToArduino->" + "Connected");
                 }
             }
@@ -158,7 +160,6 @@ public class ArduinoClientSocket
                         if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
                         {
                             msg.setData(m_byteInputStreamBuf);
-                            Arrays.fill(m_byteInputStreamBuf, (byte) 0);
                             m_strLastError = "";
                             bRes = true;
                         }
@@ -166,18 +167,11 @@ public class ArduinoClientSocket
                         {
                             // Error
                             Log.d(TAG,"getData->" + "(m_byteInputStreamBuf[0] != ACK) || (m_byteInputStreamBuf[15] != EOT)");
-                            for(int i = 0; i < 16; i++)
-                            {
-                                Log.d(TAG,"getData->" + "m_byteInputStreamBuf["+ i + "] = " + m_byteInputStreamBuf[i]);
-                            }
-
-                            Arrays.fill(m_byteInputStreamBuf, (byte) 0);
-//                            m_strLastError = "Frame";
-//                            closeConnection(msg);
-//                            bRes = false;
-                            m_strLastError = "";
-                            bRes = true;
+                            m_strLastError = "Protocol Error.";
+                            closeConnection(msg);
                         }
+                        // Reset
+                        Arrays.fill(m_byteInputStreamBuf, (byte) 0);
                     } else {
                         m_strLastError = "";
                         bRes = true;
@@ -212,70 +206,7 @@ public class ArduinoClientSocket
 
         return bRes;
     }
-/*
-    public boolean getData1(Command cmd)
-    {
-        boolean bRes = false;
-        if (m_dataInputStream != null)
-        {
 
-            try
-            {
-                //int iByteRead = 0;
-                byte byteRead = 0;
-
-                while(true)
-                {
-
-                    byteRead = m_dataInputStream.readByte();
-//                iByteRead = m_dataInputStream.read(m_byteInputStreamBuf, m_NrOfByteInInputStreamBuf, m_byteInputStreamBuf.length - m_NrOfByteInInputStreamBuf);
-                    m_byteInputStreamBuf[m_NrOfByteInInputStreamBuf] = byteRead;
-                    //               if(iByteRead > 0)
-                    //               {
-//                m_NrOfByteInInputStreamBuf = m_NrOfByteInInputStreamBuf + iByteRead;
-                    m_NrOfByteInInputStreamBuf = m_NrOfByteInInputStreamBuf + 1;
-                    if(m_NrOfByteInInputStreamBuf == 16)
-                    {
-                        m_NrOfByteInInputStreamBuf = 0;
-                        if((m_byteInputStreamBuf[0] == ACK) && (m_byteInputStreamBuf[15] == EOT))
-                        {
-                            cmd.setData(m_byteInputStreamBuf);
-                        }
-                    }
-                    //              }
-                }
-
-                //          m_strLastError = "";
-                //               bRes = true;
-            }
-            catch (SocketTimeoutException ex)
-            {
-                m_strLastError = "";
-                bRes = true;
-//                m_strLastError = m_context.getString(R.string.comm_status_timeout);
-//                closeConnection();
-            }
-            catch (EOFException eofx)
-            {
-                m_strLastError = m_context.getString(R.string.comm_status_eof);
-                closeConnection();
-            }
-            catch (Exception ex)
-            {
-                m_strLastError = ex.getMessage();
-                closeConnection();
-            }
-
-
-//            bRes = true;
-
-        }
-
-        m_timeMillisecondsGet = System.currentTimeMillis();
-
-        return bRes;
-    }
-*/
     public long getSendGetAnswerTimeMilliseconds()
     {
         return (m_timeMillisecondsGet - m_timeMillisecondsSend);

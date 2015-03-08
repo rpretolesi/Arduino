@@ -1023,7 +1023,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_1a2_4_in.setText(getString(R.string.default_string_value_bit));
             m_id_tv_byte_8a12_out.setText(getString(R.string.default_string_value_array));
             m_id_tv_byte_8a12_in.setText(getString(R.string.default_string_value_array));
-            m_drive_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+//            m_drive_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
 
             m_Message.resetCommand();
             // Send Command
@@ -1312,7 +1312,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_id_tv_byte_2_out.setText(getString(R.string.default_string_value_bit));
             m_id_tv_byte_2_in.setText(getString(R.string.default_string_value_bit));
 
-            m_c1_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+//            m_c1_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
 
             m_Message.resetCommand();
             // Send Command
@@ -1683,7 +1683,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_c_id_tv_byte_13_in.setText(R.string.default_string_value_array);
             m_c_id_tv_byte_14_in.setText(R.string.default_string_value_array);
 
-             m_c2_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
+//            m_c2_id_tv_communication_status.setText(getString(R.string.default_string_value_char));
 
             m_Message.resetCommand();
             // Send Command
@@ -2107,10 +2107,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         // Imposto il listener
         public synchronized void registerListener(ProgressUpdate listener) {
-            m_lCSListener.add(listener);
-        }
+            if(!m_lCSListener.contains(listener)){
+                m_lCSListener.add(listener);
+            }
+         }
         public synchronized void unregisterListener(ProgressUpdate listener) {
-            m_lCSListener.remove(listener);
+            if(m_lCSListener.contains(listener)){
+                m_lCSListener.remove(listener);
+            }
         }
 
         // Funzione richiamata ogni volta che ci sono dei dati da aggiornare
@@ -2121,6 +2125,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 for (ProgressUpdate cs : m_lCSListener) {
                     cs.onProgressUpdate(pud);
                     if(m_pud.isConnected() != pud[0].isConnected()){
+                        Log.d(TAG,"onUpdate->" + "onProgressUpdateConnectionChanged(pud)->isConnected : " + pud[0].isConnected() + ", Nr of Listener : " + m_lCSListener.size());
                         cs.onProgressUpdateConnectionChanged(pud);
                     }
                 }
@@ -2219,8 +2224,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  strError = strError + String.valueOf(lTime_1) + " - " + String.valueOf(lTime_2);
 */
 //                                Log.i(TAG, "doInBackground->" + "Receive - Send Diff. Time (ms)" + lTime_1 + "Send - Receive Diff. Time (ms)" + lTime_2);
-                                 pud.setData(ProgressUpdateData.Status.ONLINE,"", true);
-                                 this.publishProgress(pud);
+                                pud.setData(ProgressUpdateData.Status.ONLINE,"", true);
+                                this.publishProgress(pud);
 
                                 // attendo per non sovraccaricare CPU
                                 try {
@@ -2258,7 +2263,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             }
 
             // Pubblico i dati
-            acs.closeConnection(msg);
+            if(acs != null){
+                acs.closeConnection(msg);
+            }
             pud.setData(ProgressUpdateData.Status.CLOSED, "" , false);
             this.publishProgress(pud);
 

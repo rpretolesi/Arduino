@@ -210,7 +210,7 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
             m_settings_id_et_timeout = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_timeout);
             m_settings_id_et_timeout.setInputLimit(1, 60000);
             m_settings_id_et_comm_frame_delay = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_comm_frame_delay);
-            m_settings_id_et_comm_frame_delay.setInputLimit(50, 5000);
+            m_settings_id_et_comm_frame_delay.setInputLimit(1, 60000);
 
             m_settings_id_btn_save_server = (Button) getActivity().findViewById(R.id.settings_id_btn_save_server);
 
