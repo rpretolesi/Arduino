@@ -93,6 +93,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        // EULA
+        new EULA(this).show();
+
         // Set up the action bar.
 
         final ActionBar actionBar = getSupportActionBar();
