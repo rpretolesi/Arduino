@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.lang.Math;
 import java.util.Vector;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,7 +15,6 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -34,7 +34,7 @@ import android.widget.ToggleButton;
 
 import SQL.SQLContract;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class MainActivity extends BaseActivity implements ActionBar.TabListener {
 
     private static final String TAG = "MainActivity";
 
@@ -96,8 +96,20 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         // EULA
         new EULA(this).show();
 
-        // Set up the action bar.
+        // Check the orientation
 
+//        final int orientation = getRequestedOrientation();
+
+//        switch(orientation) {
+//            case Configuration.ORIENTATION_PORTRAIT:
+//                setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                break;
+//            case Configuration.ORIENTATION_LANDSCAPE:
+//                setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//                break;
+//        }
+
+        // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -147,7 +159,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     {
         super.onResume();
 
-        String str = "";
+        boolean bRes = false;
+        try {
+            bRes = Boolean.valueOf(SQLContract.Settings.getParameter(getApplicationContext(), SQLContract.Parameter.SET_SENSOR_ORIENTATION_LANDSCAPE));
+        } catch (Exception ignore) {
+        }
+        if(bRes){
+            setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         // Avvio il Task di comunicazione
         m_CommunicationTask = new CommunicationTask();
         m_CommunicationTask.execute(m_acs, m_Message);
@@ -163,7 +185,20 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_CommunicationTask.cancel(false);
         }
     }
+/*
+    // Check screen orientation or screen rotate event here
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
+        // Checks the orientation of the screen for landscape and portrait
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }
+*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -561,10 +596,10 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
             // Prelevo i dati dei sensori
             String strCommFrameDelay = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.COMM_FRAME_DELAY);
-            String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K);
-            String strSettSensorLowPassFilterK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K);
-            String strSettSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
-            String strSensorMinValueStartOutput = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT);
+            String strSettSensorFeedbackAmplK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_FEEDBACK_AMPL_K);
+            String strSettSensorLowPassFilterK = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_LOW_PASS_FILTER_K);
+            String strSettSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MAX_OUTPUT_VALUE);
+            String strSensorMinValueStartOutput = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MIN_VALUE_START_OUTPUT);
 
             try{
                 m_settings_id_et_comm_frame_delay = Integer.parseInt(strCommFrameDelay);
@@ -1453,7 +1488,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             m_c2_id_tv_communication_status = (CommStatusTextView) getActivity().findViewById(R.id.c2_id_tv_communication_status);
 
             // Prelevo i dati dei sensori
-            String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE);
+            String strSetSensorMaxOutputValue = SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MAX_OUTPUT_VALUE);
             int iSetSensorMaxOutputValue = 0;
             try{
                 iSetSensorMaxOutputValue = Integer.parseInt(strSetSensorMaxOutputValue);
@@ -1792,26 +1827,25 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
             m_sac_id_tv_sample_code.setText("/*\n" +
                     " TCP IP Server\n" +
-                    "  \n" +
-                    "  Circuit:\n" +
-                    "  * WiFi shield attached\n" +
-                    "  \n" +
-                    "  created 03 Feb 2015\n" +
-                    "  by Riccardo Pretolesi\n" +
-                    "\n" +
-                    "  \n" +
-                    "*/\n" +
+                    " \n" +
+                    " Circuit:\n" +
+                    " * WiFi shield attached\n" +
+                    " \n" +
+                    " created 03 Feb 2015\n" +
+                    " by Riccardo Pretolesi\n" +
+                    " \n" +
+                    " \n" +
+                    " */\n" +
                     "\n" +
                     "#include <SPI.h>\n" +
                     "#include <WiFi.h>\n" +
                     "\n" +
-                    "char ssid[] = \"PretolesiWiFi\";          //  your network SSID (name) \n" +
-                    "char pass[] = \"01234567\";   // your network password\n" +
+                    "char m_ssid[] = \"PretolesiWiFi\";          //  your network SSID (name) \n" +
+                    "char m_pass[] = \"01234567\";   // your network password\n" +
                     "\n" +
                     "int status = WL_IDLE_STATUS;\n" +
                     "int m_ServerTCPPort = 502;\n" +
                     "WiFiServer m_server(m_ServerTCPPort);\n" +
-                    "WiFiClient m_client = NULL;\n" +
                     "\n" +
                     "boolean m_bOneShotClientConnected = false;\n" +
                     "boolean m_bOneShotClientDisconnected_1 = false;\n" +
@@ -1831,13 +1865,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "boolean m_bSOHInProgress = false;\n" +
                     "byte m_byteFirstByteRead = 0;\n" +
                     "byte m_byteToWrite[16] = {0};\n" +
-                    "unsigned long  m_ulTimeoutRefMillisecs = 0;\n" +
                     "\n" +
                     "void setup() \n" +
                     "{\n" +
                     "  // initialize serial:\n" +
                     "  Serial.begin(9600);\n" +
-                    "   \n" +
+                    "\n" +
                     "  // Deselect SD Card\n" +
                     "  pinMode(4, OUTPUT);     \n" +
                     "  digitalWrite(4, 1);\n" +
@@ -1849,60 +1882,68 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "  pinMode(9, OUTPUT);     \n" +
                     "\n" +
                     "\n" +
-                    "  // check for the presence of the shield:\n" +
-                    "  if (WiFi.status() == WL_NO_SHIELD) \n" +
-                    "  {\n" +
-                    "    Serial.println(\"WiFi shield not present\"); \n" +
-                    "    // don't continue:\n" +
-                    "    while(true);\n" +
-                    "  } \n" +
-                    "  \n" +
-                    "   Serial.println(\"Attempting to connect to WPA network...\");\n" +
-                    "   Serial.print(\"SSID: \");\n" +
-                    "   Serial.println(ssid);\n" +
+                    "   //Initialize serial and wait for port to open:\n" +
+                    "  Serial.begin(9600);\n" +
+                    "  while (!Serial) {\n" +
+                    "    ; // wait for serial port to connect. Needed for Leonardo only\n" +
+                    "  }\n" +
                     "\n" +
-                    "   status = WiFi.begin(ssid, pass);\n" +
-                    "   if ( status != WL_CONNECTED) { \n" +
-                    "     Serial.println(\"Couldn't get a wifi connection\");\n" +
-                    "     while(true);\n" +
-                    "   } \n" +
-                    "   else {\n" +
-                    "     m_server.begin();\n" +
-                    "     Serial.print(\"Connected to wifi.\");\n" +
-                    "     \n" +
-                    "     // Print WiFi Status\n" +
-                    "     printWifiServerStatus();\n" +
-                    "   }\n" +
-                    "   \n" +
+                    "  // check for the presence of the shield:\n" +
+                    "  if (WiFi.status() == WL_NO_SHIELD) {\n" +
+                    "    Serial.println(\"WiFi shield not present\");\n" +
+                    "    // don't continue:\n" +
+                    "    while (true);\n" +
+                    "  }\n" +
+                    "\n" +
+                    "  String fv = WiFi.firmwareVersion();\n" +
+                    "  if ( fv != \"1.1.0\" )\n" +
+                    "    Serial.println(\"Please upgrade the firmware\");\n" +
+                    "\n" +
+                    "  // attempt to connect to Wifi network:\n" +
+                    "  while ( status != WL_CONNECTED) {\n" +
+                    "    Serial.print(\"Attempting to connect to SSID: \");\n" +
+                    "    Serial.println(m_ssid);\n" +
+                    "    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:\n" +
+                    "    status = WiFi.begin(m_ssid, m_pass);\n" +
+                    "\n" +
+                    "    // wait 10 seconds for connection:\n" +
+                    "    delay(10000);\n" +
+                    "  }\n" +
+                    "\n" +
+                    "  // start the server:\n" +
+                    "  m_server.begin();\n" +
+                    "  // you're connected now, so print out the status:\n" +
+                    "  printWifiStatus();\n" +
+                    "\n" +
                     "}\n" +
                     "\n" +
                     "\n" +
                     "void loop() \n" +
                     "{\n" +
-                    "\n" +
                     "  // WiFi Communication\n" +
                     "  Communication();\n" +
                     "}\n" +
                     "\n" +
                     "void Communication()\n" +
                     "{\n" +
-                    "  // when the client sends the first byte, say hello:\n" +
-                    "  if(m_client != NULL) \n" +
+                    "  \n" +
+                    "  WiFiClient client = m_server.available();   \n" +
+                    "  if(client != NULL) \n" +
                     "  {\n" +
-                    "    if(m_client.connected())\n" +
+                    "    if(client.connected())\n" +
                     "    {\n" +
                     "      m_bOneShotClientDisconnected_1 = false;\n" +
                     "      m_bOneShotClientDisconnected_2 = false;\n" +
                     "      if(m_bOneShotClientConnected == false)\n" +
                     "      {\n" +
                     "        m_bOneShotClientConnected = true;\n" +
-                    "                  \n" +
+                    "\n" +
                     "        // clear input buffer:\n" +
                     "        // Don't use this function.\n" +
                     "        // If after the connection the client send immediatly a frame, this will be removed from this instruction\n" +
                     "        // because 'm_server.available()' take some while befor return and this time it's enaught long to do the mess\n" +
-                    "//        m_client.flush();    \n" +
-                    "         \n" +
+                    "        //        m_client.flush();    \n" +
+                    "\n" +
                     "        // Init buffer data\n" +
                     "        m_iNrByteRead = 0;\n" +
                     "        for(int indice_1 = 0; indice_1 < 16; indice_1++)\n" +
@@ -1911,27 +1952,21 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "        }\n" +
                     "        m_byteToWrite[0] = ACK;\n" +
                     "        m_byteToWrite[15] = EOT;\n" +
-                    "        \n" +
-                    "        // Reference for timeout\n" +
-                    "        m_ulTimeoutRefMillisecs = millis();\n" +
-                    "        \n" +
+                    "\n" +
                     "        Serial.println(\"Client Connected.\");\n" +
                     "      }\n" +
-                    " \n" +
+                    "\n" +
                     "      // Read and write operation....\n" +
                     "      // Checking the first byte....\n" +
                     "      // Devono essere 16\n" +
-                    "      m_iNrByteToRead = m_client.available();\n" +
+                    "      m_iNrByteToRead = client.available();\n" +
                     "      if (m_iNrByteToRead >= 1) \n" +
                     "      {\n" +
-                    "        // Reference for timeout\n" +
-                    "        m_ulTimeoutRefMillisecs = millis();\n" +
-                    "        \n" +
                     "        if(m_bENQInProgress == false && m_bSOHInProgress == false)\n" +
                     "        {\n" +
                     "          // Check the message\n" +
                     "          // Read the first byte\n" +
-                    "          m_byteFirstByteRead = m_client.read(); \n" +
+                    "          m_byteFirstByteRead = client.read(); \n" +
                     "          m_iNrByteRead = m_iNrByteRead + 1;\n" +
                     "          // Just a enquiry....\n" +
                     "          if(m_byteFirstByteRead == ENQ)\n" +
@@ -1944,19 +1979,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "            m_bSOHInProgress = true;\n" +
                     "          }\n" +
                     "        }\n" +
-                    "        \n" +
+                    "\n" +
                     "        // Just a enquiry....\n" +
                     "        if(m_bENQInProgress == true)\n" +
                     "        {\n" +
-                    "//          Serial.println(\"ENQ byte read.\");\n" +
-                    "           \n" +
+                    "          //          Serial.println(\"ENQ byte read.\");\n" +
+                    "\n" +
                     "          for(int index_1 = 0; index_1 < 16; index_1++)\n" +
                     "          {\n" +
-                    "            m_client.write(m_byteToWrite[index_1]);\n" +
-                    "//            Serial.print(\"ENQ byte write: \");\n" +
-                    "//            Serial.print(m_byteToWrite[index_1]);\n" +
-                    "//            Serial.print(\" index: \");\n" +
-                    "//            Serial.println(index_1);\n" +
+                    "            client.write(m_byteToWrite[index_1]);\n" +
+                    "            //            Serial.print(\"ENQ byte write: \");\n" +
+                    "            //            Serial.print(m_byteToWrite[index_1]);\n" +
+                    "            //            Serial.print(\" index: \");\n" +
+                    "            //            Serial.println(index_1);\n" +
                     "          } \n" +
                     "          m_iNrByteRead = 0;\n" +
                     "          m_bENQInProgress = false;          \n" +
@@ -1967,17 +2002,17 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "        {\n" +
                     "          for(int index_0 = m_iNrByteRead; index_0 < m_iNrByteToRead; index_0++)\n" +
                     "          {\n" +
-                    "            m_byteRead[m_iNrByteRead] = m_client.read();\n" +
-                    "//            Serial.print(\"SOH byte read: \");\n" +
-                    "//            Serial.print(m_byteRead[m_iNrByteRead]);\n" +
-                    "//            Serial.print(\" index: \");\n" +
-                    "//            Serial.println(m_iNrByteRead);\n" +
+                    "            m_byteRead[m_iNrByteRead] = client.read();\n" +
+                    "            //            Serial.print(\"SOH byte read: \");\n" +
+                    "            //            Serial.print(m_byteRead[m_iNrByteRead]);\n" +
+                    "            //            Serial.print(\" index: \");\n" +
+                    "            //            Serial.println(m_iNrByteRead);\n" +
                     "            m_iNrByteRead = m_iNrByteRead + 1;  \n" +
                     "            if(m_iNrByteRead >= 16)\n" +
                     "            {\n" +
                     "              m_iNrByteRead = 0;\n" +
                     "              m_bSOHInProgress = false;\n" +
-                    "              \n" +
+                    "\n" +
                     "              // Check the last char...\n" +
                     "              if(m_byteRead[15] == EOT)\n" +
                     "              {\n" +
@@ -1992,7 +2027,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "                boolean b_1_6 = ((m_byteRead[1] & 0b00100000) == 32);\n" +
                     "                boolean b_1_7 = ((m_byteRead[1] & 0b01000000) == 64);\n" +
                     "                boolean b_1_8 = ((m_byteRead[1] & 0b10000000) == 128);\n" +
-                    "                \n" +
+                    "\n" +
                     "                boolean b_2_1 = ((m_byteRead[2] & 0b00000001) == 1);\n" +
                     "                boolean b_2_2 = ((m_byteRead[2] & 0b00000010) == 2);\n" +
                     "                boolean b_2_3 = ((m_byteRead[2] & 0b00000100) == 4);\n" +
@@ -2001,7 +2036,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "                boolean b_2_6 = ((m_byteRead[2] & 0b00100000) == 32);\n" +
                     "                boolean b_2_7 = ((m_byteRead[2] & 0b01000000) == 64);\n" +
                     "                boolean b_2_8 = ((m_byteRead[2] & 0b10000000) == 128);\n" +
-                    "                \n" +
+                    "\n" +
                     "                // Analogic\n" +
                     "                byte byte_5 = m_byteRead[5];\n" +
                     "                byte byte_6 = m_byteRead[6];\n" +
@@ -2009,38 +2044,42 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "                byte byte_8 = m_byteRead[8];\n" +
                     "                // ...\n" +
                     "                byte byte_14 = m_byteRead[14];\n" +
-                    "                \n" +
+                    "\n" +
                     "                // Output\n" +
                     "                if(b_2_1 == true){\n" +
-                    "                   digitalWrite(3, true); \n" +
-                    "                } else {\n" +
-                    "                   analogWrite(3, byte_5); \n" +
+                    "                  digitalWrite(3, true); \n" +
+                    "                } \n" +
+                    "                else {\n" +
+                    "                  analogWrite(3, byte_5); \n" +
                     "                }\n" +
-                    "                     \n" +
+                    "\n" +
                     "                if(b_2_2 == true){\n" +
-                    "                   digitalWrite(5, true); \n" +
-                    "                } else {\n" +
+                    "                  digitalWrite(5, true); \n" +
+                    "                } \n" +
+                    "                else {\n" +
                     "                  analogWrite(5, byte_6);       \n" +
                     "                }\n" +
                     "\n" +
                     "                if(b_2_3 == true){\n" +
-                    "                   digitalWrite(6, true); \n" +
-                    "                } else {\n" +
+                    "                  digitalWrite(6, true); \n" +
+                    "                } \n" +
+                    "                else {\n" +
                     "                  analogWrite(6, byte_7);       \n" +
                     "                }\n" +
                     "\n" +
                     "                if(b_2_4 == true){\n" +
-                    "                   digitalWrite(9, true); \n" +
-                    "                } else {\n" +
+                    "                  digitalWrite(9, true); \n" +
+                    "                } \n" +
+                    "                else {\n" +
                     "                  analogWrite(9, byte_8);       \n" +
                     "                }\n" +
-                    "                \n" +
+                    "\n" +
                     "                // Write back just for test....\n" +
                     "                // You can assigne here any value that you would like to read on the app....\n" +
                     "                // Digital\n" +
                     "                m_byteToWrite[1] = m_byteRead[1];\n" +
                     "                m_byteToWrite[2] = m_byteRead[2];\n" +
-                    "                \n" +
+                    "\n" +
                     "                // Analogic\n" +
                     "                m_byteToWrite[5] = m_byteRead[5];\n" +
                     "                m_byteToWrite[6] = m_byteRead[6];\n" +
@@ -2052,30 +2091,30 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "                m_byteToWrite[12] = m_byteRead[12];\n" +
                     "                m_byteToWrite[13] = m_byteRead[13];\n" +
                     "                m_byteToWrite[14] = m_byteRead[14];\n" +
-                    "                                \n" +
-                    "                \n" +
+                    "\n" +
+                    "\n" +
                     "                /*\n" +
                     "                 * Test\n" +
                     "                 *                \n" +
-                    "                for(int index_2 = 1; index_2 < 15; index_2++)\n" +
-                    "                {\n" +
-                    "                   m_byteToWrite[index_2] = m_byteRead[index_2];\n" +
-                    "                }\n" +
-                    "                */\n" +
-                    "                \n" +
+                    "                 for(int index_2 = 1; index_2 < 15; index_2++)\n" +
+                    "                 {\n" +
+                    "                 m_byteToWrite[index_2] = m_byteRead[index_2];\n" +
+                    "                 }\n" +
+                    "                 */\n" +
+                    "\n" +
                     "                for(int index_3 = 0; index_3 < 16; index_3++)\n" +
                     "                {\n" +
-                    "                   m_client.write(m_byteToWrite[index_3]);\n" +
-                    "//                   Serial.print(\"SOH byte write: \");\n" +
-                    "//                   Serial.print(m_byteToWrite[index_3]);\n" +
-                    "//                   Serial.print(\" index: \");\n" +
-                    "//                   Serial.println(index_3);\n" +
+                    "                  client.write(m_byteToWrite[index_3]);\n" +
+                    "                  //                   Serial.print(\"SOH byte write: \");\n" +
+                    "                  //                   Serial.print(m_byteToWrite[index_3]);\n" +
+                    "                  //                   Serial.print(\" index: \");\n" +
+                    "                  //                   Serial.println(index_3);\n" +
                     "                }                \n" +
                     "              }\n" +
                     "              else\n" +
                     "              {\n" +
                     "                Serial.println(\"EOT Error. \");\n" +
-                    "                m_client.stop();\n" +
+                    "                client.stop();\n" +
                     "\n" +
                     "                initValue();\n" +
                     "              }\n" +
@@ -2084,46 +2123,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "          }\n" +
                     "        }\n" +
                     "      } \n" +
-                    "      \n" +
-                    "      // Timeout \n" +
-                    "/*      \n" +
-                    " *    Delete this commet if you would like a timeout...\n" +
-                    " \n" +
-                    "      if(millis() < m_ulTimeoutRefMillisecs)\n" +
-                    "      {\n" +
-                    "        m_ulTimeoutRefMillisecs = millis();\n" +
-                    "        \n" +
-                    "        Serial.println(\"Reset millis().\");\n" +
-                    "      }\n" +
-                    "      // the value of timeout should be the same of the client\n" +
-                    "      if((millis() - m_ulTimeoutRefMillisecs) > 5000)\n" +
-                    "      {\n" +
-                    "        m_client.stop();\n" +
-                    "      \n" +
-                    "        m_bOneShotClientConnected = false;\n" +
-                    "          \n" +
-                    "        Serial.println(\"Stop for Timeout.\");\n" +
-                    "\n" +
-                    "        initValue();\n" +
-                    "      }  \n" +
-                    "*/      \n" +
                     "    }\n" +
                     "    else\n" +
                     "    {\n" +
                     "      m_bOneShotClientConnected = false;\n" +
-                    "               \n" +
+                    "\n" +
                     "      if(m_bOneShotClientDisconnected_1 == false)\n" +
                     "      {\n" +
                     "        m_bOneShotClientDisconnected_1 = true;\n" +
                     "\n" +
                     "        Serial.println(\"Client Disconnected.\");\n" +
-                    "     \n" +
+                    "\n" +
                     "        initValue();\n" +
                     "      }\n" +
-                    "\n" +
-                    "      // wait for a new client:\n" +
-                    "      m_client = m_server.available();   \n" +
-                    "      \n" +
                     "    }\n" +
                     "  }\n" +
                     "  else\n" +
@@ -2138,15 +2150,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "\n" +
                     "      initValue();\n" +
                     "    }\n" +
-                    "\n" +
-                    "    // wait for a new client:\n" +
-                    "    m_client = m_server.available();   \n" +
-                    "    \n" +
                     "  }\n" +
                     "}\n" +
                     "\n" +
                     "void initValue(){\n" +
-                    "  \n" +
+                    "\n" +
                     "  // Initializing the Value\n" +
                     "  // Variable\n" +
                     "  m_iNrByteToRead = 0;\n" +
@@ -2154,12 +2162,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "  m_bENQInProgress = false;\n" +
                     "  m_bSOHInProgress = false;\n" +
                     "  m_byteFirstByteRead = 0;\n" +
-                    "  m_ulTimeoutRefMillisecs = 0;  \n" +
+                    "\n" +
                     "  for(int index_0 = 0; index_0 < 16; index_0++) {\n" +
                     "    m_byteRead[index_0] = 0;\n" +
                     "    m_byteToWrite[index_0] = 0;\n" +
                     "  }\n" +
-                    "  \n" +
+                    "\n" +
                     "  // Output\n" +
                     "  analogWrite(3, 0);       \n" +
                     "  analogWrite(5, 0);       \n" +
@@ -2167,8 +2175,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "  analogWrite(9, 0);       \n" +
                     "\n" +
                     "}\n" +
-                    "\n" +
-                    "void printWifiServerStatus() {\n" +
+                    "void printWifiStatus() {\n" +
                     "  // print the SSID of the network you're attached to:\n" +
                     "  Serial.print(\"SSID: \");\n" +
                     "  Serial.println(WiFi.SSID());\n" +
@@ -2185,8 +2192,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     "  Serial.print(\"signal strength (RSSI):\");\n" +
                     "  Serial.print(rssi);\n" +
                     "  Serial.println(\" dBm\");\n" +
-                    "}\n" +
-                    "  ");
+                    "}\n");
 
             m_Message.resetCommand();
             // Send Command
@@ -2198,6 +2204,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     private class CommunicationTask extends AsyncTask<Object, ProgressUpdateData, Void> {
+        private static final String TAG = "CommunicationTask";
 
         private List<ProgressUpdate> m_lCSListener = new Vector<>();
         private ProgressUpdateData m_pud = new ProgressUpdateData();
@@ -2222,7 +2229,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 for (ProgressUpdate cs : m_lCSListener) {
                     cs.onProgressUpdate(pud);
                     if(m_pud.isConnected() != pud[0].isConnected()){
-                        Log.d(TAG,"onUpdate->" + "onProgressUpdateConnectionChanged(pud)->isConnected : " + pud[0].isConnected() + ", Nr of Listener : " + m_lCSListener.size());
+                        // Log.d(TAG,"onUpdate->" + "onProgressUpdateConnectionChanged(pud)->isConnected : " + pud[0].isConnected() + ", Nr of Listener : " + m_lCSListener.size());
                         cs.onProgressUpdateConnectionChanged(pud);
                     }
                 }
@@ -2318,7 +2325,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                                  }
                                  strError = strError + "\n" + "Send -> Rec. Elapsed time(ms): " + String.valueOf(lTime_2) + "/" + String.valueOf(iTimeout);
 
-//                                Log.i(TAG, "doInBackground->" + "Receive - Send Diff. Time (ms)" + lTime_1 + "Send - Receive Diff. Time (ms)" + lTime_2);
+                                // Log.i(TAG, "doInBackground->" + "Receive - Send Diff. Time (ms)" + lTime_1 + "Send - Receive Diff. Time (ms)" + lTime_2);
                                 pud.setData(ProgressUpdateData.Status.ONLINE, strError, true);
                                 this.publishProgress(pud);
 
@@ -2364,15 +2371,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             pud.setData(ProgressUpdateData.Status.CLOSED, "" , false);
             this.publishProgress(pud);
 
+            // Log.d(TAG, "doInBackground()->return");
+
             return null;
         }
-
 
         @Override
         protected void onProgressUpdate(ProgressUpdateData... pud) {
             super.onProgressUpdate(pud);
             // Aggiorno i dati
             onUpdate(pud);
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
+            // Log.d(TAG, "onPostExecute()");
         }
     }
 

@@ -64,7 +64,7 @@ public class ArduinoClientSocket
                     m_strLastError = "";
                     bRes = true;
 
-                    Log.d(TAG,"connectToArduino->" + "Connected");
+                    // // Log.d(TAG,"connectToArduino->" + "Connected");
                 }
             }
             m_timeMillisecondsSend = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class ArduinoClientSocket
         }
         catch (Exception ex)
         {
-            Log.d(TAG,"connectToArduino->" + "Exception ex : " + ex.getMessage());
+            // Log.d(TAG,"connectToArduino->" + "Exception ex : " + ex.getMessage());
             m_strLastError = ex.getMessage();
             closeConnection(msg);
         }
@@ -107,7 +107,7 @@ public class ArduinoClientSocket
                         byteCmd = msg.getCommand();
                     }
                     catch (Exception ex_1) {
-                        Log.d(TAG,"sendData->" + "Exception ex_1 : " + ex_1.getMessage());
+                        // Log.d(TAG,"sendData->" + "Exception ex_1 : " + ex_1.getMessage());
                         m_strLastError = ex_1.getMessage();
                         bRes = false;
                         closeConnection(msg);
@@ -122,7 +122,7 @@ public class ArduinoClientSocket
                 bRes = true;
             }
             catch (Exception ex_2) {
-                Log.d(TAG,"sendData->" + "Exception ex_2 : " + ex_2.getMessage());
+                // Log.d(TAG,"sendData->" + "Exception ex_2 : " + ex_2.getMessage());
                 m_strLastError = ex_2.getMessage();
                 closeConnection(msg);
             }
@@ -149,7 +149,7 @@ public class ArduinoClientSocket
                     m_NrOfByteInInputStreamBuf = m_NrOfByteInInputStreamBuf + iByteRead;
                     if(iByteRead != 16)
                     {
-                        Log.d(TAG, "getData->" + "(iByteRead > 0), iByteRead : " + iByteRead + ", m_NrOfByteInInputStreamBuf = " + m_NrOfByteInInputStreamBuf);
+                        // Log.d(TAG, "getData->" + "(iByteRead > 0), iByteRead : " + iByteRead + ", m_NrOfByteInInputStreamBuf = " + m_NrOfByteInInputStreamBuf);
                     }
 
                     if(m_NrOfByteInInputStreamBuf == 16)
@@ -166,7 +166,7 @@ public class ArduinoClientSocket
                         else
                         {
                             // Error
-                            Log.d(TAG,"getData->" + "(m_byteInputStreamBuf[0] != ACK) || (m_byteInputStreamBuf[15] != EOT)");
+                            // Log.d(TAG,"getData->" + "(m_byteInputStreamBuf[0] != ACK) || (m_byteInputStreamBuf[15] != EOT)");
                             m_strLastError = "Protocol Error.";
                             closeConnection(msg);
                         }
@@ -177,26 +177,26 @@ public class ArduinoClientSocket
                         bRes = true;
                     }
                 } else if(iByteRead < 0) {
-                    Log.d(TAG,"getData->" + "(iByteRead < 0)");
+                    // Log.d(TAG,"getData->" + "(iByteRead < 0)");
                     m_strLastError = "Stream closed";
                     bRes = false;
                     closeConnection(msg);
                 } else {
-                    Log.d(TAG,"getData->" + "(iByteRead = 0)");
+                    // Log.d(TAG,"getData->" + "(iByteRead = 0)");
                     m_strLastError = "";
                     bRes = true;
                 }
 
             } catch (SocketTimeoutException stex) {
-                Log.d(TAG,"getData->" + "SocketTimeoutException stex : " + stex.getMessage());
+                // Log.d(TAG,"getData->" + "SocketTimeoutException stex : " + stex.getMessage());
                 m_strLastError = m_context.getString(R.string.comm_status_timeout);
                 closeConnection(msg);
             } catch (EOFException eofex) {
-                Log.d(TAG,"getData->" + "EOFException eofex : " + eofex.getMessage());
+                // Log.d(TAG,"getData->" + "EOFException eofex : " + eofex.getMessage());
                 m_strLastError = m_context.getString(R.string.comm_status_eof);
                 closeConnection(msg);
             } catch (Exception ex) {
-                Log.d(TAG,"getData->" + "Exception ex : " + ex.getMessage());
+                // Log.d(TAG,"getData->" + "Exception ex : " + ex.getMessage());
                 m_strLastError = ex.getMessage();
                 closeConnection(msg);
             }
@@ -219,7 +219,7 @@ public class ArduinoClientSocket
 
     public void closeConnection(Message msg)
     {
-        Log.d(TAG,"closeConnection->" + "closeConnection");
+        // Log.d(TAG,"closeConnection->" + "closeConnection");
 
         if(msg != null) {
             msg.resetData();

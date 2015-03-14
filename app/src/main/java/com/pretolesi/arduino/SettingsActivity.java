@@ -2,6 +2,7 @@ package com.pretolesi.arduino;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,14 +11,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.Locale;
@@ -50,6 +49,9 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        // Set Orientation
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -287,6 +289,7 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
         private PretolesiEditText m_settings_id_et_sensor_low_pass_filter_k;
         private PretolesiEditText m_settings_id_et_sensor_max_output_value;
         private PretolesiEditText m_settings_id_et_sensor_min_value_start_output;
+        private CheckBox m_settings_id_cb_landscape;
 
         private Button m_settings_id_btn_save_sensor;
 
@@ -330,6 +333,7 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
             m_settings_id_et_sensor_max_output_value.setInputLimit(5, 255);
             m_settings_id_et_sensor_min_value_start_output = (PretolesiEditText) getActivity().findViewById(R.id.settings_id_et_sensor_min_value_start_output);
             m_settings_id_et_sensor_min_value_start_output.setInputLimit(5, 255);
+            m_settings_id_cb_landscape = (CheckBox) getActivity().findViewById(R.id.settings_id_cb_landscape);
 
             m_settings_id_btn_save_sensor = (Button) getActivity().findViewById(R.id.settings_id_btn_save_sensor);
 
@@ -345,34 +349,31 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
                     String strSensorLowPassFilterK = m_settings_id_et_sensor_low_pass_filter_k.getText().toString();
                     String strSensorMaxOutputValue = m_settings_id_et_sensor_max_output_value.getText().toString();
                     String strSensorMinValueStartOutput = m_settings_id_et_sensor_min_value_start_output.getText().toString();
+                    String strLandscape = String.valueOf(m_settings_id_cb_landscape.isChecked());
 
                     if(!validateInputData(getView()))
                         return;
 
                     // set a Parameter
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K, String.valueOf(strSensorFeedbackAmplK)) == false)
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_FEEDBACK_AMPL_K, String.valueOf(strSensorFeedbackAmplK)))  {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K, String.valueOf(strSensorLowPassFilterK)) == false)
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_LOW_PASS_FILTER_K, String.valueOf(strSensorLowPassFilterK))) {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE, String.valueOf(strSensorMaxOutputValue)) == false)
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MAX_OUTPUT_VALUE, String.valueOf(strSensorMaxOutputValue))) {
                         bSaveStatus = false;
                     }
-                    if(SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT, String.valueOf(strSensorMinValueStartOutput)) == false)
-                    {
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MIN_VALUE_START_OUTPUT, String.valueOf(strSensorMinValueStartOutput))) {
+                        bSaveStatus = false;
+                    }
+                    if(!SQLContract.Settings.setParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_ORIENTATION_LANDSCAPE, String.valueOf(strLandscape))) {
                         bSaveStatus = false;
                     }
 
-                    if(bSaveStatus == true)
-                    {
+                    if(bSaveStatus) {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_ok, Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
+                    } else {
                         Toast.makeText(getActivity().getApplicationContext(), R.string.db_save_data_error, Toast.LENGTH_LONG).show();
                     }
                 }
@@ -387,19 +388,28 @@ public class SettingsActivity extends ActionBarActivity implements ActionBar.Tab
             // Load the data from Database
             if(m_settings_id_et_sensor_feedback_ampl_k != null)
             {
-                m_settings_id_et_sensor_feedback_ampl_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_FEEDBACK_AMPL_K));
+                m_settings_id_et_sensor_feedback_ampl_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_FEEDBACK_AMPL_K));
             }
             if(m_settings_id_et_sensor_low_pass_filter_k != null)
             {
-                m_settings_id_et_sensor_low_pass_filter_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_LOW_PASS_FILTER_K));
+                m_settings_id_et_sensor_low_pass_filter_k.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_LOW_PASS_FILTER_K));
             }
             if(m_settings_id_et_sensor_max_output_value != null)
             {
-                m_settings_id_et_sensor_max_output_value.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MAX_OUTPUT_VALUE));
+                m_settings_id_et_sensor_max_output_value.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MAX_OUTPUT_VALUE));
             }
             if(m_settings_id_et_sensor_min_value_start_output != null)
             {
-                m_settings_id_et_sensor_min_value_start_output.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SETT_SENSOR_MIN_VALUE_START_OUTPUT));
+                m_settings_id_et_sensor_min_value_start_output.setText(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_MIN_VALUE_START_OUTPUT));
+            }
+            if(m_settings_id_cb_landscape != null)
+            {
+                boolean bRes = false;
+                try {
+                    bRes = Boolean.valueOf(SQLContract.Settings.getParameter(getActivity().getApplicationContext(), SQLContract.Parameter.SET_SENSOR_ORIENTATION_LANDSCAPE));
+                } catch (Exception ignore) {
+                }
+                m_settings_id_cb_landscape.setChecked(bRes);
             }
         }
 

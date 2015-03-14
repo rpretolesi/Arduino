@@ -35,10 +35,11 @@ public class SQLContract
         PORT(3, "502"),
         TIMEOUT(4, "30000"),
         COMM_FRAME_DELAY(5, "100"),
-        SETT_SENSOR_FEEDBACK_AMPL_K(10, "500.0"),
-        SETT_SENSOR_LOW_PASS_FILTER_K(11, "0.5"),
-        SETT_SENSOR_MAX_OUTPUT_VALUE(12, "250"),
-        SETT_SENSOR_MIN_VALUE_START_OUTPUT(13, "10");
+        SET_SENSOR_FEEDBACK_AMPL_K(10, "500.0"),
+        SET_SENSOR_LOW_PASS_FILTER_K(11, "0.5"),
+        SET_SENSOR_MAX_OUTPUT_VALUE(12, "250"),
+        SET_SENSOR_MIN_VALUE_START_OUTPUT(13, "10"),
+        SET_SENSOR_ORIENTATION_LANDSCAPE(14, "0");
 
         private int value;
         private String defaultValue;

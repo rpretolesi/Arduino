@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_id_tv_sensor_low_pass_filter_k"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:hint="@string/settings_hint_et_sensor_low_pass_filter_k"
         android:inputType="number|numberDecimal" />
 
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_id_tv_sensor_max_output_value"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:hint="@string/settings_hint_et_sensor_max_output_value"
         android:inputType="number|none" />
 
@@ -73,16 +73,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_id_tv_sensor_min_value_start_output"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:hint="@string/settings_hint_et_sensor_min_value_start_output"
         android:inputType="number|none" />
+
+    <CheckBox
+        android:id="@+id/settings_id_cb_landscape"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settings_id_et_sensor_min_value_start_output"
+        android:layout_alignParentStart="true"
+        android:text="@string/settings_text_cb_landscape" />
 
     <Button
         android:id="@+id/settings_id_btn_save_sensor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:text="@string/settings_text_btn_save_sensor" />
+
 
 </RelativeLayout>

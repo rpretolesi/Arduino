@@ -42,7 +42,7 @@
         e. These Terms and Conditions and your relationship with The Company under these Terms and Conditions will be governed by the laws of the State of California without regard to its conflict of laws provisions. You and The Company agree to submit to the exclusive jurisdiction of the courts located within the county of Santa Clara, California to resolve any legal matter arising from these Terms and Conditions. Notwithstanding this, you agree that The Company will still be allowed to apply for injunctive remedies (or an equivalent type of urgent legal relief) in any jurisdiction.
     </string>
 
-    <string name="updates">Upates in this version: First Release </string>
+    <string name="updates">Updates in this version: First Release </string>
 
 
     <!-- Notifiche di operazioni su Database -->
@@ -76,6 +76,7 @@
     <string name="settings_hint_et_sensor_max_output_value">5 - 255</string>
     <string name="settings_text_tv_sensor_min_value_start_output">Min output value</string>
     <string name="settings_hint_et_sensor_min_value_start_output">5 - 255</string>
+    <string name="settings_text_cb_landscape">Set Orientation: Landscape</string>
     <string name="settings_text_btn_save_sensor">Save\nParameter</string>
 
 
