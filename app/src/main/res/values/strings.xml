@@ -62,7 +62,7 @@
     <string name="settings_text_btn_stop_comm">Stop\nCom.</string>
     <string name="settings_text_tv_timeout">Timeout Receiving Data Packet.(ms)</string>
     <string name="settings_hint_et_timeout">1 - 60000(ms)</string>
-    <string name="settings_text_tv_comm_frame_delay">Receive/Send Packet Delay Time(ms)</string>
+    <string name="settings_text_tv_comm_frame_delay">Receive/Send Packet Delay Time.(ms)</string>
     <string name="settings_hint_et_comm_frame_delay">1 - 60000</string>
     <string name="settings_text_btn_save_server">Save\nParameter</string>
     <!-- Settings. Sensor-->

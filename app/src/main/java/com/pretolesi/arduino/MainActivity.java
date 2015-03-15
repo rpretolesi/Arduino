@@ -1840,8 +1840,8 @@ public class MainActivity extends BaseActivity implements ActionBar.TabListener 
                     "#include <SPI.h>\n" +
                     "#include <WiFi.h>\n" +
                     "\n" +
-                    "char m_ssid[] = \"PretolesiWiFi\";          //  your network SSID (name) \n" +
-                    "char m_pass[] = \"01234567\";   // your network password\n" +
+                    "char m_ssid[] = \"MyWiFi\";          //  your network SSID (name) \n" +
+                    "char m_pass[] = \"MyPassword\";   // your network password\n" +
                     "\n" +
                     "int status = WL_IDLE_STATUS;\n" +
                     "int m_ServerTCPPort = 502;\n" +
