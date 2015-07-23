@@ -42,7 +42,7 @@
         e. These Terms and Conditions and your relationship with The Company under these Terms and Conditions will be governed by the laws of the State of California without regard to its conflict of laws provisions. You and The Company agree to submit to the exclusive jurisdiction of the courts located within the county of Santa Clara, California to resolve any legal matter arising from these Terms and Conditions. Notwithstanding this, you agree that The Company will still be allowed to apply for injunctive remedies (or an equivalent type of urgent legal relief) in any jurisdiction.
     </string>
 
-    <string name="updates">Updates in this version: First Release </string>
+    <string name="updates">If you need a Modbus Client with the possibility to choose which sensor to use for to send command to your Arduino in various Protocols, other that many others features, please consider to install: \n\n "Easy SCADA And Home Automation" \n\n Updates in this version: Some Bug Fix. </string>
 
 
     <!-- Notifiche di operazioni su Database -->
